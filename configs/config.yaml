@@ -1,0 +1,35 @@
+# Confidence-ToM Experiment Configuration
+name: "confidence_tom_experiment"
+output_dir: "results"
+verbose: true
+use_wandb: false
+wandb_project: "confidence-tom"
+
+# 第一階段：Generator (小模型)
+generator:
+  model: "google/gemma-2-9b-it"
+  temperature: 0.7
+  max_tokens: 2048
+
+# 第二階段：Observer (大模型)
+observer:
+  models:
+    - "openai/gpt-4o"
+    - "anthropic/claude-3.5-sonnet"
+    - "google/gemini-1.5-pro"
+  temperature: 0
+  max_tokens: 2048
+
+# 資料集設定
+dataset:
+  sources:
+    - "gsm8k"        # 數學推理
+    - "truthfulqa"   # 常識誤區
+  num_samples: 100
+
+# 信心評估設定
+confidence:
+  scale: "percentage"  # percentage (0-100) or categorical (Low/Medium/High)
+  
+save_csv: true
+save_json: true
