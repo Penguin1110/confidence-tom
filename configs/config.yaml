@@ -11,6 +11,12 @@ generator:
   temperature: 0.7
   max_tokens: 2048
 
+# 第一.五階段：Styler (風格轉換，用於 D1: Style-equivalent 實驗)
+styler:
+  model: "gpt-4o"
+  temperature: 0.3
+  max_tokens: 2048
+
 # 第二階段：Observer (大模型)
 observer:
   models:
