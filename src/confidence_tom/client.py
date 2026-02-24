@@ -1,8 +1,11 @@
 import os
 from typing import Optional, Type, TypeVar
 
+from dotenv import load_dotenv
 from openai import OpenAI
 from pydantic import BaseModel
+
+load_dotenv()
 
 T = TypeVar("T", bound=BaseModel)
 
