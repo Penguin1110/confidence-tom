@@ -30,6 +30,6 @@ dataset:
 # 信心評估設定
 confidence:
   scale: "percentage"  # percentage (0-100) or categorical (Low/Medium/High)
-  
+
 save_csv: true
 save_json: true

@@ -32,6 +32,12 @@ package = true
 testpaths = ["tests"]
 pythonpath = ["src"]
 
+[tool.mypy]
+strict = true
+warn_unused_configs = true
+warn_return_any = true
+ignore_missing_imports = true
+
 [dependency-groups]
 dev = [
     "mypy>=1.19.1",
