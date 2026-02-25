@@ -1,3 +1,4 @@
+import asyncio
 import collections
 import logging
 from typing import List, Optional
@@ -31,7 +32,7 @@ class SubjectGenerator:
             "3. Assess your own confidence (0-100) that this answer is correct."
         )
 
-    def solve(
+    async def solve(
         self,
         question_id: str,
         question: str,
@@ -61,10 +62,15 @@ class SubjectGenerator:
             {"role": "user", "content": f"Question: {question}"},
         ]
 
-        samples: List[SolvedInstance] = []
-        for i in range(self.k_samples):
+        async def fetch_sample(i: int) -> Optional[SubjectOutput]:
             logger.info(f"    Running Subject sample {i + 1}/{self.k_samples} [{framing}]")
-            parsed_result = self.client.generate_parsed(messages, SubjectOutput)
+            return await self.client.agenerate_parsed(messages, SubjectOutput)
+
+        tasks = [fetch_sample(i) for i in range(self.k_samples)]
+        results = await asyncio.gather(*tasks)
+
+        samples: List[SolvedInstance] = []
+        for parsed_result in results:
             if parsed_result:
                 samples.append(
                     SolvedInstance(

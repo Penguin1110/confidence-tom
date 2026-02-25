@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -14,6 +15,10 @@ logger = logging.getLogger(__name__)
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
+    asyncio.run(amain(cfg))
+
+
+async def amain(cfg: DictConfig) -> None:
     gen_cfg = cfg.generator
     logger.info(f"Initializing SubjectGenerator with model: {gen_cfg.model}")
     subject_gen = SubjectGenerator(
@@ -37,7 +42,7 @@ def main(cfg: DictConfig) -> None:
                 f"Processing question {q['id']} [Level: {q['ambiguity_level']}] "
                 f"[Framing: {framing}]..."
             )
-            solved = subject_gen.solve(
+            solved = await subject_gen.solve(
                 question_id=f"{q['id']}_{framing}",
                 question=q["question"],
                 ground_truth=q["ground_truth"],

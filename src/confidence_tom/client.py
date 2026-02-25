@@ -2,7 +2,7 @@ import os
 from typing import Optional, Type, TypeVar
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 from pydantic import BaseModel
 
 load_dotenv()
@@ -25,6 +25,7 @@ class LLMClient:
             print("WARNING: OPENROUTER_API_KEY not found in environment!")
 
         self.client = OpenAI(base_url=base_url, api_key=api_key)
+        self.aclient = AsyncOpenAI(base_url=base_url, api_key=api_key)
 
     def generate_parsed(
         self, messages: list[dict[str, str]], response_model: Type[T]
@@ -41,6 +42,23 @@ class LLMClient:
             return response.choices[0].message.parsed  # type: ignore[no-any-return]
         except Exception as e:
             print(f"Error generating parsed LLM response: {e}")
+            return None
+
+    async def agenerate_parsed(
+        self, messages: list[dict[str, str]], response_model: Type[T]
+    ) -> Optional[T]:
+        """Asynchronously generates a structured response matching the Pydantic schema."""
+        try:
+            response = await self.aclient.beta.chat.completions.parse(
+                model=self.model,
+                messages=messages,
+                temperature=self.temperature,
+                max_tokens=self.max_tokens,
+                response_format=response_model,
+            )
+            return response.choices[0].message.parsed  # type: ignore[no-any-return]
+        except Exception as e:
+            print(f"Error agenerating parsed LLM response: {e}")
             return None
 
     def generate_text(self, messages: list[dict[str, str]]) -> str:
