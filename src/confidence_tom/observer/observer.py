@@ -21,7 +21,7 @@ class RecursiveObserver:
             "an overconfidence flag, and your reasoning."
         )
 
-    def evaluate(
+    async def evaluate(
         self,
         level: int,
         subject_output: SubjectOutputV2,
@@ -44,7 +44,7 @@ class RecursiveObserver:
                 {"role": "system", "content": ss_prompt},
                 {"role": "user", "content": f"Question: {subject_output.question}"},
             ]
-            parsed_ss = self.client.generate_parsed(ss_messages, ObserverSelfSolve)
+            parsed_ss = await self.client.agenerate_parsed(ss_messages, ObserverSelfSolve)
             if parsed_ss:
                 observer_self_solve = parsed_ss
             else:
@@ -85,7 +85,7 @@ class RecursiveObserver:
             {"role": "user", "content": user_prompt},
         ]
 
-        parsed_result = self.client.generate_parsed(messages, JudgmentOutput)
+        parsed_result = await self.client.agenerate_parsed(messages, JudgmentOutput)
 
         if parsed_result is None:
             return None

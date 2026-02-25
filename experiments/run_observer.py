@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -15,6 +16,10 @@ logger = logging.getLogger(__name__)
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
+    asyncio.run(amain(cfg))
+
+
+async def amain(cfg: DictConfig) -> None:
     input_file = Path(cfg.output_dir) / "generator_v2_results.json"
 
     if not input_file.exists():
@@ -52,7 +57,7 @@ def main(cfg: DictConfig) -> None:
                     model_name=model_name, protocol=protocol, temperature=temperature
                 )
 
-                result = observer.evaluate(
+                result = await observer.evaluate(
                     level=k,
                     subject_output=subject_output,
                     previous_judgments=recursive_chain,
