@@ -85,6 +85,13 @@ def main(cfg: DictConfig) -> None:
             }
         )
 
+        # 即時存檔 (Real-time saving)
+        output_dir = Path(cfg.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        out_file = output_dir / "observer_v2_recursive_results.json"
+        with open(out_file, "w", encoding="utf-8") as f:
+            json.dump(final_results, f, indent=2, ensure_ascii=False)
+
     # Save to disk
     output_dir = Path(cfg.output_dir)
     out_file = output_dir / "observer_v2_recursive_results.json"
