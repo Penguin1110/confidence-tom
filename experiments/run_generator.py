@@ -30,7 +30,21 @@ async def amain(cfg: DictConfig) -> None:
 
     questions = load_mixed_dataset(num_per_level=cfg.dataset.num_samples)
 
+    output_dir = Path(cfg.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out_file = output_dir / "generator_v2_results.json"
+
     results = []
+    processed_qids: set[str] = set()
+    if out_file.exists():
+        try:
+            with open(out_file, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+                results.extend(existing_data)
+                processed_qids.update(item["question_id"] for item in existing_data)
+            logger.info(f"Resuming... Loaded {len(existing_data)} previously solved questions.")
+        except json.JSONDecodeError:
+            logger.warning(f"Failed to parse {out_file}, starting fresh.")
 
     for q in questions:
         # For L3b and L4, test framing interventions
@@ -39,12 +53,17 @@ async def amain(cfg: DictConfig) -> None:
             framings = ["real-world", "in-universe"]
 
         for framing in framings:
+            full_qid = f"{q['id']}_{framing}"
+            if full_qid in processed_qids:
+                logger.info(f"Skipping already processed question {full_qid}")
+                continue
+
             logger.info(
                 f"Processing question {q['id']} [Level: {q['ambiguity_level']}] "
                 f"[Framing: {framing}]..."
             )
             solved = await subject_gen.solve(
-                question_id=f"{q['id']}_{framing}",
+                question_id=full_qid,
                 question=q["question"],
                 ground_truth=q["ground_truth"],
                 ambiguity_level=q["ambiguity_level"],
@@ -64,9 +83,6 @@ async def amain(cfg: DictConfig) -> None:
             results.append(solved.model_dump())
 
             # 即時存檔 (Real-time saving)
-            output_dir = Path(cfg.output_dir)
-            output_dir.mkdir(parents=True, exist_ok=True)
-            out_file = output_dir / "generator_v2_results.json"
             with open(out_file, "w", encoding="utf-8") as f:
                 json.dump(results, f, indent=2, ensure_ascii=False)
     logger.info(f"Finished! Results saved to {out_file}")
