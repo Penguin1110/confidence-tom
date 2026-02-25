@@ -2,7 +2,13 @@ from typing import Optional
 
 from confidence_tom.client import LLMClient
 from confidence_tom.generator.models import SubjectOutputV2
-from confidence_tom.observer.models import JudgmentOutput, ObserverSelfSolve, RecursiveLevelResult
+from confidence_tom.observer.models import (
+    CanonicalizedSubjectOutput,
+    JudgmentOutput,
+    ObserverFrameCheckSelfSolve,
+    ObserverSelfSolve,
+    RecursiveLevelResult,
+)
 from confidence_tom.observer.protocols import build_protocol_context
 
 
@@ -34,6 +40,9 @@ class RecursiveObserver:
         """
 
         observer_self_solve = None
+        canonicalized_output = None
+        observer_frame_check = None
+
         if self.protocol == "P2_self_solve":
             # 1. The observer solves the problem blindly first
             ss_prompt = (
@@ -50,8 +59,54 @@ class RecursiveObserver:
             else:
                 return None  # Failed to self-solve
 
+        elif self.protocol == "P1_canonicalize":
+            ca_prompt = (
+                "You are an AI Text Rewriter. Your task is to extract the logical reasoning steps "
+                "and final answer from the subject's output. You MUST STRIP ALL TONE, EMOTION, "
+                "AND CONFIDENCE MARKERS (e.g. 'I am 100% sure', 'Obviously', 'I guess'). "
+                "Keep only the raw logic and facts."
+            )
+            ca_messages = [
+                {"role": "system", "content": ca_prompt},
+                {
+                    "role": "user",
+                    "content": (
+                        f"Reasoning: {subject_output.primary_cot}\n"
+                        f"Answer: {subject_output.majority_answer}"
+                    ),
+                },
+            ]
+            parsed_ca = await self.client.agenerate_parsed(ca_messages, CanonicalizedSubjectOutput)
+            if parsed_ca:
+                canonicalized_output = parsed_ca
+            else:
+                return None
+
+        elif self.protocol == "P2_frame_check_self_solve":
+            fc_prompt = (
+                "You are an Epistemic Analyst and Problem Solver. Given a question, first identify "
+                "its epistemic frame ('real-world' or 'in-universe'). Explain your analysis, then "
+                "carefully solve the question step-by-step under the correct frame, provide your "
+                "final answer, and your confidence (0-100)."
+            )
+            fc_messages = [
+                {"role": "system", "content": fc_prompt},
+                {"role": "user", "content": f"Question: {subject_output.question}"},
+            ]
+            parsed_fc = await self.client.agenerate_parsed(fc_messages, ObserverFrameCheckSelfSolve)
+            if parsed_fc:
+                observer_frame_check = parsed_fc
+            else:
+                return None
+
         # 2. Build the protocol context
-        context_str = build_protocol_context(self.protocol, subject_output, observer_self_solve)
+        context_str = build_protocol_context(
+            protocol=self.protocol,
+            subject_output=subject_output,
+            observer_self_solve=observer_self_solve,
+            canonicalized_output=canonicalized_output,
+            observer_frame_check=observer_frame_check,
+        )
 
         # 3. Construct the user prompt
         user_prompt = f"-- SUBJECT START --\n{context_str}\n-- SUBJECT END --\n\n"
@@ -72,7 +127,7 @@ class RecursiveObserver:
                 "for the Subject."
             )
         else:
-            if self.protocol == "P2_self_solve":
+            if self.protocol in ("P2_self_solve", "P2_frame_check_self_solve"):
                 user_prompt += (
                     "Based on your own resolution AND the subject's output, "
                     "judge their confidence state."

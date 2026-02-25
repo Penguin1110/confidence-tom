@@ -29,8 +29,14 @@ async def amain(cfg: DictConfig) -> None:
     with open(input_file, "r", encoding="utf-8") as f:
         level0_results = json.load(f)
 
-    # Instantiate Observers: Test P0, P2 (Self-solve), and P3 (Multi-sample insight)
-    protocols_to_test = ["P0_raw", "P2_self_solve", "P3_multi_sample"]
+    # Instantiate Observers: Test P0, P1, P2 (Self-solve), P2+ (Frame-check), and P3 (Multi-sample)
+    protocols_to_test = [
+        "P0_raw",
+        "P1_canonicalize",
+        "P2_self_solve",
+        "P2_frame_check_self_solve",
+        "P3_multi_sample",
+    ]
     observer_models = cfg.observer.models  # We expect at least one model here
     temperature = cfg.observer.temperature
 

@@ -9,6 +9,29 @@ class ObserverSelfSolve(BaseModel):
     confidence: int = Field(description="Your confidence in this answer (0-100).")
 
 
+class CanonicalizedSubjectOutput(BaseModel):
+    """Canonicalized version of the subject's output, stripped of stylistic bias/tone."""
+
+    canonical_reasoning: str = Field(
+        description="The logical reasoning steps, stripped of tone and confidence words."
+    )
+    canonical_answer: str = Field(description="The raw final answer without extra fluff.")
+
+
+class ObserverFrameCheckSelfSolve(BaseModel):
+    """Observer's Frame-Check then Self-Solve attempt used for Protocol P2+."""
+
+    epistemic_frame: str = Field(
+        description="Identify the frame of the question: 'real-world' or 'in-universe'."
+    )
+    frame_analysis: str = Field(
+        description="Why you classified the frame this way, and any tricky premises found."
+    )
+    reasoning: str = Field(description="Your step-by-step reasoning under this frame.")
+    answer: str = Field(description="Your final answer.")
+    confidence: int = Field(description="Your confidence in this answer (0-100).")
+
+
 class JudgmentOutput(BaseModel):
     """The structured judgment output from the Observer model."""
 
