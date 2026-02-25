@@ -25,6 +25,7 @@ async def amain(cfg: DictConfig) -> None:
         model_name=gen_cfg.model,
         temperature=gen_cfg.temperature,
         k_samples=gen_cfg.k_samples if "k_samples" in gen_cfg else 5,
+        max_tokens=gen_cfg.max_tokens if "max_tokens" in gen_cfg else 4096,
     )
 
     questions = load_mixed_dataset(num_per_level=cfg.dataset.num_samples)

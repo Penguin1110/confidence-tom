@@ -22,9 +22,11 @@ class SubjectOutput(BaseModel):
 class SubjectGenerator:
     """Simulates the 'Subject' model that solves questions with Behavioral Confidence (K runs)."""
 
-    def __init__(self, model_name: str, temperature: float = 0.7, k_samples: int = 5) -> None:
+    def __init__(
+        self, model_name: str, temperature: float = 0.7, k_samples: int = 5, max_tokens: int = 4096
+    ) -> None:
         self.k_samples = k_samples
-        self.client = LLMClient(model=model_name, temperature=temperature, max_tokens=2048)
+        self.client = LLMClient(model=model_name, temperature=temperature, max_tokens=max_tokens)
         self.system_prompt = (
             "You are an AI assistant solving problems. For each question:\n"
             "1. Think step-by-step and write down your reasoning.\n"
