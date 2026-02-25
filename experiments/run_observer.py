@@ -36,49 +36,53 @@ async def amain(cfg: DictConfig) -> None:
 
     MAX_LEVELS = 3
     final_results = []
+    output_dir = Path(cfg.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    out_file = output_dir / "observer_v2_recursive_results.json"
 
-    for item_raw in level0_results:
-        # Load back into Pydantic model
-        subject_output = SubjectOutputV2(**item_raw)
-        logger.info(f"Processing evaluation for Question: {subject_output.question_id}")
+    sem = asyncio.Semaphore(5)
 
-        protocol_chains = []
+    from typing import Any
 
-        for protocol in protocols_to_test:
-            logger.info(f"  -> Testing Protocol: [{protocol}]")
-            recursive_chain: list[RecursiveLevelResult] = []
+    async def bound_process_question(item_raw: dict[str, Any]) -> None:
+        async with sem:
+            subject_output = SubjectOutputV2(**item_raw)
+            logger.info(f"Processing evaluation for Question: {subject_output.question_id}")
 
-            for k in range(1, MAX_LEVELS + 1):
-                # Pick model dynamically (Heterogeneous Observer Chain)
-                model_name = observer_models[(k - 1) % len(observer_models)]
-                logger.info(f"      Running Level-{k} observer [{model_name}] ({protocol})...")
+            async def run_protocol(protocol: str) -> dict[str, Any]:
+                recursive_chain: list[RecursiveLevelResult] = []
+                for k in range(1, MAX_LEVELS + 1):
+                    model_name = observer_models[(k - 1) % len(observer_models)]
+                    logger.info(
+                        f"      Q: {subject_output.question_id} | "
+                        f"Running Level-{k} observer [{model_name}] ({protocol})..."
+                    )
 
-                observer = RecursiveObserver(
-                    model_name=model_name, protocol=protocol, temperature=temperature
-                )
+                    observer = RecursiveObserver(
+                        model_name=model_name, protocol=protocol, temperature=temperature
+                    )
 
-                result = await observer.evaluate(
-                    level=k,
-                    subject_output=subject_output,
-                    previous_judgments=recursive_chain,
-                )
+                    result = await observer.evaluate(
+                        level=k,
+                        subject_output=subject_output,
+                        previous_judgments=recursive_chain,
+                    )
 
-                if result:
-                    recursive_chain.append(result)
-                else:
-                    logger.warning(f"Failed to get Level-{k} judgment for {protocol}.")
-                    break
+                    if result:
+                        recursive_chain.append(result)
+                    else:
+                        logger.warning(f"Failed to get Level-{k} judgment for {protocol}.")
+                        break
 
-            # Save chain for this protocol test
-            protocol_chains.append(
-                {
+                return {
                     "protocol": protocol,
                     "oversight_chain": [rc.model_dump() for rc in recursive_chain],
                 }
-            )
 
-        final_results.append(
-            {
+            tasks = [run_protocol(p) for p in protocols_to_test]
+            protocol_chains = await asyncio.gather(*tasks)
+
+            res = {
                 "question_id": subject_output.question_id,
                 "question": subject_output.question,
                 "ambiguity_level": subject_output.ambiguity_level,
@@ -88,21 +92,14 @@ async def amain(cfg: DictConfig) -> None:
                 "is_correct": subject_output.is_correct,
                 "evaluations_by_protocol": protocol_chains,
             }
-        )
+            final_results.append(res)
 
-        # 即時存檔 (Real-time saving)
-        output_dir = Path(cfg.output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-        out_file = output_dir / "observer_v2_recursive_results.json"
-        with open(out_file, "w", encoding="utf-8") as f:
-            json.dump(final_results, f, indent=2, ensure_ascii=False)
+            # 即時存檔 (Real-time saving)
+            with open(out_file, "w", encoding="utf-8") as f:
+                json.dump(final_results, f, indent=2, ensure_ascii=False)
 
-    # Save to disk
-    output_dir = Path(cfg.output_dir)
-    out_file = output_dir / "observer_v2_recursive_results.json"
-
-    with open(out_file, "w", encoding="utf-8") as f:
-        json.dump(final_results, f, indent=2, ensure_ascii=False)
+    tasks = [bound_process_question(item) for item in level0_results]
+    await asyncio.gather(*tasks)
 
     logger.info(f"Finished! Recursive observation V2 results saved to {out_file}")
 
