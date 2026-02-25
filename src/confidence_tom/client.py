@@ -18,16 +18,11 @@ class LLMClient:
         self.temperature = temperature
         self.max_tokens = max_tokens
 
-        # Check if it's an OpenRouter model (contains a slash, e.g., google/gemma-2-9b-it)
-        if "/" in self.model:
-            base_url = "https://openrouter.ai/api/v1"
-            api_key = os.environ.get("OPENROUTER_API_KEY", "")
-        else:
-            base_url = "https://api.openai.com/v1"
-            api_key = os.environ.get("OPENAI_API_KEY", "")
+        base_url = "https://openrouter.ai/api/v1"
+        api_key = os.environ.get("OPENROUTER_API_KEY", "")
 
         if not api_key:
-            pass  # Could raise warning, but defer it to standard error if API gets called.
+            print("WARNING: OPENROUTER_API_KEY not found in environment!")
 
         self.client = OpenAI(base_url=base_url, api_key=api_key)
 
