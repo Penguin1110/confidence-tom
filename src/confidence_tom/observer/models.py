@@ -22,4 +22,5 @@ class RecursiveLevelResult(BaseModel):
 
     level: int
     observer_model: str
+    protocol: str
     judgment: JudgmentOutput

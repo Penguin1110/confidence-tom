@@ -5,6 +5,7 @@ description = "Theory of Mind 信心預測實驗 - 大模型能否讀懂小模�
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "datasets>=4.5.0",
     "fastparquet>=2025.12.0",
     "huggingface-hub>=1.3.2",
     "hydra-core>=1.3.2",

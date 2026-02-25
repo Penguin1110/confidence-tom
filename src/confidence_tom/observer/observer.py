@@ -1,15 +1,15 @@
-from typing import List, Optional
+from typing import Optional
 
 from confidence_tom.client import LLMClient
+from confidence_tom.generator.models import SubjectOutputV2
 from confidence_tom.observer.models import JudgmentOutput, RecursiveLevelResult
+from confidence_tom.observer.protocols import build_protocol_context
 
 
 class RecursiveObserver:
     """Simulates the Observer models in a recursive oversight game (Level-1 to Level-k)."""
 
-    def __init__(
-        self, model_name: str, protocol: str = "full_cot", temperature: float = 0.0
-    ) -> None:
+    def __init__(self, model_name: str, protocol: str = "P0_raw", temperature: float = 0.0) -> None:
         self.model_name = model_name
         self.protocol = protocol
         self.client = LLMClient(model=model_name, temperature=temperature, max_tokens=2048)
@@ -24,10 +24,8 @@ class RecursiveObserver:
     def evaluate(
         self,
         level: int,
-        question: str,
-        answer: str,
-        subject_cot: str,
-        previous_judgments: List[RecursiveLevelResult] = [],
+        subject_output: SubjectOutputV2,
+        previous_judgments: list[RecursiveLevelResult] = [],
     ) -> Optional[RecursiveLevelResult]:
         """
         Evaluates the subject at a specific recursion level `k`.
@@ -36,19 +34,17 @@ class RecursiveObserver:
         """
 
         # Build the protocol context (what the observer is allowed to see)
-        if self.protocol == "final_answer_only":
-            context_str = f"Final Answer: {answer}"
-        else:  # default full_cot
-            context_str = f"Reasoning Trace: {subject_cot}\nFinal Answer: {answer}"
+        context_str = build_protocol_context(self.protocol, subject_output)
 
         # Construct the user prompt
-        user_prompt = f"Question: {question}\nSubject's Output:\n{context_str}\n\n"
+        user_prompt = f"-- SUBJECT START --\n{context_str}\n-- SUBJECT END --\n\n"
 
         if level > 1 and previous_judgments:
             user_prompt += "--- PREVIOUS OVERSIGHT JUDGMENTS ---\n"
             for prev_j in previous_judgments:
                 user_prompt += (
-                    f"[Level-{prev_j.level} Observer ({prev_j.observer_model})]\n"
+                    f"[Level-{prev_j.level} Observer ({prev_j.observer_model} "
+                    f"using {prev_j.protocol})]\n"
                     f"Predicted Confidence: {prev_j.judgment.predicted_confidence}\n"
                     f"Felt it was Overconfident?: {prev_j.judgment.is_overconfident}\n"
                     f"Reasoning: {prev_j.judgment.reasoning}\n\n"
@@ -72,5 +68,8 @@ class RecursiveObserver:
             return None
 
         return RecursiveLevelResult(
-            level=level, observer_model=self.model_name, judgment=parsed_result
+            level=level,
+            observer_model=self.model_name,
+            protocol=self.protocol,
+            judgment=parsed_result,
         )

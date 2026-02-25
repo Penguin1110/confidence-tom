@@ -7,11 +7,12 @@ wandb_project: "confidence-tom"
 
 # 第一階段：Generator (小模型)
 generator:
-  model: "google/gemma-3-27b-it"
-  temperature: 0.7
-  max_tokens: 4096
+  model: "google/gemma-3-27b-it" # or "google/gemma-3-9b-it"
+  temperature: 0.7  # Temperature > 0 is REQUIRED for self-consistency
+  max_tokens: 2048
+  k_samples: 5      # Compute behavioral confidence (self-consistency)
 
-# 第一.五階段：Styler (風格轉換，用於 D1: Style-equivalent 實驗)
+# 第一.五階段：Styler (不再強制使用，暫時保留)
 styler:
   model: "openai/gpt-4o"
   temperature: 0.3
@@ -20,18 +21,14 @@ styler:
 # 第二階段：Observer (大模型)
 observer:
   models:
-    - "openai/gpt-5.2"
-    - "anthropic/claude-opus-4.6"
-    - "google/gemini-3.1-pro-preview"
+    - "openai/gpt-4o"
+    - "anthropic/claude-3.5-sonnet"
   temperature: 0
-  max_tokens: 4096
+  max_tokens: 2048
 
-# 資料集設定
+# 資料集設定：HuggingFace Datasets
 dataset:
-  sources:
-    - "gsm8k"        # 數學推理
-    - "truthfulqa"   # 常識誤區
-  num_samples: 100
+  num_samples: 3  # Number of samples per Ambiguity Level (MVP use small number)
 
 # 信心評估設定
 confidence:

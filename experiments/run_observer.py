@@ -5,6 +5,7 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig
 
+from confidence_tom.generator.models import SubjectOutputV2
 from confidence_tom.observer.models import RecursiveLevelResult
 from confidence_tom.observer.observer import RecursiveObserver
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
-    input_file = Path(cfg.output_dir) / "generator_level0_results.json"
+    input_file = Path(cfg.output_dir) / "generator_v2_results.json"
 
     if not input_file.exists():
         logger.error(f"Input file {input_file} not found! Run generator first.")
@@ -23,80 +24,71 @@ def main(cfg: DictConfig) -> None:
     with open(input_file, "r", encoding="utf-8") as f:
         level0_results = json.load(f)
 
-    # Instantiate Observer (using the first model from the config list for now)
-    observer_models = cfg.observer.models
-    # Let's say we just use the first observer model down the recursive chain for simplicity.
-    # Or, we could pass the baton between models!
-    # Here, we keep the model fixed for the recursive tower.
-    observer = RecursiveObserver(
-        model_name=observer_models[0], protocol="full_cot", temperature=cfg.observer.temperature
-    )
+    # Instantiate Observers: Test both P0 (Raw Judge) and P3 (Multi-sample insight)
+    # We will test how observer agreement changes between these protocols!
+    protocols_to_test = ["P0_raw", "P3_multi_sample"]
+    model_name = cfg.observer.models[0]
+    temperature = cfg.observer.temperature
 
-    # We will compute recursive judgments for levels k=1 to 3
     MAX_LEVELS = 3
-
     final_results = []
 
-    for item in level0_results:
-        question = item["question"]
-        logger.info(f"Processing evaluation for Question: {item['question_id']}")
+    for item_raw in level0_results:
+        # Load back into Pydantic model
+        subject_output = SubjectOutputV2(**item_raw)
+        logger.info(f"Processing evaluation for Question: {subject_output.question_id}")
 
-        # We test across all 'styled_variants' to satisfy Milestone 1 (Style-Content Confounding)
-        evaluated_variants = []
-        for variant in item["styled_variants"]:
-            style_name = variant["style_name"]
-            cot = variant["styled_cot"]
-            answer = variant["answer"]
-            true_conf = variant["true_confidence"]
+        protocol_chains = []
 
-            logger.info(f"  -> Playing Recursive Game for style: [{style_name}]")
-
+        for protocol in protocols_to_test:
+            logger.info(f"  -> Testing Protocol: [{protocol}]")
+            observer = RecursiveObserver(
+                model_name=model_name, protocol=protocol, temperature=temperature
+            )
             recursive_chain: list[RecursiveLevelResult] = []
 
             for k in range(1, MAX_LEVELS + 1):
-                logger.info(f"      Running Level-{k} observer...")
-                # The observer gets the history of all previous levels
+                logger.info(f"      Running Level-{k} observer ({protocol})...")
                 result = observer.evaluate(
                     level=k,
-                    question=question,
-                    answer=answer,
-                    subject_cot=cot,
+                    subject_output=subject_output,
                     previous_judgments=recursive_chain,
                 )
 
                 if result:
                     recursive_chain.append(result)
                 else:
-                    logger.warning(f"Failed to get Level-{k} judgment.")
+                    logger.warning(f"Failed to get Level-{k} judgment for {protocol}.")
                     break
 
-            # Save chain for this variant
-            evaluated_variants.append(
+            # Save chain for this protocol test
+            protocol_chains.append(
                 {
-                    "style_name": style_name,
-                    "styled_cot": cot,
-                    "answer": answer,
-                    "true_confidence": true_conf,
+                    "protocol": protocol,
                     "oversight_chain": [rc.model_dump() for rc in recursive_chain],
                 }
             )
 
         final_results.append(
             {
-                "question_id": item["question_id"],
-                "question": question,
-                "evaluated_variants": evaluated_variants,
+                "question_id": subject_output.question_id,
+                "question": subject_output.question,
+                "ambiguity_level": subject_output.ambiguity_level,
+                "behavioral_confidence": subject_output.behavioral_confidence,
+                "avg_reported_confidence": subject_output.avg_reported_confidence,
+                "is_correct": subject_output.is_correct,
+                "evaluations_by_protocol": protocol_chains,
             }
         )
 
     # Save to disk
     output_dir = Path(cfg.output_dir)
-    out_file = output_dir / "observer_recursive_results.json"
+    out_file = output_dir / "observer_v2_recursive_results.json"
 
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(final_results, f, indent=2, ensure_ascii=False)
 
-    logger.info(f"Finished! Recursive observation results saved to {out_file}")
+    logger.info(f"Finished! Recursive observation V2 results saved to {out_file}")
 
 
 if __name__ == "__main__":
