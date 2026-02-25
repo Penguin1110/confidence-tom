@@ -22,36 +22,41 @@ def main(cfg: DictConfig) -> None:
         k_samples=gen_cfg.k_samples if "k_samples" in gen_cfg else 5,
     )
 
-    # 1. Load Dataset (Ambiguity L1 & L3)
-    # We'll just load 2 questions of each to keep the MVP fast.
     questions = load_mixed_dataset(num_per_level=cfg.dataset.num_samples)
 
     results = []
 
-    # 2. Process Questions
     for q in questions:
-        logger.info(f"Processing question {q['id']} [Level: {q['ambiguity_level']}]...")
-        solved = subject_gen.solve(
-            question_id=q["id"],
-            question=q["question"],
-            ground_truth=q["ground_truth"],
-            ambiguity_level=q["ambiguity_level"],
-        )
+        # For L3b and L4, test framing interventions
+        framings = ["standard"]
+        if "L3b" in q["ambiguity_level"] or "L4" in q["ambiguity_level"]:
+            framings = ["real-world", "in-universe"]
 
-        if not solved:
-            logger.warning(f"Failed to solve question {q['id']}")
-            continue
+        for framing in framings:
+            logger.info(
+                f"Processing question {q['id']} [Level: {q['ambiguity_level']}] "
+                f"[Framing: {framing}]..."
+            )
+            solved = subject_gen.solve(
+                question_id=f"{q['id']}_{framing}",
+                question=q["question"],
+                ground_truth=q["ground_truth"],
+                ambiguity_level=q["ambiguity_level"],
+                framing=framing,
+            )
 
-        logger.info(
-            f"[SOLVED] {q['id']} | True Ans: {solved.ground_truth[:30]}... | "
-            f"Maj Ans: {solved.majority_answer[:30]}... | "
-            f"c_beh: {solved.behavioral_confidence} | "
-            f"c_rep: {solved.avg_reported_confidence:.1f}"
-        )
+            if not solved:
+                logger.warning(f"Failed to solve question {q['id']}")
+                continue
 
-        results.append(solved.model_dump())
+            logger.info(
+                f"[SOLVED] {q['id']} | "
+                f"c_beh: {solved.behavioral_confidence} | "
+                f"c_rep: {solved.avg_reported_confidence:.1f}"
+            )
 
-    # 3. Save results
+            results.append(solved.model_dump())
+
     output_dir = Path(cfg.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out_file = output_dir / "generator_v2_results.json"

@@ -24,10 +24,9 @@ def main(cfg: DictConfig) -> None:
     with open(input_file, "r", encoding="utf-8") as f:
         level0_results = json.load(f)
 
-    # Instantiate Observers: Test both P0 (Raw Judge) and P3 (Multi-sample insight)
-    # We will test how observer agreement changes between these protocols!
-    protocols_to_test = ["P0_raw", "P3_multi_sample"]
-    model_name = cfg.observer.models[0]
+    # Instantiate Observers: Test P0, P2 (Self-solve), and P3 (Multi-sample insight)
+    protocols_to_test = ["P0_raw", "P2_self_solve", "P3_multi_sample"]
+    observer_models = cfg.observer.models  # We expect at least one model here
     temperature = cfg.observer.temperature
 
     MAX_LEVELS = 3
@@ -42,13 +41,17 @@ def main(cfg: DictConfig) -> None:
 
         for protocol in protocols_to_test:
             logger.info(f"  -> Testing Protocol: [{protocol}]")
-            observer = RecursiveObserver(
-                model_name=model_name, protocol=protocol, temperature=temperature
-            )
             recursive_chain: list[RecursiveLevelResult] = []
 
             for k in range(1, MAX_LEVELS + 1):
-                logger.info(f"      Running Level-{k} observer ({protocol})...")
+                # Pick model dynamically (Heterogeneous Observer Chain)
+                model_name = observer_models[(k - 1) % len(observer_models)]
+                logger.info(f"      Running Level-{k} observer [{model_name}] ({protocol})...")
+
+                observer = RecursiveObserver(
+                    model_name=model_name, protocol=protocol, temperature=temperature
+                )
+
                 result = observer.evaluate(
                     level=k,
                     subject_output=subject_output,
@@ -74,6 +77,7 @@ def main(cfg: DictConfig) -> None:
                 "question_id": subject_output.question_id,
                 "question": subject_output.question,
                 "ambiguity_level": subject_output.ambiguity_level,
+                "framing": subject_output.framing,
                 "behavioral_confidence": subject_output.behavioral_confidence,
                 "avg_reported_confidence": subject_output.avg_reported_confidence,
                 "is_correct": subject_output.is_correct,

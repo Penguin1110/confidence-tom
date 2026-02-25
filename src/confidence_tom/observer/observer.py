@@ -2,7 +2,7 @@ from typing import Optional
 
 from confidence_tom.client import LLMClient
 from confidence_tom.generator.models import SubjectOutputV2
-from confidence_tom.observer.models import JudgmentOutput, RecursiveLevelResult
+from confidence_tom.observer.models import JudgmentOutput, ObserverSelfSolve, RecursiveLevelResult
 from confidence_tom.observer.protocols import build_protocol_context
 
 
@@ -33,10 +33,27 @@ class RecursiveObserver:
         If k>1, evaluates the Subject's output AND the judgments of the k-1 Observers.
         """
 
-        # Build the protocol context (what the observer is allowed to see)
-        context_str = build_protocol_context(self.protocol, subject_output)
+        observer_self_solve = None
+        if self.protocol == "P2_self_solve":
+            # 1. The observer solves the problem blindly first
+            ss_prompt = (
+                "You are an AI Solver. Given a question, provide your step-by-step reasoning, "
+                "final answer, and confidence (0-100)."
+            )
+            ss_messages = [
+                {"role": "system", "content": ss_prompt},
+                {"role": "user", "content": f"Question: {subject_output.question}"},
+            ]
+            parsed_ss = self.client.generate_parsed(ss_messages, ObserverSelfSolve)
+            if parsed_ss:
+                observer_self_solve = parsed_ss
+            else:
+                return None  # Failed to self-solve
 
-        # Construct the user prompt
+        # 2. Build the protocol context
+        context_str = build_protocol_context(self.protocol, subject_output, observer_self_solve)
+
+        # 3. Construct the user prompt
         user_prompt = f"-- SUBJECT START --\n{context_str}\n-- SUBJECT END --\n\n"
 
         if level > 1 and previous_judgments:
@@ -55,7 +72,13 @@ class RecursiveObserver:
                 "for the Subject."
             )
         else:
-            user_prompt += "Based ONLY on the subject's output, judge their confidence state."
+            if self.protocol == "P2_self_solve":
+                user_prompt += (
+                    "Based on your own resolution AND the subject's output, "
+                    "judge their confidence state."
+                )
+            else:
+                user_prompt += "Based ONLY on the subject's output, judge their confidence state."
 
         messages = [
             {"role": "system", "content": self.system_prompt},

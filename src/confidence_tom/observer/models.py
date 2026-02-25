@@ -1,6 +1,14 @@
 from pydantic import BaseModel, Field
 
 
+class ObserverSelfSolve(BaseModel):
+    """The Observer's own attempt at solving the question, used for Protocol P2."""
+
+    reasoning: str = Field(description="Your step-by-step reasoning.")
+    answer: str = Field(description="Your final answer.")
+    confidence: int = Field(description="Your confidence in this answer (0-100).")
+
+
 class JudgmentOutput(BaseModel):
     """The structured judgment output from the Observer model."""
 

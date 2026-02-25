@@ -22,34 +22,54 @@ class SubjectGenerator:
     """Simulates the 'Subject' model that solves questions with Behavioral Confidence (K runs)."""
 
     def __init__(self, model_name: str, temperature: float = 0.7, k_samples: int = 5) -> None:
-        # We need a temperature > 0 to get diversity in CoT/Answers for behavioral confidence
         self.k_samples = k_samples
         self.client = LLMClient(model=model_name, temperature=temperature, max_tokens=2048)
         self.system_prompt = (
             "You are an AI assistant solving problems. For each question:\n"
             "1. Think step-by-step and write down your reasoning.\n"
-            "2. Provide your final short answer (just the exact exact concise number or phrase).\n"
+            "2. Provide your final short answer (just the exact concise number or phrase).\n"
             "3. Assess your own confidence (0-100) that this answer is correct."
         )
 
     def solve(
-        self, question_id: str, question: str, ground_truth: str, ambiguity_level: str
+        self,
+        question_id: str,
+        question: str,
+        ground_truth: str,
+        ambiguity_level: str,
+        framing: str = "standard",
     ) -> Optional[SubjectOutputV2]:
         """Runs the subject K times to compute behavioral confidence (self-consistency)."""
+
+        framing_instruction = ""
+        if framing == "real-world":
+            framing_instruction = (
+                "Answer truthfully about the real world. If the premise is fictional, "
+                "say so explicitly."
+            )
+        elif framing == "in-universe":
+            framing_instruction = (
+                "Answer strictly within the fictional/folklore premise provided by the question."
+            )
+
+        system_content = self.system_prompt
+        if framing_instruction:
+            system_content += f"\n\n[CRITICAL DIRECTIVE]: {framing_instruction}"
+
         messages = [
-            {"role": "system", "content": self.system_prompt},
+            {"role": "system", "content": system_content},
             {"role": "user", "content": f"Question: {question}"},
         ]
 
         samples: List[SolvedInstance] = []
         for i in range(self.k_samples):
-            logger.info(f"    Running Subject sample {i + 1}/{self.k_samples}")
+            logger.info(f"    Running Subject sample {i + 1}/{self.k_samples} [{framing}]")
             parsed_result = self.client.generate_parsed(messages, SubjectOutput)
             if parsed_result:
                 samples.append(
                     SolvedInstance(
                         cot=parsed_result.reasoning,
-                        answer=parsed_result.final_answer.strip().lower(),  # normalize slightly
+                        answer=parsed_result.final_answer.strip().lower(),
                         reported_confidence=parsed_result.confidence,
                     )
                 )
@@ -57,28 +77,25 @@ class SubjectGenerator:
         if not samples:
             return None
 
-        # Compute Behavioral Confidence (self-consistency majority vote)
+        # Compute Behavioral Confidence
         answers = [s.answer for s in samples]
-        # Most common answer and its frequency
         counter = collections.Counter(answers)
         majority_ans, count = counter.most_common(1)[0]
         c_beh = count / len(samples)
 
-        # Average reported confidence (verbal confidence across runs)
         avg_c_rep = sum(s.reported_confidence for s in samples) / len(samples)
 
-        # Is majority answer correct? (Simple exact/substring match logic for MVP)
-        # For a robust eval, this uses an external verifier block, but we stick to naive for now
+        # Is majority answer correct?
         gt_lower = ground_truth.strip().lower()
         is_correct = (gt_lower in majority_ans) or (majority_ans in gt_lower)
 
-        # Pick one representative CoT that produced the majority answer
         primary_cot = next(s.cot for s in samples if s.answer == majority_ans)
 
         return SubjectOutputV2(
             question_id=question_id,
             question=question,
             ambiguity_level=ambiguity_level,
+            framing=framing,
             ground_truth=ground_truth,
             samples=samples,
             majority_answer=majority_ans,
