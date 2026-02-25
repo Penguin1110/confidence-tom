@@ -57,13 +57,12 @@ def main(cfg: DictConfig) -> None:
 
             results.append(solved.model_dump())
 
-    output_dir = Path(cfg.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    out_file = output_dir / "generator_v2_results.json"
-
-    with open(out_file, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-
+            # 即時存檔 (Real-time saving)
+            output_dir = Path(cfg.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            out_file = output_dir / "generator_v2_results.json"
+            with open(out_file, "w", encoding="utf-8") as f:
+                json.dump(results, f, indent=2, ensure_ascii=False)
     logger.info(f"Finished! Results saved to {out_file}")
 
 

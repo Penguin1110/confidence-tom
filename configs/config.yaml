@@ -10,11 +10,11 @@ generator:
   model: "google/gemma-3-27b-it" # or "google/gemma-3-9b-it"
   temperature: 0.7  # Temperature > 0 is REQUIRED for self-consistency
   max_tokens: 2048
-  k_samples: 5      # Compute behavioral confidence (self-consistency)
+  k_samples: 10      # Compute behavioral confidence (self-consistency)
 
 # 第一.五階段：Styler (不再強制使用，暫時保留)
 styler:
-  model: "openai/gpt-4o"
+  model: "openai/gpt-4.1-mini"
   temperature: 0.3
   max_tokens: 4096
 
