@@ -13,6 +13,9 @@ from confidence_tom.observer.observer import RecursiveObserver
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Silence httpx info logs
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
