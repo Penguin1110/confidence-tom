@@ -25,6 +25,11 @@ def main(cfg: DictConfig) -> None:
 
 async def amain(cfg: DictConfig) -> None:
     input_file = Path(cfg.output_dir) / "generator_v2_results.json"
+    balanced_file = Path(cfg.output_dir) / "generator_v2_results_balanced.json"
+
+    if balanced_file.exists():
+        input_file = balanced_file
+        logger.info(f"Using balanced dataset: {input_file}")
 
     if not input_file.exists():
         logger.error(f"Input file {input_file} not found! Run generator first.")
@@ -46,9 +51,20 @@ async def amain(cfg: DictConfig) -> None:
 
     MAX_LEVELS = 3
     final_results = []
+    processed_qids: set[str] = set()
     output_dir = Path(cfg.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out_file = output_dir / "observer_v2_recursive_results.json"
+
+    if out_file.exists():
+        try:
+            with open(out_file, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+                final_results.extend(existing_data)
+                processed_qids.update(item["question_id"] for item in existing_data)
+            logger.info(f"Resuming... Loaded {len(existing_data)} previously judged questions.")
+        except json.JSONDecodeError:
+            logger.warning(f"Failed to parse {out_file}, starting fresh.")
 
     sem = asyncio.Semaphore(5)
 
@@ -57,6 +73,10 @@ async def amain(cfg: DictConfig) -> None:
     async def bound_process_question(item_raw: dict[str, Any]) -> None:
         async with sem:
             subject_output = SubjectOutputV2(**item_raw)
+            if subject_output.question_id in processed_qids:
+                logger.info(f"Skipping already evaluated question {subject_output.question_id}")
+                return
+
             logger.info(f"Processing evaluation for Question: {subject_output.question_id}")
 
             async def run_protocol(protocol: str) -> dict[str, Any]:
