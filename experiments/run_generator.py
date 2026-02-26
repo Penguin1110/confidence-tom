@@ -12,8 +12,9 @@ from confidence_tom.generator.generator import SubjectGenerator
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Silence httpx info logs (like 404s for fallback huggingface scripts and API calls)
+# Silence httpx and openai info logs (like 404s and API retries)
 logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("openai").setLevel(logging.WARNING)
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="config")
