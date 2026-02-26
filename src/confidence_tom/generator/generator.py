@@ -66,7 +66,7 @@ class SubjectGenerator:
 
         async def fetch_sample(i: int) -> Optional[SubjectOutput]:
             logger.info(f"    Running Subject sample {i + 1}/{self.k_samples} [{framing}]")
-            return await self.client.agenerate_parsed(messages, SubjectOutput)
+            return await self.client.agenerate_parsed(messages, SubjectOutput)  # type: ignore[no-any-return]
 
         tasks = [fetch_sample(i) for i in range(self.k_samples)]
         results = await asyncio.gather(*tasks)
