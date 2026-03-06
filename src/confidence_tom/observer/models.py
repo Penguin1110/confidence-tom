@@ -1,5 +1,11 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
+
+# ============================================================================
+# Observer Self-Solve Models (for P2+ protocols)
+# ============================================================================
 
 class ObserverSelfSolve(BaseModel):
     """The Observer's own attempt at solving the question, used for Protocol P2."""
@@ -32,21 +38,113 @@ class ObserverFrameCheckSelfSolve(BaseModel):
     confidence: int = Field(description="Your confidence in this answer (0-100).")
 
 
+# ============================================================================
+# Trap Declaration Model (for Frame-Aware Observer / P2+ protocol)
+# ============================================================================
+
+class TrapDeclaration(BaseModel):
+    """
+    Observer's pre-analysis of potential logical traps BEFORE seeing the subject's answer.
+    This is designed to mitigate Hindsight Bias.
+    """
+
+    question_summary: str = Field(
+        description="Brief summary of what the question is asking."
+    )
+    difficulty_assessment: str = Field(
+        description="How difficult is this question for a 20B-parameter model? (Easy/Medium/Hard)"
+    )
+    potential_traps: List[str] = Field(
+        description="List 2-4 specific logical traps or common mistakes a 20B model might fall into."
+    )
+    success_indicators: List[str] = Field(
+        description="What would good reasoning look like? Key markers of correct approach."
+    )
+    failure_indicators: List[str] = Field(
+        description="What would flawed reasoning look like? Red flags to watch for."
+    )
+
+
+# ============================================================================
+# Diagnosis Model (CoT analysis)
+# ============================================================================
+
+class CoTDiagnosis(BaseModel):
+    """Detailed diagnosis of the subject's Chain of Thought."""
+
+    fell_into_trap: bool = Field(
+        description="Did the subject fall into any of the identified logical traps?"
+    )
+    trap_details: Optional[str] = Field(
+        default=None, description="If fell_into_trap is True, describe which trap and how."
+    )
+    reasoning_quality: str = Field(
+        description="Overall quality of reasoning: 'Sound', 'Flawed but functional', 'Fundamentally broken'"
+    )
+    luck_factor: bool = Field(
+        description="Is there evidence of 'lucky guess' - correct answer despite flawed reasoning?"
+    )
+    luck_explanation: Optional[str] = Field(
+        default=None, description="If luck_factor is True, explain how the subject got lucky."
+    )
+    key_errors: List[str] = Field(
+        default=[], description="List of specific logical errors found in the CoT."
+    )
+    key_strengths: List[str] = Field(
+        default=[], description="List of specific strengths in the CoT."
+    )
+
+
+# ============================================================================
+# Judgment Output Models
+# ============================================================================
+
 class JudgmentOutput(BaseModel):
     """The structured judgment output from the Observer model."""
 
     predicted_confidence: int = Field(
-        description="Your predicted confidence score of the subject (0-100). "
-        "How confident do they seem?"
+        description="Predicted probability (0-100) that the subject would answer correctly "
+        "if asked this question 10 times independently. This is your estimate of C_beh."
     )
     is_overconfident: bool = Field(
-        description="True if you believe the subject is overconfident given its "
-        "reasoning and output, False otherwise."
+        description="True if the subject's self-reported confidence seems higher than warranted "
+        "by their reasoning quality."
     )
     reasoning: str = Field(
-        description="Why you assigned this confidence score and overconfidence judgment."
+        description="Detailed explanation of why you assigned this confidence score."
     )
 
+
+class EnhancedJudgmentOutput(BaseModel):
+    """Enhanced judgment output with structured diagnosis for Frame-Aware Observer."""
+
+    # Diagnosis phase
+    diagnosis: CoTDiagnosis = Field(
+        description="Detailed diagnosis of the subject's reasoning process."
+    )
+    
+    # Prediction phase
+    predicted_confidence: int = Field(
+        description="Predicted probability (0-100) that the subject would answer correctly "
+        "if asked this question 10 times independently. This is your estimate of C_beh."
+    )
+    confidence_reasoning: str = Field(
+        description="Explain how you arrived at this confidence prediction, accounting for "
+        "reasoning quality, luck factors, and trap susceptibility."
+    )
+    
+    # Calibration signals
+    is_overconfident: bool = Field(
+        description="True if subject's self-reported confidence exceeds predicted confidence significantly."
+    )
+    is_underconfident: bool = Field(
+        description="True if subject's self-reported confidence is much lower than their actual capability."
+    )
+
+
+# ============================================================================
+# Result Recording Models
+# ============================================================================
 
 class RecursiveLevelResult(BaseModel):
     """A record of a single level in the recursive observer process."""
@@ -54,4 +152,8 @@ class RecursiveLevelResult(BaseModel):
     level: int
     observer_model: str
     protocol: str
-    judgment: JudgmentOutput
+    observer_group: str = Field(default="unknown", description="A: Blind, B: Informed, C: Frame-Aware")
+    judgment: JudgmentOutput | EnhancedJudgmentOutput
+    trap_declaration: Optional[TrapDeclaration] = Field(
+        default=None, description="Only populated for Frame-Aware (Group C) observers."
+    )

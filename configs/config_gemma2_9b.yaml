@@ -1,11 +1,12 @@
-# Confidence-ToM Experiment Configuration
+# Confidence-ToM Experiment Configuration - Gemma-2-9B-IT
 # ============================================================================
-# 實驗：測試大模型（Observer）對小模型（Subject）的心智理論（ToM）能力
-# Ground Truth (C_beh): 對同一題目進行 K=10 次獨立採樣後的答對比例
+# 小模型：Gemma-2-9B-IT
+# 資料集：GPQA + MATH 各 15 題
+# 採樣次數：K=10
 # ============================================================================
 
-name: "confidence_tom_experiment_v2"
-output_dir: "results"
+name: "confidence_tom_gemma2_9b"
+output_dir: "results/gemma2_9b"
 verbose: true
 use_wandb: false
 wandb_project: "confidence-tom"
@@ -14,11 +15,11 @@ wandb_project: "confidence-tom"
 # 第一階段：Generator (小模型 - Subject)
 # ============================================================================
 generator:
-  model: "google/gemma-2-9b-it"
-  temperature: 0.7  # Temperature > 0 is REQUIRED for behavioral sampling
+  model: "google/gemma-2-9b-it"  # Gemma-2-9B-IT
+  temperature: 0.7
   max_tokens: 4096
-  k_samples: 10     # K=10 independent samples for C_beh computation
-  require_justification: true  # Force structured confidence explanation
+  k_samples: 10     # K=10 次獨立採樣
+  require_justification: true
 
 # ============================================================================
 # 第二階段：Observer (大模型 - 三組對照實驗)
@@ -26,12 +27,9 @@ generator:
 observer:
   models:
     - "openai/gpt-4o"
-    # - "anthropic/claude-3.5-sonnet"
-    # - "google/gemini-1.5-pro"
   temperature: 0
   max_tokens: 2048
   
-  # 三組對照實驗
   experimental_groups:
     - name: "A_blind"
       description: "Blind Observer - 純 ToM 組，不知道正確答案"
@@ -47,41 +45,21 @@ observer:
       has_trap_declaration: true
 
 # ============================================================================
-# 資料集設定：GPQA Diamond + MATH Level 4-5 (困難題目)
+# 資料集設定：GPQA + MATH 各 15 題
 # ============================================================================
 dataset:
   name: "gpqa_math_mix"
   num_samples: 15  # 每種題型 15 題，總共約 30 題
-  
-  # GPQA Diamond (或 MMLU Hard fallback):
-  #   - 專家級科學推理（物理、化學、生物 PhD 等級）
-  #   - 測試小模型是否會「一本正經地胡說八道」
-  #
-  # MATH Level 4-5:
-  #   - 競賽級多步數學運算
-  #   - 測試「計算疲勞」和長鏈推理崩潰
 
 # ============================================================================
 # 評估設定
 # ============================================================================
 evaluation:
   metrics:
-    - "prediction_accuracy"    # |C_pred - C_beh|
-    - "self_assessment_accuracy"  # |C_rep - C_beh|
-    - "overconfidence_detection"  # Precision/Recall for overconfidence flag
-    - "luck_factor_detection"     # Success cases: correct answer, wrong reasoning
-  
-  # 異常樣本分類
-  anomaly_categories:
-    - name: "luck_success"
-      description: "答對但理由錯誤 (歪打正著)"
-      condition: "is_correct AND reasoning_quality == 'flawed'"
-    - name: "confident_fail"
-      description: "自評很高但全錯"
-      condition: "c_rep > 80 AND c_beh < 20"
-    - name: "humble_success"
-      description: "自評很低但全對"
-      condition: "c_rep < 30 AND c_beh > 80"
+    - "prediction_accuracy"
+    - "self_assessment_accuracy"
+    - "overconfidence_detection"
+    - "luck_factor_detection"
 
 # ============================================================================
 # 輸出設定

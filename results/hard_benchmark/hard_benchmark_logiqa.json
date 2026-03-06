@@ -1,0 +1,182 @@
+[
+  {
+    "id": "arc_challenge_0",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_1",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_2",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_3",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_4",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_5",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_6",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_7",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_8",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_9",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_10",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_11",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_12",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_13",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_14",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_15",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_16",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_17",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_18",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_19",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_20",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_21",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_22",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_23",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_24",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_25",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_26",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_27",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_28",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "arc_challenge_29",
+    "ground_truth": "C",
+    "student_answer": "A",
+    "is_correct": false
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-03-04T23:46:19.991534",
+  "subject_model": "google/gemma-3-27b-it",
+  "observer_model": "openai/gpt-4o",
+  "results": [
+    {
+      "dataset": "gpqa_diamond",
+      "total": 28,
+      "correct": 23,
+      "accuracy": 0.8214285714285714
+    },
+    {
+      "dataset": "logiqa",
+      "total": 30,
+      "correct": 29,
+      "accuracy": 0.9666666666666667
+    },
+    {
+      "dataset": "math_hard",
+      "total": 30,
+      "correct": 25,
+      "accuracy": 0.8333333333333334
+    }
+  ],
+  "overall_accuracy": 0.875
+}

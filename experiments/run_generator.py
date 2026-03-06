@@ -6,7 +6,7 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig
 
-from confidence_tom.dataset import load_mixed_dataset
+from confidence_tom.dataset import load_dataset_by_config
 from confidence_tom.generator.generator import SubjectGenerator
 
 logging.basicConfig(level=logging.INFO)
@@ -28,15 +28,23 @@ async def amain(cfg: DictConfig) -> None:
     subject_gen = SubjectGenerator(
         model_name=gen_cfg.model,
         temperature=gen_cfg.temperature,
-        k_samples=gen_cfg.k_samples if "k_samples" in gen_cfg else 5,
-        max_tokens=gen_cfg.max_tokens if "max_tokens" in gen_cfg else 4096,
+        k_samples=gen_cfg.get("k_samples", 10),
+        max_tokens=gen_cfg.get("max_tokens", 4096),
+        require_justification=gen_cfg.get("require_justification", True),
     )
 
-    questions = load_mixed_dataset(num_per_level=cfg.dataset.num_samples)
+    # Load dataset based on configuration
+    dataset_cfg = cfg.dataset
+    questions = load_dataset_by_config(
+        dataset_name=dataset_cfg.get("name", "bbh"),
+        tasks=list(dataset_cfg.get("tasks", ["navigate", "formal_fallacies"])),
+        num_samples=dataset_cfg.get("num_samples", 100),
+    )
+    logger.info(f"Loaded {len(questions)} questions from {dataset_cfg.get('name', 'bbh')}")
 
     output_dir = Path(cfg.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    out_file = output_dir / "generator_v2_results.json"
+    out_file = output_dir / "generator_v3_results.json"
 
     results = []
     processed_qids: set[str] = set()
@@ -51,45 +59,45 @@ async def amain(cfg: DictConfig) -> None:
             logger.warning(f"Failed to parse {out_file}, starting fresh.")
 
     for q in questions:
-        # For L3b and L4, test framing interventions
-        framings = ["standard"]
-        if "L3b" in q["ambiguity_level"] or "L4" in q["ambiguity_level"]:
-            framings = ["real-world", "in-universe"]
+        qid = q["id"]
+        if qid in processed_qids:
+            logger.info(f"Skipping already processed question {qid}")
+            continue
 
-        for framing in framings:
-            full_qid = f"{q['id']}_{framing}"
-            if full_qid in processed_qids:
-                logger.info(f"Skipping already processed question {full_qid}")
-                continue
+        task_type = q.get("task_type", "unknown")
+        logger.info(
+            f"Processing question {qid} [Task: {task_type}] "
+            f"[Level: {q['ambiguity_level']}]..."
+        )
+        
+        solved = await subject_gen.solve(
+            question_id=qid,
+            question=q["question"],
+            ground_truth=q["ground_truth"],
+            ambiguity_level=q["ambiguity_level"],
+            framing="standard",
+            task_type=task_type,
+        )
 
-            logger.info(
-                f"Processing question {q['id']} [Level: {q['ambiguity_level']}] "
-                f"[Framing: {framing}]..."
-            )
-            solved = await subject_gen.solve(
-                question_id=full_qid,
-                question=q["question"],
-                ground_truth=q["ground_truth"],
-                ambiguity_level=q["ambiguity_level"],
-                framing=framing,
-            )
+        if not solved:
+            logger.warning(f"Failed to solve question {qid}")
+            continue
 
-            if not solved:
-                logger.warning(f"Failed to solve question {q['id']}")
-                continue
+        logger.info(
+            f"[SOLVED] {qid} | "
+            f"c_beh: {solved.behavioral_confidence:.2f} ({solved.correct_count}/{solved.k_samples}) | "
+            f"c_rep: {solved.avg_reported_confidence:.1f} | "
+            f"consistency: {solved.consistency_rate:.2f}"
+        )
 
-            logger.info(
-                f"[SOLVED] {q['id']} | "
-                f"c_beh: {solved.behavioral_confidence} | "
-                f"c_rep: {solved.avg_reported_confidence:.1f}"
-            )
+        results.append(solved.model_dump())
 
-            results.append(solved.model_dump())
-
-            # 即時存檔 (Real-time saving)
-            with open(out_file, "w", encoding="utf-8") as f:
-                json.dump(results, f, indent=2, ensure_ascii=False)
+        # Save results in real-time
+        with open(out_file, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+            
     logger.info(f"Finished! Results saved to {out_file}")
+    logger.info(f"Total questions processed: {len(results)}")
 
 
 if __name__ == "__main__":

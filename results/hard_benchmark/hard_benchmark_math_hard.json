@@ -1,0 +1,182 @@
+[
+  {
+    "id": "mmlu_college_mathematics_0",
+    "ground_truth": "A",
+    "student_answer": "Final Answer: The final answer is $\\boxed{9}$",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_1",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_2",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_3",
+    "ground_truth": "D",
+    "student_answer": "B",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_college_mathematics_4",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_5",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_6",
+    "ground_truth": "A",
+    "student_answer": "Final Answer: The final answer is $\\boxed{A}$",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_7",
+    "ground_truth": "A",
+    "student_answer": "Final Answer: The final answer is $\\boxed{1/2}$",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_8",
+    "ground_truth": "C",
+    "student_answer": "Final Answer: The final answer is $\\boxed{5/8}$",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_mathematics_9",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_0",
+    "ground_truth": "C",
+    "student_answer": "625",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_1",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_2",
+    "ground_truth": "B",
+    "student_answer": "Final Answer: The final answer is $\\boxed{(-\\infty,0)\\cup (0,\\infty)}$",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_3",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_4",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_5",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_high_school_mathematics_6",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_7",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_8",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_high_school_mathematics_9",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_0",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_1",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_2",
+    "ground_truth": "D",
+    "student_answer": "B",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_abstract_algebra_3",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_4",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_5",
+    "ground_truth": "B",
+    "student_answer": "D",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_abstract_algebra_6",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_7",
+    "ground_truth": "B",
+    "student_answer": "Let's consider the polynomial $f(x) = 8x^3 + 6x^2 - 9x + 24$. We can rewrite it as $f(x) = 2(4x^3 + 3x^2 - \\frac{9}{2}x + 12)$. Since th",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_abstract_algebra_8",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_9",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  }
+]

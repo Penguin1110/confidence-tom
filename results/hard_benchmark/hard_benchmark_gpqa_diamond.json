@@ -1,0 +1,170 @@
+[
+  {
+    "id": "mmlu_professional_law_2",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_physics_1",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_physics_3",
+    "ground_truth": "B",
+    "student_answer": "B**",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_professional_law_3",
+    "ground_truth": "C",
+    "student_answer": "C**",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_physics_0",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_professional_law_0",
+    "ground_truth": "C",
+    "student_answer": "A",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_college_chemistry_3",
+    "ground_truth": "C",
+    "student_answer": "A",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_formal_logic_3",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_formal_logic_1",
+    "ground_truth": "C",
+    "student_answer": "[C]",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_0",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_chemistry_2",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_professional_law_1",
+    "ground_truth": "B",
+    "student_answer": "D",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_college_biology_2",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_chemistry_0",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_formal_logic_2",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_biology_3",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_biology_0",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_1",
+    "ground_truth": "A",
+    "student_answer": "2x^2 + 5",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_chemistry_1",
+    "ground_truth": "D",
+    "student_answer": "A",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_college_biology_1",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_3",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_formal_logic_0",
+    "ground_truth": "A",
+    "student_answer": "A",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_college_physics_2",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_professional_medicine_3",
+    "ground_truth": "B",
+    "student_answer": "B",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_professional_medicine_2",
+    "ground_truth": "D",
+    "student_answer": "D**",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_abstract_algebra_2",
+    "ground_truth": "D",
+    "student_answer": "B",
+    "is_correct": false
+  },
+  {
+    "id": "mmlu_professional_medicine_1",
+    "ground_truth": "D",
+    "student_answer": "D",
+    "is_correct": true
+  },
+  {
+    "id": "mmlu_professional_medicine_0",
+    "ground_truth": "C",
+    "student_answer": "C",
+    "is_correct": true
+  }
+]

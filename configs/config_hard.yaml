@@ -1,0 +1,98 @@
+# Hard Benchmark Configuration
+# ============================================================================
+# 測試：使用困難資料集挑戰小模型，讓大模型批改評估正確率
+# 
+# 資料集說明：
+# - GPQA Diamond / MMLU Hard: 專家級科學推理（物理、化學、生物 PhD 等級）
+#   → 測試 Observer 能否看穿專業術語下的邏輯謬誤
+#
+# - MATH (Level 4-5): 多步數學運算（競賽等級）
+#   → 步驟極長，容易產生「計算疲勞」，測試在長鏈推理中精準捕捉「微小的崩潰」
+# ============================================================================
+
+name: "hard_benchmark_experiment"
+output_dir: "results/hard_benchmark"
+verbose: true
+use_wandb: false
+num_rounds: 3  # 測試輪數
+
+# ============================================================================
+# Generator (小模型 - Subject) - 被測試的模型
+# ============================================================================
+generator:
+  model: "google/gemma-3-27b-it"  # 小模型，預期在困難題目上會出錯
+  temperature: 0.7  # 保持一定隨機性
+  max_tokens: 2048
+  k_samples: 1      # Hard benchmark 只需要單次採樣
+
+# ============================================================================
+# Observer (大模型 - Grader) - 批改用的模型
+# ============================================================================
+observer:
+  models:
+    - "openai/gpt-4o"    # 主要批改模型
+    # - "anthropic/claude-sonnet-4-20250514"  # 備選
+  temperature: 0          # 批改時使用確定性輸出
+  max_tokens: 1024
+
+# ============================================================================
+# 資料集設定
+# ============================================================================
+dataset:
+  name: "gpqa_math_mix"  # GPQA Diamond + MATH Level 4-5 混合
+  num_samples: 30  # 每個資料集約 30 題，總共約 60 題
+  
+  # 個別資料集設定
+  gpqa:
+    enabled: true
+    num_samples: 30
+    description: "專家級科學推理 - 測試對專業術語謬誤的識別"
+    
+  logiqa:
+    enabled: true
+    num_samples: 30
+    description: "LSAT 風格邏輯推理 - 測試對干擾選項的抵抗"
+    
+  math_hard:
+    enabled: true
+    num_samples: 30
+    min_level: 4  # Level 4-5 題目
+    description: "多步數學推理 - 測試長鏈推理中的崩潰點檢測"
+
+# ============================================================================
+# 評估指標
+# ============================================================================
+evaluation:
+  metrics:
+    - "accuracy"                 # 整體正確率
+    - "overconfidence_rate"      # 過度自信比例（高信心但答錯）
+    - "lucky_guess_rate"         # 歪打正著比例（答對但推理錯誤）
+    - "reasoning_quality_dist"   # 推理品質分布
+    
+  # 異常樣本分類
+  interesting_cases:
+    - name: "confident_nonsense"
+      description: "信心滿滿但完全胡說八道"
+      condition: "confidence > 80 AND reasoning_quality == 'nonsense'"
+    
+    - name: "plausible_wrong"
+      description: "推理看似合理但結論錯誤"
+      condition: "reasoning_quality in ['good', 'excellent'] AND is_correct == false"
+    
+    - name: "lucky_success"
+      description: "推理有缺陷但碰巧答對"
+      condition: "reasoning_quality in ['flawed', 'nonsense'] AND is_correct == true"
+
+# ============================================================================
+# 輸出設定
+# ============================================================================
+save_json: true
+save_csv: true
+generate_plots: true
+
+# 附加輸出
+outputs:
+  - "hard_benchmark_summary.json"       # 整體統計摘要
+  - "hard_benchmark_gpqa_diamond.json"  # GPQA 詳細結果
+  - "hard_benchmark_logiqa.json"        # LogiQA 詳細結果
+  - "hard_benchmark_math_hard.json"     # MATH 詳細結果
