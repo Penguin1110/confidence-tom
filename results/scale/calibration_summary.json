@@ -1,0 +1,41 @@
+[
+  {
+    "model_name": "Gemma-3-4B",
+    "n_questions": 400,
+    "accuracy": 0.4875,
+    "mean_reported_confidence": 0.8403,
+    "mean_behavioral_confidence": 0.9413,
+    "mean_gap": -0.101,
+    "mean_absolute_gap": 0.1594,
+    "ece": 0.3535,
+    "brier_acc": 0.3613,
+    "brier_internal": 0.0346,
+    "overconfidence_rate": 0.1575
+  },
+  {
+    "model_name": "Gemma-3-12B",
+    "n_questions": 400,
+    "accuracy": 0.66,
+    "mean_reported_confidence": 0.8345,
+    "mean_behavioral_confidence": 0.9718,
+    "mean_gap": -0.1372,
+    "mean_absolute_gap": 0.1554,
+    "ece": 0.1745,
+    "brier_acc": 0.242,
+    "brier_internal": 0.0314,
+    "overconfidence_rate": 0.0575
+  },
+  {
+    "model_name": "Gemma-3-27B",
+    "n_questions": 400,
+    "accuracy": 0.725,
+    "mean_reported_confidence": 0.8207,
+    "mean_behavioral_confidence": 0.9807,
+    "mean_gap": -0.16,
+    "mean_absolute_gap": 0.1688,
+    "ece": 0.0957,
+    "brier_acc": 0.194,
+    "brier_internal": 0.0352,
+    "overconfidence_rate": 0.03
+  }
+]

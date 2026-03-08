@@ -1,0 +1,4 @@
+model_name,n_questions,accuracy,mean_reported_confidence,mean_behavioral_confidence,mean_gap,mean_absolute_gap,ece,brier_acc,brier_internal,overconfidence_rate
+Gemma-3-4B,400,0.4875,0.8403,0.9413,-0.101,0.1594,0.3535,0.3613,0.0346,0.1575
+Gemma-3-12B,400,0.66,0.8345,0.9718,-0.1372,0.1554,0.1745,0.242,0.0314,0.0575
+Gemma-3-27B,400,0.725,0.8207,0.9807,-0.16,0.1688,0.0957,0.194,0.0352,0.03

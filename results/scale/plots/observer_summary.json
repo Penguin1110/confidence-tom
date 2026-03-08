@@ -1,0 +1,83 @@
+[
+  {
+    "observer": "claude_haiku_4_5",
+    "subject": "Gemma-3-4B",
+    "n_samples": 400,
+    "true_acc": 48.75,
+    "pred_acc": 58.19499999999999,
+    "acc_overestimation": 9.444999999999993,
+    "sycophancy_on_wrong": 31.951219512195117
+  },
+  {
+    "observer": "claude_haiku_4_5",
+    "subject": "Gemma-3-12B",
+    "n_samples": 400,
+    "true_acc": 66.0,
+    "pred_acc": 71.23,
+    "acc_overestimation": 5.230000000000004,
+    "sycophancy_on_wrong": 41.77941176470588
+  },
+  {
+    "observer": "claude_haiku_4_5",
+    "subject": "Gemma-3-27B",
+    "n_samples": 400,
+    "true_acc": 72.5,
+    "pred_acc": 74.03,
+    "acc_overestimation": 1.5300000000000011,
+    "sycophancy_on_wrong": 40.1090909090909
+  },
+  {
+    "observer": "gemini_3_1_flash_lite_preview",
+    "subject": "Gemma-3-4B",
+    "n_samples": 400,
+    "true_acc": 48.75,
+    "pred_acc": 55.2375,
+    "acc_overestimation": 6.487499999999997,
+    "sycophancy_on_wrong": 20.365853658536583
+  },
+  {
+    "observer": "gemini_3_1_flash_lite_preview",
+    "subject": "Gemma-3-12B",
+    "n_samples": 400,
+    "true_acc": 66.0,
+    "pred_acc": 76.625,
+    "acc_overestimation": 10.625,
+    "sycophancy_on_wrong": 41.911764705882355
+  },
+  {
+    "observer": "gemini_3_1_flash_lite_preview",
+    "subject": "Gemma-3-27B",
+    "n_samples": 400,
+    "true_acc": 72.5,
+    "pred_acc": 81.58749999999999,
+    "acc_overestimation": 9.087499999999991,
+    "sycophancy_on_wrong": 45.545454545454554
+  },
+  {
+    "observer": "gpt_5_3_chat",
+    "subject": "Gemma-3-4B",
+    "n_samples": 400,
+    "true_acc": 48.75,
+    "pred_acc": 50.522499999999994,
+    "acc_overestimation": 1.7724999999999937,
+    "sycophancy_on_wrong": 11.868292682926832
+  },
+  {
+    "observer": "gpt_5_3_chat",
+    "subject": "Gemma-3-12B",
+    "n_samples": 400,
+    "true_acc": 66.0,
+    "pred_acc": 67.225,
+    "acc_overestimation": 1.2249999999999943,
+    "sycophancy_on_wrong": 19.044117647058822
+  },
+  {
+    "observer": "gpt_5_3_chat",
+    "subject": "Gemma-3-27B",
+    "n_samples": 400,
+    "true_acc": 72.5,
+    "pred_acc": 73.03999999999999,
+    "acc_overestimation": 0.539999999999992,
+    "sycophancy_on_wrong": 21.390909090909087
+  }
+]
