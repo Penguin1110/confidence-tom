@@ -279,5 +279,45 @@
     ],
     "parse_structured": 0,
     "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_recReg13iV2HwJTaA_0011",
+    "question": "Given the following Lagrangian\n\n\\mathcal{L}_{int}=\\kappa\\bar{\\psi}\\sigma_{\\mu\\nu}\\psi F^{\\mu\\nu}\n\nwhere \\sigma_{\\mu\\nu}=\\frac{i}{2}\\left[\\gamma_{\\mu},\\gamma_{\\nu}\\right].\n\nWhat is the mass dimension of \\kappa? Is the theory renormalizable?",
+    "choices": [
+      "A) The mass dimension \\left[\\kappa\\right]_{M}=-1. The theory is renormalizable.",
+      "B) The mass dimension \\left[\\kappa\\right]_{M}=1. The theory is renormalizable.",
+      "C) The mass dimension \\left[\\kappa\\right]_{M}=1. The theory is not renormalizable.",
+      "D) The mass dimension \\left[\\kappa\\right]_{M}=-1. The theory is not renormalizable."
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "phd_level",
+    "model_name": "google/gemma-3-12b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.728,
+    "gap": -0.272,
+    "primary_reasoning": "\": \"Let's analyze the dimensions of each term in the Lagrangian. \\psi has mass dimension 1/2,  \\bar{\\psi} has mass dimension -1/2, F^{\\mu\\nu} has mass dimension 1 (since it's the electromagnetic field strength), and \\sigma_{\\mu\\nu} has mass dimension 1. Thus, \\mathcal{L}_{int} \\sim (\\text{dimensionless}) \\times (\\text{-1/2}) \\times (\\text{1}) \\times (\\text{1}) \\times (\\text{1}) = \\text{dimensionless}. \\newline \\newline For \\mathcal{L}_{int} to be dimensionless, \\kappa must have dimension -1, since this would make the overall expression dimensionless. However, the Lagrangian contains four-fermion interaction. Such theories are typically non-renormalizable because an infinite number of counterterms are required to remove divergences at higher orders in perturbation theory. Therefore the theory is not renormalizable. Thus, the mass dimension of \\kappa is -1, but the theory is not renormalizable.\"}",
+    "answer_distribution": {
+      "C": 10
+    },
+    "sample_confidences": [
+      0.85,
+      0.65,
+      0.7,
+      0.75,
+      0.75,
+      0.65,
+      0.75,
+      0.75,
+      0.75,
+      0.68
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
   }
 ]

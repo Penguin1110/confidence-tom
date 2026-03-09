@@ -1,25 +1,33 @@
-[2026-03-09 20:09:26,487][confidence_tom.scale_dataset][INFO] - Loading HARD scale experiment dataset (target 30 per hard source)...
-[2026-03-09 20:09:26,487][confidence_tom.scale_dataset][INFO] - Loading MMLU (30 questions)...
-[2026-03-09 20:09:29,510][confidence_tom.scale_dataset][INFO] -   Loaded 30 MMLU questions
-[2026-03-09 20:09:29,510][confidence_tom.scale_dataset][INFO] - Loading GPQA Diamond (30 questions)...
-[2026-03-09 20:09:31,433][confidence_tom.scale_dataset][INFO] -   Loaded 30 GPQA questions
-[2026-03-09 20:09:31,434][confidence_tom.scale_dataset][INFO] - Loading ARC-Challenge (15 questions)...
-[2026-03-09 20:09:33,570][confidence_tom.scale_dataset][INFO] -   Loaded 15 ARC-Challenge questions
-[2026-03-09 20:09:33,570][confidence_tom.scale_dataset][INFO] - Loading TruthfulQA MC (15 questions)...
-[2026-03-09 20:09:35,727][confidence_tom.scale_dataset][INFO] -   Loaded 15 TruthfulQA MC questions
-[2026-03-09 20:09:35,728][confidence_tom.scale_dataset][INFO] - Hard datasets ready: 90 total questions (GPQA=30, hard_MMLU=30, ARC=15, TQA=15)
-[2026-03-09 20:09:35,728][__main__][INFO] - 📦 Loaded 90 questions
-[2026-03-09 20:09:35,729][__main__][INFO] - ⚙️  Config: 11 models × 90 questions × K=10 = 9900 API calls
-[2026-03-09 20:09:35,729][__main__][INFO] - ⚙️  Concurrency: 8 per model
-[2026-03-09 20:09:35,731][__main__][INFO] - 🚀 [Gemma-3-4B] Starting (google/gemma-3-4b-it)
-[2026-03-09 20:09:35,784][__main__][INFO] - 🚀 [Gemma-3-12B] Starting (google/gemma-3-12b-it)
-[2026-03-09 20:09:35,785][__main__][INFO] -   [Gemma-3-12B] Resumed: 7 already done
-[2026-03-09 20:09:35,832][__main__][INFO] - 🚀 [Gemma-3-27B] Starting (google/gemma-3-27b-it)
-[2026-03-09 20:09:35,879][__main__][INFO] - 🚀 [Qwen-3.5-27B] Starting (qwen/qwen3.5-27b)
-[2026-03-09 20:09:35,927][__main__][INFO] - 🚀 [Qwen-3.5-35B-A3B] Starting (qwen/qwen3.5-35b-a3b)
-[2026-03-09 20:09:35,974][__main__][INFO] - 🚀 [Qwen-3.5-122B-A10B] Starting (qwen/qwen3.5-122b-a10b)
-[2026-03-09 20:09:36,022][__main__][INFO] - 🚀 [Qwen-3.5-397B-A17B] Starting (qwen/qwen3.5-397b-a17b)
-[2026-03-09 20:09:36,069][__main__][INFO] - 🚀 [Llama-4-Scout] Starting (meta-llama/llama-4-scout)
-[2026-03-09 20:09:36,117][__main__][INFO] - 🚀 [Llama-4-Maverick] Starting (meta-llama/llama-4-maverick)
-[2026-03-09 20:09:36,164][__main__][INFO] - 🚀 [GPT-OSS-20B] Starting (openai/gpt-oss-20b)
-[2026-03-09 20:09:36,211][__main__][INFO] - 🚀 [GPT-OSS-120B] Starting (openai/gpt-oss-120b)
+[2026-03-09 20:10:27,873][confidence_tom.scale_dataset][INFO] - Loading HARD scale experiment dataset (target 30 per hard source)...
+[2026-03-09 20:10:27,873][confidence_tom.scale_dataset][INFO] - Loading MMLU (30 questions)...
+[2026-03-09 20:10:30,971][confidence_tom.scale_dataset][INFO] -   Loaded 30 MMLU questions
+[2026-03-09 20:10:30,971][confidence_tom.scale_dataset][INFO] - Loading GPQA Diamond (30 questions)...
+[2026-03-09 20:10:32,882][confidence_tom.scale_dataset][INFO] -   Loaded 30 GPQA questions
+[2026-03-09 20:10:32,882][confidence_tom.scale_dataset][INFO] - Loading ARC-Challenge (15 questions)...
+[2026-03-09 20:10:34,966][confidence_tom.scale_dataset][INFO] -   Loaded 15 ARC-Challenge questions
+[2026-03-09 20:10:34,966][confidence_tom.scale_dataset][INFO] - Loading TruthfulQA MC (15 questions)...
+[2026-03-09 20:10:37,177][confidence_tom.scale_dataset][INFO] -   Loaded 15 TruthfulQA MC questions
+[2026-03-09 20:10:37,178][confidence_tom.scale_dataset][INFO] - Hard datasets ready: 90 total questions (GPQA=30, hard_MMLU=30, ARC=15, TQA=15)
+[2026-03-09 20:10:37,178][__main__][INFO] - 📦 Loaded 90 questions
+[2026-03-09 20:10:37,184][__main__][INFO] - ⚙️  Config: 11 models × 90 questions × K=10 = 9900 API calls
+[2026-03-09 20:10:37,184][__main__][INFO] - ⚙️  Concurrency: 8 per model
+[2026-03-09 20:10:37,185][__main__][INFO] - 🚀 [Gemma-3-4B] Starting (google/gemma-3-4b-it)
+[2026-03-09 20:10:37,186][__main__][INFO] -   [Gemma-3-4B] Resumed: 3 already done
+[2026-03-09 20:10:37,235][__main__][INFO] - 🚀 [Gemma-3-12B] Starting (google/gemma-3-12b-it)
+[2026-03-09 20:10:37,236][__main__][INFO] -   [Gemma-3-12B] Resumed: 8 already done
+[2026-03-09 20:10:37,283][__main__][INFO] - 🚀 [Gemma-3-27B] Starting (google/gemma-3-27b-it)
+[2026-03-09 20:10:37,283][__main__][INFO] -   [Gemma-3-27B] Resumed: 1 already done
+[2026-03-09 20:10:37,330][__main__][INFO] - 🚀 [Qwen-3.5-27B] Starting (qwen/qwen3.5-27b)
+[2026-03-09 20:10:37,378][__main__][INFO] - 🚀 [Qwen-3.5-35B-A3B] Starting (qwen/qwen3.5-35b-a3b)
+[2026-03-09 20:10:37,426][__main__][INFO] - 🚀 [Qwen-3.5-122B-A10B] Starting (qwen/qwen3.5-122b-a10b)
+[2026-03-09 20:10:37,474][__main__][INFO] - 🚀 [Qwen-3.5-397B-A17B] Starting (qwen/qwen3.5-397b-a17b)
+[2026-03-09 20:10:37,521][__main__][INFO] - 🚀 [Llama-4-Scout] Starting (meta-llama/llama-4-scout)
+[2026-03-09 20:10:37,570][__main__][INFO] - 🚀 [Llama-4-Maverick] Starting (meta-llama/llama-4-maverick)
+[2026-03-09 20:10:37,622][__main__][INFO] - 🚀 [GPT-OSS-20B] Starting (openai/gpt-oss-20b)
+[2026-03-09 20:10:37,672][__main__][INFO] - 🚀 [GPT-OSS-120B] Starting (openai/gpt-oss-120b)
+[2026-03-09 20:10:48,429][__main__][INFO] -   [Gemma-3-4B] [4/90] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 241s
+[2026-03-09 20:10:51,448][__main__][INFO] -   [Gemma-3-4B] [5/90] arc_0006 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 242s
+[2026-03-09 20:11:08,285][__main__][INFO] -   [Gemma-3-4B] [6/90] mmlu_college_physics_0001 | ✅=False | c_beh=0.70 | c_rep=0.67 | gap=-0.03 | ETA 435s
+[2026-03-09 20:11:15,946][__main__][INFO] -   [Gemma-3-4B] [7/90] mmlu_professional_accounting_0015 | ✅=False | c_beh=0.50 | c_rep=0.91 | gap=+0.41 | ETA 459s
+[2026-03-09 20:11:20,326][__main__][INFO] -   [Gemma-3-4B] [8/90] mmlu_econometrics_0026 | ✅=False | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 442s
+[2026-03-09 20:11:33,771][__main__][INFO] -   [Gemma-3-4B] [9/90] gpqa_rec9GugrngvsQR99A_0010 | ✅=False | c_beh=0.90 | c_rep=0.86 | gap=-0.04 | ETA 509s
