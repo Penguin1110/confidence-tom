@@ -53,7 +53,7 @@ generator:
 
 # --- Dataset Settings ---
 dataset:
-  num_per_source: 15    # Total = 60 (MMLU + ARC + TruthfulQA + GSM8K) for MVP test
+  num_per_source: 30    # Total = 60 (MMLU + ARC + TruthfulQA + GSM8K) for MVP test
 
 # --- Observer Models (for Part B: second-order experiment) ---
 observer:
