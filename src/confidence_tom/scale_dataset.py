@@ -23,6 +23,16 @@ logger = logging.getLogger(__name__)
 # Reproducibility
 _SEED = 42
 
+HARD_MMLU_SUBJECTS = [
+    "college_mathematics",
+    "college_physics",
+    "college_chemistry",
+    "econometrics",
+    "formal_logic",
+    "professional_accounting",
+    "abstract_algebra",
+]
+
 
 def load_mmlu(
     subjects: Optional[list[str]] = None,
@@ -350,32 +360,81 @@ def load_gsm8k_mc(
     return questions
 
 
+def load_gpqa_mc(
+    num_samples: int = 100,
+) -> list[MCQuestion]:
+    """Load GPQA (Diamond split) to intentionally challenge frontier models.
+    
+    GPQA is specifically designed to be extremely difficult even for PhDs.
+    """
+    logger.info(f"Loading GPQA Diamond ({num_samples} questions)...")
+    
+    # Using the standard huggingface gpqa dataset
+    dataset = load_dataset("Idavidrein/gpqa", "gpqa_diamond", split="train")
+    dataset = dataset.shuffle(seed=_SEED)
+    
+    rng = random.Random(_SEED)
+    choice_labels = ["A", "B", "C", "D"]
+    questions: list[MCQuestion] = []
+    
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+            
+        correct_ans = str(item["Correct Answer"])
+        distractors = [
+            str(item["Incorrect Answer 1"]),
+            str(item["Incorrect Answer 2"]),
+            str(item["Incorrect Answer 3"]),
+        ]
+        
+        # Build 4-choice list and shuffle
+        all_options = [correct_ans] + distractors
+        rng.shuffle(all_options)
+        correct_idx = all_options.index(correct_ans)
+        
+        formatted_choices = [f"{choice_labels[j]}) {all_options[j]}" for j in range(4)]
+        
+        questions.append(
+            MCQuestion(
+                id=f"gpqa_{item['Record ID']}_{i:04d}",
+                question=str(item["Question"]),
+                choices=formatted_choices,
+                correct_answer=choice_labels[correct_idx],
+                category="science",
+                source="gpqa_diamond",
+                external_difficulty="phd_level",
+            )
+        )
+        
+    logger.info(f"  Loaded {len(questions)} GPQA questions")
+    return questions
+
+
 def load_scale_experiment_dataset(
     num_per_source: int = 100,
 ) -> list[MCQuestion]:
-    """Load the complete scale experiment dataset from all 4 sources.
+    """Load the complete scale experiment dataset focusing on HARD tasks.
 
-    Returns a balanced dataset with ~4 × num_per_source questions,
-    all in standardized MC format.
-
-    Args:
-        num_per_source: Number of questions per benchmark source.
-
-    Returns:
-        Shuffled list of MCQuestion from all sources.
+    Returns a balanced dataset from hard sources (e.g., GPQA, hard MMLU),
+    all in standardized MC format. This guarantees that model accuracy gets crushed,
+    preventing ceiling effects for models like Qwen 397B.
     """
-    logger.info(f"Loading scale experiment dataset ({num_per_source} per source)...")
+    logger.info(f"Loading HARD scale experiment dataset (target {num_per_source} per hard source)...")
 
-    mmlu_qs = load_mmlu(num_samples=num_per_source)
-    arc_qs = load_arc_challenge(num_samples=num_per_source)
-    tqa_qs = load_truthfulqa_mc(num_samples=num_per_source)
-    gsm_qs = load_gsm8k_mc(num_samples=num_per_source)
+    # Load hard MMLU
+    mmlu_qs = load_mmlu(subjects=HARD_MMLU_SUBJECTS, num_samples=num_per_source)
+    # Load GPQA Diamond
+    gpqa_qs = load_gpqa_mc(num_samples=num_per_source)
+    # We can still add some ARC/GSM but they might be too easy, keeping a small batch
+    arc_qs = load_arc_challenge(num_samples=num_per_source // 2)
+    tqa_qs = load_truthfulqa_mc(num_samples=num_per_source // 2)
 
-    combined = mmlu_qs + arc_qs + tqa_qs + gsm_qs
+    combined = mmlu_qs + gpqa_qs + arc_qs + tqa_qs
     random.Random(_SEED).shuffle(combined)
 
     logger.info(
-        f"Scale experiment dataset ready: {len(combined)} total questions "
-        f"(MMLU={len(mmlu_qs)}, ARC={len(arc_qs)}, TQA={len(tqa_qs)}, GSM8K={len(gsm_qs)})"
+        f"Hard datasets ready: {len(combined)} total questions "
+        f"(GPQA={len(gpqa_qs)}, hard_MMLU={len(mmlu_qs)}, ARC={len(arc_qs)}, TQA={len(tqa_qs)})"
     )
     return combined
