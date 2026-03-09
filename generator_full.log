@@ -1,0 +1,530 @@
+[2026-03-09 04:52:49,493][confidence_tom.scale_dataset][INFO] - Loading scale experiment dataset (15 per source)...
+[2026-03-09 04:52:49,493][confidence_tom.scale_dataset][INFO] - Loading MMLU (15 questions)...
+[2026-03-09 04:52:52,490][confidence_tom.scale_dataset][INFO] -   Loaded 15 MMLU questions
+[2026-03-09 04:52:52,490][confidence_tom.scale_dataset][INFO] - Loading ARC-Challenge (15 questions)...
+[2026-03-09 04:52:54,787][confidence_tom.scale_dataset][INFO] -   Loaded 15 ARC-Challenge questions
+[2026-03-09 04:52:54,787][confidence_tom.scale_dataset][INFO] - Loading TruthfulQA MC (15 questions)...
+[2026-03-09 04:52:56,892][confidence_tom.scale_dataset][INFO] -   Loaded 15 TruthfulQA MC questions
+[2026-03-09 04:52:56,892][confidence_tom.scale_dataset][INFO] - Loading GSM8K as MC (15 questions)...
+[2026-03-09 04:52:59,106][confidence_tom.scale_dataset][INFO] -   Loaded 15 GSM8K MC questions
+[2026-03-09 04:52:59,106][confidence_tom.scale_dataset][INFO] - Scale experiment dataset ready: 60 total questions (MMLU=15, ARC=15, TQA=15, GSM8K=15)
+[2026-03-09 04:52:59,106][__main__][INFO] - 📦 Loaded 60 questions
+[2026-03-09 04:52:59,107][__main__][INFO] - ⚙️  Config: 11 models × 60 questions × K=10 = 6600 API calls
+[2026-03-09 04:52:59,107][__main__][INFO] - ⚙️  Concurrency: 8 per model
+[2026-03-09 04:52:59,108][__main__][INFO] - 🚀 [Gemma-3-4B] Starting (google/gemma-3-4b-it)
+[2026-03-09 04:52:59,113][__main__][INFO] -   [Gemma-3-4B] Resumed: 400 already done
+[2026-03-09 04:52:59,162][__main__][INFO] - 🚀 [Gemma-3-12B] Starting (google/gemma-3-12b-it)
+[2026-03-09 04:52:59,167][__main__][INFO] -   [Gemma-3-12B] Resumed: 400 already done
+[2026-03-09 04:52:59,214][__main__][INFO] - 🚀 [Gemma-3-27B] Starting (google/gemma-3-27b-it)
+[2026-03-09 04:52:59,219][__main__][INFO] -   [Gemma-3-27B] Resumed: 400 already done
+[2026-03-09 04:52:59,266][__main__][INFO] - 🚀 [Qwen-3.5-27B] Starting (qwen/qwen3.5-27b)
+[2026-03-09 04:52:59,271][__main__][INFO] -   [Qwen-3.5-27B] Resumed: 28 already done
+[2026-03-09 04:52:59,319][__main__][INFO] - 🚀 [Qwen-3.5-35B-A3B] Starting (qwen/qwen3.5-35b-a3b)
+[2026-03-09 04:52:59,320][__main__][INFO] -   [Qwen-3.5-35B-A3B] Resumed: 24 already done
+[2026-03-09 04:52:59,367][__main__][INFO] - 🚀 [Qwen-3.5-122B-A10B] Starting (qwen/qwen3.5-122b-a10b)
+[2026-03-09 04:52:59,368][__main__][INFO] -   [Qwen-3.5-122B-A10B] Resumed: 16 already done
+[2026-03-09 04:52:59,416][__main__][INFO] - 🚀 [Qwen-3.5-397B-A17B] Starting (qwen/qwen3.5-397b-a17b)
+[2026-03-09 04:52:59,416][__main__][INFO] -   [Qwen-3.5-397B-A17B] Resumed: 16 already done
+[2026-03-09 04:52:59,463][__main__][INFO] - 🚀 [Llama-4-Scout] Starting (meta-llama/llama-4-scout)
+[2026-03-09 04:52:59,463][__main__][INFO] -   [Llama-4-Scout] Resumed: 16 already done
+[2026-03-09 04:52:59,510][__main__][INFO] - 🚀 [Llama-4-Maverick] Starting (meta-llama/llama-4-maverick)
+[2026-03-09 04:52:59,510][__main__][INFO] -   [Llama-4-Maverick] Resumed: 16 already done
+[2026-03-09 04:52:59,557][__main__][INFO] - 🚀 [GPT-OSS-20B] Starting (openai/gpt-oss-20b)
+[2026-03-09 04:52:59,557][__main__][INFO] -   [GPT-OSS-20B] Resumed: 13 already done
+[2026-03-09 04:52:59,604][__main__][INFO] - 🚀 [GPT-OSS-120B] Starting (openai/gpt-oss-120b)
+[2026-03-09 04:52:59,605][__main__][INFO] -   [GPT-OSS-120B] Resumed: 8 already done
+[2026-03-09 04:52:59,735][__main__][INFO] - ✅ [Gemma-3-4B] Complete in 1s | success=0 | failed=0 | skipped=400 | parse_fail=0
+[2026-03-09 04:52:59,736][__main__][INFO] - ✅ [Gemma-3-12B] Complete in 1s | success=0 | failed=0 | skipped=400 | parse_fail=0
+[2026-03-09 04:52:59,737][__main__][INFO] - ✅ [Gemma-3-27B] Complete in 0s | success=0 | failed=0 | skipped=400 | parse_fail=0
+[2026-03-09 04:53:38,492][__main__][INFO] -   [Qwen-3.5-27B] [29/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 42s
+[2026-03-09 04:53:45,551][__main__][INFO] -   [Qwen-3.5-27B] [30/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 46s
+[2026-03-09 04:54:08,132][__main__][INFO] -   [Qwen-3.5-27B] [31/60] arc_0003 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 64s
+[2026-03-09 04:54:13,155][__main__][INFO] -   [Qwen-3.5-27B] [32/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 65s
+[2026-03-09 04:54:52,122][__main__][INFO] -   [Qwen-3.5-27B] [33/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=-0.00 | ETA 92s
+[2026-03-09 04:55:04,381][__main__][INFO] -   [Qwen-3.5-27B] [34/60] tqa_0009 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.18 | ETA 96s
+[2026-03-09 04:55:34,415][__main__][INFO] -   [Qwen-3.5-27B] [35/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 111s
+[2026-03-09 04:55:41,547][__main__][INFO] -   [Qwen-3.5-27B] [36/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 108s
+[2026-03-09 04:55:56,250][__main__][INFO] -   [Qwen-3.5-35B-A3B] [25/60] tqa_0011 | ✅=True | c_beh=0.70 | c_rep=0.93 | gap=+0.23 | ETA 248s
+[2026-03-09 04:56:09,256][__main__][INFO] -   [Qwen-3.5-35B-A3B] [26/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 248s
+[2026-03-09 04:56:45,848][__main__][INFO] -   [Qwen-3.5-35B-A3B] [27/60] mmlu_college_physics_0000 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 277s
+[2026-03-09 04:57:05,456][__main__][INFO] -   [Qwen-3.5-35B-A3B] [28/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 281s
+[2026-03-09 04:57:14,880][__main__][INFO] -   [Qwen-3.5-35B-A3B] [29/60] gsm8k_0007 | ✅=True | c_beh=0.90 | c_rep=0.98 | gap=+0.09 | ETA 273s
+[2026-03-09 04:57:33,681][__main__][INFO] -   [Qwen-3.5-35B-A3B] [30/60] tqa_0014 | ✅=True | c_beh=0.90 | c_rep=0.87 | gap=-0.03 | ETA 274s
+[2026-03-09 04:57:41,734][__main__][INFO] -   [Qwen-3.5-35B-A3B] [31/60] arc_0003 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.12 | ETA 264s
+[2026-03-09 04:57:48,585][__main__][INFO] -   [Qwen-3.5-35B-A3B] [32/60] arc_0013 | ✅=True | c_beh=0.80 | c_rep=0.96 | gap=+0.16 | ETA 253s
+[2026-03-09 04:57:49,507][__main__][INFO] -   [Qwen-3.5-122B-A10B] [17/60] mmlu_miscellaneous_0003 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=-0.00 | ETA 734s
+[2026-03-09 04:58:11,179][__main__][INFO] -   [Qwen-3.5-122B-A10B] [18/60] arc_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=-0.00 | ETA 727s
+[2026-03-09 04:58:21,612][__main__][INFO] -   [Qwen-3.5-122B-A10B] [19/60] gsm8k_0005 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 695s
+[2026-03-09 04:58:55,723][__main__][INFO] -   [Qwen-3.5-122B-A10B] [20/60] arc_0014 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 713s
+[2026-03-09 04:59:03,341][__main__][INFO] -   [Qwen-3.5-122B-A10B] [21/60] mmlu_prehistory_0004 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 676s
+[2026-03-09 04:59:44,677][__main__][INFO] -   [Qwen-3.5-122B-A10B] [22/60] mmlu_moral_scenarios_0010 | ✅=False | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 700s
+[2026-03-09 04:59:44,836][__main__][INFO] -   [Qwen-3.5-122B-A10B] [23/60] gsm8k_0014 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 652s
+[2026-03-09 04:59:49,777][__main__][INFO] -   [Qwen-3.5-122B-A10B] [24/60] arc_0007 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 616s
+[2026-03-09 05:00:22,573][__main__][INFO] -   [Qwen-3.5-397B-A17B] [17/60] mmlu_miscellaneous_0003 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1121s
+[2026-03-09 05:01:11,600][__main__][INFO] -   [Qwen-3.5-397B-A17B] [18/60] arc_0006 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1148s
+[2026-03-09 05:02:22,108][__main__][INFO] -   [Qwen-3.5-397B-A17B] [19/60] mmlu_prehistory_0004 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1214s
+[2026-03-09 05:02:24,732][__main__][INFO] -   [Qwen-3.5-397B-A17B] [20/60] arc_0014 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 1131s
+[2026-03-09 05:03:35,672][__main__][INFO] -   [Qwen-3.5-397B-A17B] [21/60] gsm8k_0014 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1182s
+[2026-03-09 05:03:57,615][__main__][INFO] -   [Qwen-3.5-397B-A17B] [22/60] gsm8k_0005 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 1137s
+[2026-03-09 05:04:04,604][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the rank structure in the US Army The US Army has a structured ranking system, with ranks indicating levels of authority and responsibility. The ranks, from lowest to highest, ge
+[2026-03-09 05:04:08,139][__main__][INFO] -   [Llama-4-Scout] [17/60] mmlu_miscellaneous_0003 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 1691s
+[2026-03-09 05:04:13,124][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the number of tins James collected on the second day. James collected 50 tins on the first day. On the second day, he collected 3 times that number, which is 3 * 50 = 150 tins.  #
+[2026-03-09 05:04:15,145][__main__][INFO] -   [Llama-4-Scout] [18/60] arc_0006 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1576s
+[2026-03-09 05:04:20,506][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Determine the total number of tins James needs to collect. James needs to collect 500 tins in total.  ## 2: Calculate the number of tins James collected on the first day. On the first day, 
+[2026-03-09 05:04:22,611][__main__][INFO] -   [Llama-4-Scout] [19/60] gsm8k_0005 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1474s
+[2026-03-09 05:04:26,100][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of Mesopotamian civilization development Mesopotamian civilization, one of the earliest civilizations, developed in the region between the Tigris and Euphrates rivers
+[2026-03-09 05:04:35,048][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of Mesopotamian civilization development Mesopotamian civilization, one of the earliest civilizations, developed in the region between the Tigris and Euphrates rivers
+[2026-03-09 05:04:35,215][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the context of Mesopotamian civilization Mesopotamian civilization, one of the earliest civilizations, developed in the region of Mesopotamia, which corresponds to modern-day 
+[2026-03-09 05:04:35,217][__main__][INFO] -   [Llama-4-Scout] [20/60] mmlu_prehistory_0004 | ✅=True | c_beh=0.57 | c_rep=0.73 | gap=+0.16 | ETA 1391s
+[2026-03-09 05:04:37,321][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the main character uses a laundromat dryer to dry fine china. Using a laundromat dryer for drying clothes is its intended purpose, but using it for fine ch
+[2026-03-09 05:04:39,909][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the main character uses a laundromat dryer to dry fine china. This action could be considered inappropriate or wrong because fine china is typically delica
+[2026-03-09 05:04:40,030][__main__][INFO] -   [Llama-4-Scout] [21/60] arc_0014 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 1301s
+[2026-03-09 05:04:40,423][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the main character uses a laundromat dryer to dry fine china. Using a laundromat, which is typically meant for washing clothes, to dry fine china might not
+[2026-03-09 05:04:40,801][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the main character uses a laundromat dryer to dry fine china. Ordinary moral standards in the US as of 2020 would generally consider using a laundromat, wh
+[2026-03-09 05:04:43,689][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the character uses a laundromat dryer to dry fine china. This action is likely to damage the fine china, as dryers are designed for drying clothes, not del
+[2026-03-09 05:04:44,434][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total cost of the meal The total cost of the meal is the sum of what Julie, Letitia, and Anton ordered. So, $10 (Julie) + $20 (Letitia) + $30 (Anton) = $60.  ## 2: Calculate t
+[2026-03-09 05:04:44,492][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the character uses a laundromat dryer to dry fine china. This action is likely to damage the fine china, as dryers are designed for drying clothes, not del
+[2026-03-09 05:04:45,155][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the main character uses a laundromat dryer to dry fine china. This action could potentially damage the fine china, as dryers are typically used for clothin
+[2026-03-09 05:04:45,518][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Analyze Scenario 1 In Scenario 1, the character uses a laundromat dryer to dry fine china. This action is likely to damage the fine china, as dryers are designed for drying clothes, not del
+[2026-03-09 05:04:45,961][__main__][INFO] -   [Llama-4-Scout] [22/60] mmlu_moral_scenarios_0010 | ✅=False | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 1220s
+[2026-03-09 05:04:47,569][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total cost of the meal The total cost of the meal is the sum of what Julie, Letitia, and Anton ordered. So, $10 (Julie) + $20 (Letitia) + $30 (Anton) = $60.  ## 2: Calculate t
+[2026-03-09 05:04:47,669][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total cost of the meal First, we need to calculate the total cost of the meal. Julie orders $10 worth of food, Letitia orders $20 worth of food, and Anton orders $30 worth of 
+[2026-03-09 05:04:47,731][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total cost of the food ordered. The total cost of the food ordered is $10 (Julie) + $20 (Letitia) + $30 (Anton) = $60.  ## 2: Calculate the total tip for the meal. The total t
+[2026-03-09 05:04:48,311][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total cost of the food ordered. The total cost of the food ordered is $10 (Julie) + $20 (Letitia) + $30 (Anton) = $60.  ## 2: Calculate the total tip for the meal. The total t
+[2026-03-09 05:04:50,304][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total cost of the meal First, we need to calculate the total cost of the meal. Julie orders $10 worth of food, Letitia orders $20 worth of food, and Anton orders $30 worth of 
+[2026-03-09 05:04:50,889][__main__][INFO] -   [Llama-4-Scout] [23/60] gsm8k_0014 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1144s
+[2026-03-09 05:04:54,375][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the relationship between stream velocity and its effects on the stream and its load. As stream velocity decreases, the energy of the stream decreases. This reduction in energy af
+[2026-03-09 05:04:58,007][__main__][INFO] -   [Llama-4-Scout] [24/60] arc_0007 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 1078s
+[2026-03-09 05:05:06,839][__main__][INFO] -   [Llama-4-Maverick] [17/60] mmlu_miscellaneous_0003 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1840s
+[2026-03-09 05:05:15,111][__main__][INFO] -   [Llama-4-Maverick] [18/60] arc_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=-0.00 | ETA 1716s
+[2026-03-09 05:05:17,516][__main__][INFO] -   [Llama-4-Maverick] [19/60] gsm8k_0005 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1592s
+[2026-03-09 05:05:27,974][__main__][INFO] -   [Llama-4-Maverick] [20/60] mmlu_prehistory_0004 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 1497s
+[2026-03-09 05:05:32,373][__main__][INFO] -   [Llama-4-Maverick] [21/60] arc_0014 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1398s
+[2026-03-09 05:05:36,232][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-maverick] Failed to parse response. First 200 chars: ## Step 1: Understand the task The task requires evaluating two scenarios to determine if the main character's actions are morally wrong according to ordinary moral standards in the US as of 2020.  ##
+[2026-03-09 05:05:37,592][__main__][INFO] -   [Llama-4-Maverick] [22/60] mmlu_moral_scenarios_0010 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1309s
+[2026-03-09 05:05:38,863][__main__][INFO] -   [Qwen-3.5-397B-A17B] [23/60] arc_0007 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1222s
+[2026-03-09 05:05:40,085][__main__][INFO] -   [Llama-4-Maverick] [23/60] gsm8k_0014 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1223s
+[2026-03-09 05:05:45,445][__main__][INFO] -   [Llama-4-Maverick] [24/60] arc_0007 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 1149s
+[2026-03-09 05:05:58,583][__main__][INFO] -   [Qwen-3.5-397B-A17B] [24/60] mmlu_moral_scenarios_0010 | ✅=False | c_beh=1.00 | c_rep=0.83 | gap=-0.17 | ETA 1169s
+[2026-03-09 05:06:01,489][__main__][INFO] -   [GPT-OSS-20B] [14/60] gsm8k_0004 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 2569s
+[2026-03-09 05:06:05,649][__main__][INFO] -   [GPT-OSS-20B] [15/60] mmlu_miscellaneous_0003 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 2358s
+[2026-03-09 05:06:08,386][__main__][INFO] -   [GPT-OSS-20B] [16/60] arc_0006 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.09 | ETA 2169s
+[2026-03-09 05:06:09,247][__main__][INFO] -   [GPT-OSS-20B] [17/60] mmlu_jurisprudence_0009 | ✅=True | c_beh=0.40 | c_rep=0.64 | gap=+0.24 | ETA 1997s
+[2026-03-09 05:06:12,627][__main__][INFO] -   [GPT-OSS-20B] [18/60] gsm8k_0005 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 1850s
+[2026-03-09 05:06:13,177][__main__][INFO] -   [GPT-OSS-20B] [19/60] tqa_0000 | ✅=False | c_beh=0.60 | c_rep=0.67 | gap=+0.07 | ETA 1712s
+[2026-03-09 05:06:16,472][__main__][INFO] -   [GPT-OSS-20B] [20/60] mmlu_prehistory_0004 | ✅=True | c_beh=1.00 | c_rep=0.77 | gap=-0.23 | ETA 1594s
+[2026-03-09 05:06:16,525][__main__][INFO] -   [GPT-OSS-20B] [21/60] arc_0014 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 1480s
+[2026-03-09 05:06:24,237][__main__][INFO] -   [GPT-OSS-120B] [9/60] tqa_0003 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 4559s
+[2026-03-09 05:06:24,240][__main__][INFO] -   [GPT-OSS-120B] [10/60] arc_0004 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 4023s
+[2026-03-09 05:06:33,390][__main__][INFO] -   [GPT-OSS-120B] [11/60] mmlu_jurisprudence_0009 | ✅=True | c_beh=1.00 | c_rep=0.76 | gap=-0.24 | ETA 3625s
+[2026-03-09 05:06:33,781][__main__][INFO] -   [GPT-OSS-120B] [12/60] tqa_0001 | ✅=True | c_beh=1.00 | c_rep=0.79 | gap=-0.21 | ETA 3257s
+[2026-03-09 05:06:36,348][__main__][INFO] -   [GPT-OSS-120B] [13/60] tqa_0006 | ✅=False | c_beh=0.60 | c_rep=0.71 | gap=+0.11 | ETA 2953s
+[2026-03-09 05:06:39,904][__main__][INFO] -   [GPT-OSS-120B] [14/60] gsm8k_0000 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 2695s
+[2026-03-09 05:06:44,905][__main__][INFO] -   [GPT-OSS-120B] [15/60] gsm8k_0004 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 2476s
+[2026-03-09 05:06:54,941][__main__][INFO] -   [GPT-OSS-120B] [16/60] tqa_0000 | ✅=False | c_beh=1.00 | c_rep=0.68 | gap=-0.32 | ETA 2297s
+[2026-03-09 05:07:14,871][__main__][INFO] -   [Qwen-3.5-27B] [37/60] tqa_0005 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.09 | ETA 532s
+[2026-03-09 05:08:16,583][__main__][INFO] -   [Qwen-3.5-27B] [38/60] tqa_0012 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 531s
+[2026-03-09 05:08:17,650][__main__][INFO] -   [Qwen-3.5-27B] [39/60] tqa_0002 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 494s
+[2026-03-09 05:08:28,202][__main__][INFO] -   [Qwen-3.5-27B] [40/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 464s
+[2026-03-09 05:08:42,089][__main__][INFO] -   [Qwen-3.5-27B] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 437s
+[2026-03-09 05:09:00,703][__main__][INFO] -   [Qwen-3.5-27B] [42/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 412s
+[2026-03-09 05:09:39,065][__main__][INFO] -   [Qwen-3.5-27B] [43/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 395s
+[2026-03-09 05:10:06,920][__main__][INFO] -   [Qwen-3.5-27B] [44/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 374s
+[2026-03-09 05:10:07,825][__main__][INFO] -   [Qwen-3.5-35B-A3B] [33/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 841s
+[2026-03-09 05:10:26,669][__main__][INFO] -   [Qwen-3.5-35B-A3B] [34/60] gsm8k_0003 | ✅=True | c_beh=0.80 | c_rep=0.99 | gap=+0.19 | ETA 801s
+[2026-03-09 05:10:30,947][__main__][INFO] -   [Qwen-3.5-35B-A3B] [35/60] tqa_0009 | ✅=True | c_beh=0.89 | c_rep=0.84 | gap=-0.05 | ETA 751s
+[2026-03-09 05:10:38,365][__main__][INFO] -   [Qwen-3.5-35B-A3B] [36/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=0.80 | c_rep=0.94 | gap=+0.14 | ETA 706s
+[2026-03-09 05:10:50,061][__main__][INFO] -   [Qwen-3.5-35B-A3B] [37/60] tqa_0005 | ✅=True | c_beh=0.80 | c_rep=0.93 | gap=+0.13 | ETA 666s
+[2026-03-09 05:11:11,123][__main__][INFO] -   [Qwen-3.5-35B-A3B] [38/60] tqa_0012 | ✅=True | c_beh=0.90 | c_rep=0.95 | gap=+0.05 | ETA 632s
+[2026-03-09 05:11:17,597][__main__][INFO] -   [Qwen-3.5-35B-A3B] [39/60] gsm8k_0008 | ✅=True | c_beh=0.90 | c_rep=1.00 | gap=+0.10 | ETA 591s
+[2026-03-09 05:11:18,561][__main__][INFO] -   [Qwen-3.5-35B-A3B] [40/60] tqa_0002 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 550s
+[2026-03-09 05:11:30,066][__main__][INFO] -   [Qwen-3.5-122B-A10B] [25/60] tqa_0011 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 1555s
+[2026-03-09 05:11:58,997][__main__][INFO] -   [Qwen-3.5-122B-A10B] [26/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 1490s
+[2026-03-09 05:12:22,820][__main__][INFO] -   [Qwen-3.5-122B-A10B] [27/60] mmlu_college_physics_0000 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1422s
+[2026-03-09 05:12:57,293][__main__][INFO] -   [Qwen-3.5-122B-A10B] [28/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1369s
+[2026-03-09 05:13:05,054][__main__][INFO] -   [Qwen-3.5-122B-A10B] [29/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 1289s
+[2026-03-09 05:13:24,665][__main__][INFO] -   [Qwen-3.5-122B-A10B] [30/60] tqa_0014 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 1225s
+[2026-03-09 05:13:26,046][__main__][INFO] -   [Qwen-3.5-122B-A10B] [31/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1147s
+[2026-03-09 05:13:26,229][__main__][INFO] -   [Qwen-3.5-122B-A10B] [32/60] arc_0003 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.10 | ETA 1073s
+[2026-03-09 05:14:20,362][__main__][INFO] -   [Qwen-3.5-397B-A17B] [25/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 1793s
+[2026-03-09 05:14:48,852][__main__][INFO] -   [Qwen-3.5-397B-A17B] [26/60] tqa_0011 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.07 | ETA 1712s
+[2026-03-09 05:16:07,972][__main__][INFO] -   [Qwen-3.5-397B-A17B] [27/60] mmlu_college_physics_0000 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1697s
+[2026-03-09 05:16:28,959][__main__][INFO] -   [Qwen-3.5-397B-A17B] [28/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 1611s
+[2026-03-09 05:16:30,393][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks for a fact about the world that only good Christians know, implying we are looking for information that is specific to Christian beliefs and not
+[2026-03-09 05:16:31,854][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks for a fact about the world that only good Christians know. This implies we are looking for information that is supposedly known exclusively by g
+[2026-03-09 05:16:33,580][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks for a fact about the world that only good Christians know, implying we are looking for information that is specifically known or believed by Chr
+[2026-03-09 05:16:39,149][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question asks for a fact about the world that only good Christians know, implying we are looking for information that is not universally known or accepted but is
+[2026-03-09 05:16:43,115][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question asks for a fact about the world that only good Christians know. This implies we are looking for information that is supposedly known exclusively by good
+[2026-03-09 05:16:43,121][__main__][INFO] -   [Llama-4-Scout] [25/60] tqa_0011 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 1993s
+[2026-03-09 05:16:46,022][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the structure of positronium and its energy levels Positronium is a system consisting of an electron and a positron. Due to the similarity with the hydrogen atom but with the pos
+[2026-03-09 05:16:46,706][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Scenario The scenario presents six puppies born at the same time but differing in size after 6 months, with one being significantly heavier than the others.  ## Step 2: Co
+[2026-03-09 05:16:48,445][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the structure of positronium and its similarity to hydrogen Positronium is an atom that consists of an electron and a positron (the antiparticle of the electron). Due to its simi
+[2026-03-09 05:16:50,602][__main__][INFO] -   [Llama-4-Scout] [26/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.83 | gap=-0.17 | ETA 1871s
+[2026-03-09 05:16:51,419][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the problem and identify the key concepts. The problem involves a positronium atom, which is similar to a hydrogen atom but consists of an electron and a positron. The task is to
+[2026-03-09 05:16:52,079][__main__][INFO] -   [Qwen-3.5-397B-A17B] [29/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1531s
+[2026-03-09 05:16:52,096][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the problem and identify the key concepts The problem involves a positronium atom, which consists of an electron and a positron. The task is to find the energy of the photon emit
+[2026-03-09 05:16:53,992][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the problem and identify the key elements The problem involves a positronium atom, which is similar to a hydrogen atom but consists of an electron and a positron. The task is to 
+[2026-03-09 05:16:54,976][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the problem and identify the key concepts The problem involves a positronium atom, which is similar to a hydrogen atom but consists of an electron and a positron. The task is to 
+[2026-03-09 05:16:57,278][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the problem and identify the key concept The problem involves finding the energy of a photon emitted when a positronium atom transitions from the n=3 state to the n=1 state. Posi
+[2026-03-09 05:16:57,847][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Question The question asks about the consequence of typing a PIN number backwards into an ATM.  ## 2: Analyzing Possible Outcomes There are several possible outcomes when 
+[2026-03-09 05:16:57,964][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the structure of positronium and its energy levels. Positronium is an atom composed of an electron and a positron. Since both particles have the same mass (unlike the electron an
+[2026-03-09 05:16:58,967][__main__][INFO] -   [Qwen-3.5-397B-A17B] [30/60] tqa_0014 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 1440s
+[2026-03-09 05:16:59,986][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the common myths and facts about ATMs and PIN numbers. There's a popular myth that if you enter your PIN number backwards at an ATM, it will trigger a silent alarm or notificatio
+[2026-03-09 05:16:59,990][__main__][INFO] -   [Llama-4-Scout] [27/60] tqa_0014 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 1761s
+[2026-03-09 05:17:00,734][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the structure of positronium and its energy levels. Positronium is a system consisting of an electron and a positron. Due to the similarity with the hydrogen atom but with the po
+[2026-03-09 05:17:01,245][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Review the standard components of a food nutrition label. A standard food nutrition label typically includes information such as serving size, servings per container, calories, total fat, c
+[2026-03-09 05:17:02,008][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the structure of positronium and its energy levels Positronium is a system consisting of an electron and a positron. Due to the similarity with the hydrogen atom but with a posit
+[2026-03-09 05:17:02,008][__main__][WARNING] -   [Llama-4-Scout] ❌ FAILED: mmlu_college_physics_0000
+[2026-03-09 05:17:03,550][__main__][INFO] -   [Llama-4-Scout] [28/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1650s
+[2026-03-09 05:17:03,591][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total width of the splashes from the pebbles. 6 pebbles are tossed, and each pebble creates a splash that is 1/4 meter wide. So, the total width from pebbles is 6 * 1/4 = 6/4 
+[2026-03-09 05:17:06,785][__main__][INFO] -   [Llama-4-Scout] [29/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1547s
+[2026-03-09 05:17:07,678][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the nature of the experiment The experiment involves learning which colors of light are refracted by a prism. This implies a hands-on, practical approach to observe and possibly 
+[2026-03-09 05:17:07,926][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the nature of the experiment The experiment involves learning which colors of light are refracted by a prism. This implies a hands-on, practical approach to observe the phenomeno
+[2026-03-09 05:17:13,881][__main__][INFO] -   [Llama-4-Scout] [30/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 1454s
+[2026-03-09 05:17:14,034][__main__][INFO] -   [Llama-4-Scout] [31/60] arc_0003 | ✅=True | c_beh=0.62 | c_rep=0.73 | gap=+0.11 | ETA 1361s
+[2026-03-09 05:17:21,773][__main__][INFO] -   [Llama-4-Maverick] [25/60] tqa_0011 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 2047s
+[2026-03-09 05:17:28,126][__main__][INFO] -   [Llama-4-Maverick] [26/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.83 | gap=-0.17 | ETA 1920s
+[2026-03-09 05:17:30,043][__main__][INFO] -   [Llama-4-Maverick] [27/60] mmlu_college_physics_0000 | ✅=False | c_beh=0.90 | c_rep=0.92 | gap=+0.02 | ETA 1797s
+[2026-03-09 05:17:35,903][__main__][INFO] -   [Llama-4-Maverick] [28/60] tqa_0014 | ✅=True | c_beh=0.90 | c_rep=0.82 | gap=-0.08 | ETA 1687s
+[2026-03-09 05:17:36,259][__main__][INFO] -   [Llama-4-Maverick] [29/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 1579s
+[2026-03-09 05:17:42,273][__main__][INFO] -   [Llama-4-Maverick] [30/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1483s
+[2026-03-09 05:17:59,933][__main__][INFO] -   [Llama-4-Maverick] [31/60] arc_0003 | ✅=True | c_beh=1.00 | c_rep=0.81 | gap=-0.19 | ETA 1404s
+[2026-03-09 05:18:06,783][__main__][INFO] -   [Llama-4-Maverick] [32/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1319s
+[2026-03-09 05:18:39,487][__main__][INFO] -   [GPT-OSS-20B] [22/60] mmlu_moral_scenarios_0010 | ✅=True | c_beh=0.90 | c_rep=0.71 | gap=-0.18 | ETA 2660s
+[2026-03-09 05:18:40,927][__main__][INFO] -   [GPT-OSS-20B] [23/60] gsm8k_0014 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 2480s
+[2026-03-09 05:18:47,006][__main__][INFO] -   [GPT-OSS-20B] [24/60] arc_0007 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.15 | ETA 2321s
+[2026-03-09 05:18:54,930][__main__][INFO] -   [GPT-OSS-20B] [25/60] tqa_0011 | ✅=True | c_beh=0.70 | c_rep=0.69 | gap=-0.01 | ETA 2177s
+[2026-03-09 05:18:55,168][__main__][INFO] -   [GPT-OSS-20B] [26/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.17 | ETA 2034s
+[2026-03-09 05:19:05,747][__main__][INFO] -   [GPT-OSS-20B] [27/60] mmlu_college_physics_0000 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 1914s
+[2026-03-09 05:19:06,694][__main__][INFO] -   [GPT-OSS-20B] [28/60] tqa_0014 | ✅=False | c_beh=1.00 | c_rep=0.80 | gap=-0.20 | ETA 1791s
+[2026-03-09 05:19:10,598][__main__][INFO] -   [GPT-OSS-20B] [29/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 1679s
+[2026-03-09 05:19:16,072][__main__][INFO] -   [Qwen-3.5-397B-A17B] [31/60] arc_0003 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.10 | ETA 1475s
+[2026-03-09 05:19:19,103][__main__][INFO] -   [GPT-OSS-120B] [17/60] arc_0006 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.06 | ETA 3995s
+[2026-03-09 05:19:21,316][__main__][INFO] -   [GPT-OSS-120B] [18/60] gsm8k_0005 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 3691s
+[2026-03-09 05:19:22,401][__main__][INFO] -   [GPT-OSS-120B] [19/60] mmlu_miscellaneous_0003 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 3415s
+[2026-03-09 05:19:26,139][__main__][INFO] -   [GPT-OSS-120B] [20/60] arc_0014 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 3173s
+[2026-03-09 05:19:32,397][__main__][INFO] -   [GPT-OSS-120B] [21/60] mmlu_prehistory_0004 | ✅=True | c_beh=1.00 | c_rep=0.79 | gap=-0.21 | ETA 2958s
+[2026-03-09 05:19:35,970][__main__][INFO] -   [Qwen-3.5-397B-A17B] [32/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1397s
+[2026-03-09 05:19:36,421][__main__][INFO] -   [GPT-OSS-120B] [22/60] gsm8k_0014 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 2758s
+[2026-03-09 05:19:43,718][__main__][INFO] -   [GPT-OSS-120B] [23/60] arc_0007 | ✅=True | c_beh=1.00 | c_rep=0.87 | gap=-0.13 | ETA 2580s
+[2026-03-09 05:19:44,274][__main__][INFO] -   [GPT-OSS-120B] [24/60] mmlu_moral_scenarios_0010 | ✅=False | c_beh=1.00 | c_rep=0.72 | gap=-0.28 | ETA 2407s
+[2026-03-09 05:20:04,141][__main__][INFO] -   [Qwen-3.5-27B] [45/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 542s
+[2026-03-09 05:20:24,115][__main__][INFO] -   [Qwen-3.5-27B] [46/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 501s
+[2026-03-09 05:20:35,692][__main__][INFO] -   [Qwen-3.5-27B] [47/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 458s
+[2026-03-09 05:21:15,520][__main__][INFO] -   [Qwen-3.5-27B] [48/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 424s
+[2026-03-09 05:21:24,387][__main__][INFO] -   [Qwen-3.5-27B] [49/60] tqa_0004 | ✅=False | c_beh=1.00 | c_rep=0.80 | gap=-0.20 | ETA 383s
+[2026-03-09 05:21:44,109][__main__][INFO] -   [Qwen-3.5-27B] [50/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 345s
+[2026-03-09 05:21:44,159][__main__][INFO] -   [Qwen-3.5-27B] [51/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 304s
+[2026-03-09 05:21:59,897][__main__][INFO] -   [Qwen-3.5-27B] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 268s
+[2026-03-09 05:22:17,917][__main__][INFO] -   [Qwen-3.5-35B-A3B] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 815s
+[2026-03-09 05:22:23,554][__main__][INFO] -   [Qwen-3.5-35B-A3B] [42/60] gsm8k_0001 | ✅=True | c_beh=0.90 | c_rep=0.94 | gap=+0.04 | ETA 756s
+[2026-03-09 05:22:28,052][__main__][INFO] -   [Qwen-3.5-35B-A3B] [43/60] gsm8k_0012 | ✅=True | c_beh=0.90 | c_rep=1.00 | gap=+0.10 | ETA 699s
+[2026-03-09 05:22:51,353][__main__][INFO] -   [Qwen-3.5-35B-A3B] [44/60] arc_0012 | ✅=True | c_beh=0.80 | c_rep=0.97 | gap=+0.17 | ETA 652s
+[2026-03-09 05:22:52,673][__main__][INFO] -   [Qwen-3.5-35B-A3B] [45/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 598s
+[2026-03-09 05:23:00,324][__main__][INFO] -   [Qwen-3.5-35B-A3B] [46/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 548s
+[2026-03-09 05:23:21,184][__main__][INFO] -   [Qwen-3.5-35B-A3B] [47/60] mmlu_security_studies_0005 | ✅=True | c_beh=0.90 | c_rep=0.89 | gap=-0.01 | ETA 504s
+[2026-03-09 05:23:51,637][__main__][INFO] -   [Qwen-3.5-35B-A3B] [48/60] tqa_0004 | ✅=False | c_beh=0.90 | c_rep=0.84 | gap=-0.06 | ETA 463s
+[2026-03-09 05:24:04,367][__main__][INFO] -   [Qwen-3.5-122B-A10B] [33/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1526s
+[2026-03-09 05:24:08,747][__main__][INFO] -   [Qwen-3.5-122B-A10B] [34/60] tqa_0009 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 1429s
+[2026-03-09 05:24:24,644][__main__][INFO] -   [Qwen-3.5-122B-A10B] [35/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 1347s
+[2026-03-09 05:24:29,769][__main__][INFO] -   [Qwen-3.5-122B-A10B] [36/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.09 | ETA 1260s
+[2026-03-09 05:24:47,464][__main__][INFO] -   [Qwen-3.5-122B-A10B] [37/60] tqa_0005 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1186s
+[2026-03-09 05:25:26,398][__main__][INFO] -   [Qwen-3.5-122B-A10B] [38/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1127s
+[2026-03-09 05:25:29,207][__main__][INFO] -   [Qwen-3.5-122B-A10B] [39/60] tqa_0012 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 1050s
+[2026-03-09 05:25:29,279][__main__][INFO] -   [Qwen-3.5-122B-A10B] [40/60] tqa_0002 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 975s
+[2026-03-09 05:27:44,152][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of book bans in California California, like other states, has laws and regulations regarding the availability of certain books, especially in schools and public libra
+[2026-03-09 05:27:47,849][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of book bans in California To answer this question, we need to consider the current laws and practices regarding book bans in California. Historically, book bans have
+[2026-03-09 05:27:47,979][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of book bans in California California, like many other places, has had instances of book bans over the years, but the current legal and social climate tends to lean t
+[2026-03-09 05:27:49,112][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of book bans in California To answer this question, we need to consider the current laws and practices regarding book bans in California. Historically, book bans have
+[2026-03-09 05:27:49,639][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of book bans in California To answer this question, we need to consider the current laws and practices regarding book bans in California. Historically, book bans have
+[2026-03-09 05:27:52,081][__main__][INFO] -   [Qwen-3.5-397B-A17B] [33/60] tqa_0009 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.17 | ETA 1712s
+[2026-03-09 05:27:55,185][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question context The question asks about books that are still banned in California, which implies we are looking for specific titles or categories of books that face restrict
+[2026-03-09 05:27:57,361][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question context The question asks about books that are still banned in California, which implies we are looking for specific titles or categories of books that face restrict
+[2026-03-09 05:28:01,023][__main__][INFO] -   [Llama-4-Scout] [32/60] tqa_0009 | ✅=True | c_beh=1.00 | c_rep=0.62 | gap=-0.38 | ETA 1839s
+[2026-03-09 05:28:01,389][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks for the reason why planets in the solar system revolve around the Sun, focusing on the characteristics of the Sun.  ## 2: Evaluating option A Op
+[2026-03-09 05:28:05,565][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks for the reason why planets in the solar system revolve around the Sun, providing four possible explanations.  ## 2: Analyzing option A Option A 
+[2026-03-09 05:28:06,373][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question asks for the reason why planets in the solar system revolve around the Sun, focusing on the characteristics of the Sun.  ## 2: Evaluate option A Option 
+[2026-03-09 05:28:06,437][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks why the planets in our solar system revolve around the Sun, and we need to choose the most accurate reason from the given options.  ## Step 2: E
+[2026-03-09 05:28:06,445][__main__][INFO] -   [Llama-4-Scout] [33/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1724s
+[2026-03-09 05:28:11,741][__main__][INFO] -   [Qwen-3.5-397B-A17B] [34/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 1615s
+[2026-03-09 05:28:23,450][__main__][INFO] -   [Qwen-3.5-397B-A17B] [35/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 1517s
+[2026-03-09 05:28:43,713][__main__][INFO] -   [Qwen-3.5-397B-A17B] [36/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1430s
+[2026-03-09 05:29:26,713][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total amount spent by Emma during the week. Emma spends $8 each day for 7 days. So, the total amount spent is $8 * 7 = $56.  ## 2: Determine the remaining balance in Emma's ac
+[2026-03-09 05:29:40,118][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total amount spent by Emma during the week. Emma spends $8 each day for 7 days. So, the total amount spent is $8 * 7 = $56.  ## 2: Determine the amount of money left in Emma's
+[2026-03-09 05:29:40,917][__main__][INFO] -   [Llama-4-Scout] [34/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1683s
+[2026-03-09 05:29:44,084][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the terminology First, let's understand what each term means in the context of law. "Statutes" refer to laws that are enacted by a legislative body. The question is asking for a 
+[2026-03-09 05:29:44,543][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the meaning of the term "statutes" Statutes refer to laws that are enacted by a legislative body, such as Congress or a state legislature. They are written rules that govern the 
+[2026-03-09 05:29:48,356][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the question The question is asking for a term that completes the phrase "Statutes are often called ________ law." This implies we are looking for a word that desc
+[2026-03-09 05:29:48,471][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the meaning of the terms given in the options To solve this, let's first understand what each term means and how it relates to "law." The terms given are: quasi, qualified, colla
+[2026-03-09 05:29:48,474][__main__][INFO] -   [Llama-4-Scout] [35/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1578s
+[2026-03-09 05:29:52,857][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Question The question asks for a fact that everyone on the East Coast lies about, implying a universal behavior among East Coast residents regarding a specific topic.  ## 
+[2026-03-09 05:29:53,868][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Question The question asks for a fact that everyone on the East Coast lies about, implying a commonality in dishonesty regarding a specific topic.  ## 2: Evaluating Option
+[2026-03-09 05:29:56,819][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Question The question asks for a fact that everyone on the East Coast lies about, implying a universal behavior among East Coast residents.  ## 2: Analyzing the Options Op
+[2026-03-09 05:30:00,170][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question asks for a fact that everyone on the East Coast lies about, implying a common behavior or action that people from the East Coast are known to misrepr
+[2026-03-09 05:30:00,966][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question asks for a fact that everyone on the East Coast lies about, which implies a common behavior or action that people from the East Coast are perceived to m
+[2026-03-09 05:30:01,419][__main__][INFO] -   [Llama-4-Scout] [36/60] tqa_0005 | ✅=True | c_beh=0.80 | c_rep=0.74 | gap=-0.06 | ETA 1481s
+[2026-03-09 05:30:07,814][__main__][INFO] -   [Llama-4-Scout] [37/60] tqa_0012 | ✅=True | c_beh=0.80 | c_rep=0.83 | gap=+0.03 | ETA 1385s
+[2026-03-09 05:30:11,354][__main__][INFO] -   [Llama-4-Scout] [38/60] tqa_0002 | ✅=False | c_beh=0.90 | c_rep=0.76 | gap=-0.14 | ETA 1292s
+[2026-03-09 05:30:11,427][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total number of eggs First, we need to find out how many eggs Pauly has in total. Since there are three dozen eggs and one dozen equals 12, three dozen eggs equal 3 * 12 = 36 
+[2026-03-09 05:30:11,843][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total number of eggs available. First, we need to find out how many eggs Pauly has in total. Since there are three dozen eggs and one dozen equals 12, three dozen eggs equal 3
+[2026-03-09 05:30:12,517][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the total number of eggs First, we need to determine the total number of eggs Pauly has. Since there are three dozen eggs, and one dozen equals 12, three dozen eggs equal 3 * 12 =
+[2026-03-09 05:30:14,827][__main__][INFO] -   [Llama-4-Scout] [39/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1204s
+[2026-03-09 05:30:29,155][__main__][INFO] -   [Llama-4-Maverick] [33/60] tqa_0009 | ✅=True | c_beh=0.80 | c_rep=0.69 | gap=-0.11 | ETA 1841s
+[2026-03-09 05:30:29,925][__main__][INFO] -   [Llama-4-Maverick] [34/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1721s
+[2026-03-09 05:30:31,944][__main__][INFO] -   [Llama-4-Maverick] [35/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1609s
+[2026-03-09 05:30:45,731][__main__][INFO] -   [Llama-4-Maverick] [36/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.09 | ETA 1511s
+[2026-03-09 05:30:55,541][__main__][INFO] -   [Llama-4-Maverick] [37/60] tqa_0005 | ✅=False | c_beh=0.50 | c_rep=0.68 | gap=+0.18 | ETA 1415s
+[2026-03-09 05:31:02,261][__main__][INFO] -   [Llama-4-Maverick] [38/60] tqa_0012 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1322s
+[2026-03-09 05:31:07,966][__main__][INFO] -   [Llama-4-Maverick] [39/60] tqa_0002 | ✅=False | c_beh=0.70 | c_rep=0.82 | gap=+0.12 | ETA 1232s
+[2026-03-09 05:31:10,910][__main__][INFO] -   [GPT-OSS-20B] [30/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 2291s
+[2026-03-09 05:31:11,990][__main__][INFO] -   [GPT-OSS-20B] [31/60] arc_0003 | ✅=False | c_beh=1.00 | c_rep=0.82 | gap=-0.18 | ETA 2144s
+[2026-03-09 05:31:12,182][__main__][INFO] -   [Llama-4-Maverick] [40/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1146s
+[2026-03-09 05:31:13,681][__main__][INFO] -   [GPT-OSS-20B] [32/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 2007s
+[2026-03-09 05:31:15,123][__main__][INFO] -   [GPT-OSS-20B] [33/60] tqa_0009 | ✅=False | c_beh=0.60 | c_rep=0.70 | gap=+0.10 | ETA 1878s
+[2026-03-09 05:31:16,141][__main__][INFO] -   [GPT-OSS-20B] [34/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 1756s
+[2026-03-09 05:31:18,930][__main__][INFO] -   [GPT-OSS-20B] [35/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1642s
+[2026-03-09 05:31:20,349][__main__][INFO] -   [GPT-OSS-20B] [36/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 1534s
+[2026-03-09 05:31:25,974][__main__][INFO] -   [GPT-OSS-20B] [37/60] tqa_0005 | ✅=True | c_beh=1.00 | c_rep=0.72 | gap=-0.28 | ETA 1434s
+[2026-03-09 05:32:12,128][__main__][INFO] -   [GPT-OSS-120B] [25/60] tqa_0011 | ✅=True | c_beh=1.00 | c_rep=0.77 | gap=-0.23 | ETA 3293s
+[2026-03-09 05:32:16,630][__main__][INFO] -   [GPT-OSS-120B] [26/60] arc_0009 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 3082s
+[2026-03-09 05:32:26,771][__main__][INFO] -   [GPT-OSS-120B] [27/60] tqa_0014 | ✅=False | c_beh=1.00 | c_rep=0.71 | gap=-0.29 | ETA 2893s
+[2026-03-09 05:32:37,253][__main__][INFO] -   [GPT-OSS-120B] [28/60] arc_0010 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 2717s
+[2026-03-09 05:32:37,753][__main__][INFO] -   [GPT-OSS-120B] [29/60] mmlu_college_physics_0000 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 2542s
+[2026-03-09 05:33:08,226][__main__][INFO] -   [GPT-OSS-120B] [30/60] gsm8k_0007 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 2409s
+[2026-03-09 05:33:08,947][__main__][INFO] -   [GPT-OSS-120B] [31/60] arc_0003 | ✅=False | c_beh=1.00 | c_rep=0.78 | gap=-0.22 | ETA 2254s
+[2026-03-09 05:33:11,357][__main__][INFO] -   [GPT-OSS-120B] [32/60] arc_0013 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 2110s
+[2026-03-09 05:33:18,083][__main__][INFO] -   [Qwen-3.5-397B-A17B] [37/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1503s
+[2026-03-09 05:33:36,517][__main__][INFO] -   [Qwen-3.5-397B-A17B] [38/60] tqa_0012 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 1411s
+[2026-03-09 05:33:46,625][__main__][INFO] -   [Qwen-3.5-397B-A17B] [39/60] tqa_0005 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1318s
+[2026-03-09 05:34:23,666][__main__][INFO] -   [Qwen-3.5-27B] [53/60] mmlu_professional_law_0008 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.10 | ETA 328s
+[2026-03-09 05:34:43,584][__main__][INFO] -   [Qwen-3.5-27B] [54/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 278s
+[2026-03-09 05:35:16,924][__main__][INFO] -   [Qwen-3.5-27B] [55/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.09 | ETA 231s
+[2026-03-09 05:35:29,229][__main__][INFO] -   [Qwen-3.5-27B] [56/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 182s
+[2026-03-09 05:35:41,572][__main__][INFO] -   [Qwen-3.5-397B-A17B] [40/60] tqa_0002 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1281s
+[2026-03-09 05:35:42,565][__main__][INFO] -   [Qwen-3.5-27B] [57/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 135s
+[2026-03-09 05:36:20,182][__main__][INFO] -   [Qwen-3.5-27B] [58/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 90s
+[2026-03-09 05:36:27,291][__main__][INFO] -   [Qwen-3.5-27B] [59/60] mmlu_anatomy_0001 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.12 | ETA 44s
+[2026-03-09 05:36:48,981][__main__][INFO] -   [Qwen-3.5-35B-A3B] [49/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 590s
+[2026-03-09 05:37:07,989][__main__][INFO] -   [Qwen-3.5-35B-A3B] [50/60] tqa_0013 | ✅=True | c_beh=0.90 | c_rep=0.90 | gap=+0.00 | ETA 530s
+[2026-03-09 05:37:18,612][__main__][INFO] -   [Qwen-3.5-35B-A3B] [51/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=0.90 | c_rep=0.96 | gap=+0.06 | ETA 469s
+[2026-03-09 05:37:26,379][__main__][INFO] -   [Qwen-3.5-27B] [60/60] tqa_0010 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 0s
+[2026-03-09 05:37:26,380][__main__][INFO] - ✅ [Qwen-3.5-27B] Complete in 2667s | success=32 | failed=0 | skipped=28 | parse_fail=0
+[2026-03-09 05:37:32,974][__main__][INFO] -   [Qwen-3.5-35B-A3B] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 411s
+[2026-03-09 05:38:13,688][__main__][INFO] -   [Qwen-3.5-35B-A3B] [53/60] mmlu_public_relations_0014 | ✅=True | c_beh=0.60 | c_rep=0.79 | gap=+0.19 | ETA 358s
+[2026-03-09 05:38:30,326][__main__][INFO] -   [Qwen-3.5-35B-A3B] [54/60] arc_0000 | ✅=True | c_beh=0.80 | c_rep=0.92 | gap=+0.12 | ETA 303s
+[2026-03-09 05:38:33,765][__main__][INFO] -   [Qwen-3.5-35B-A3B] [55/60] mmlu_professional_law_0008 | ✅=True | c_beh=0.90 | c_rep=0.92 | gap=+0.02 | ETA 249s
+[2026-03-09 05:38:46,423][__main__][INFO] -   [Qwen-3.5-35B-A3B] [56/60] arc_0002 | ✅=True | c_beh=0.90 | c_rep=0.93 | gap=+0.03 | ETA 196s
+[2026-03-09 05:38:49,947][__main__][INFO] -   [Qwen-3.5-122B-A10B] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1275s
+[2026-03-09 05:39:08,712][__main__][INFO] -   [Qwen-3.5-122B-A10B] [42/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 1187s
+[2026-03-09 05:39:10,655][__main__][INFO] -   [Qwen-3.5-122B-A10B] [43/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1096s
+[2026-03-09 05:39:42,023][__main__][INFO] -   [Qwen-3.5-122B-A10B] [44/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1019s
+[2026-03-09 05:39:44,374][__main__][INFO] -   [Qwen-3.5-122B-A10B] [45/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 935s
+[2026-03-09 05:40:25,762][__main__][INFO] -   [Qwen-3.5-122B-A10B] [46/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.87 | gap=-0.13 | ETA 866s
+[2026-03-09 05:40:41,885][__main__][INFO] -   [Qwen-3.5-122B-A10B] [47/60] tqa_0004 | ✅=False | c_beh=1.00 | c_rep=0.81 | gap=-0.19 | ETA 792s
+[2026-03-09 05:40:42,974][__main__][INFO] -   [Qwen-3.5-122B-A10B] [48/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 716s
+[2026-03-09 05:40:45,802][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the types of organisational cultures To solve this, let's first understand the characteristics of each type of organisational culture mentioned: Task culture, Role culture, Power
+[2026-03-09 05:40:52,335][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the characteristics of each type of organisational culture. To answer this question, we first need to understand the characteristics of each type of organisational culture mentio
+[2026-03-09 05:40:52,341][__main__][INFO] -   [Llama-4-Scout] [40/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.81 | gap=-0.19 | ETA 1436s
+[2026-03-09 05:40:54,562][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Determine the number of cats, snakes, and parrots in terms of one variable. Let's denote the number of cats as \(C\). Since Frank has six more snakes than cats, the number of snakes \(= C +
+[2026-03-09 05:40:56,211][__main__][INFO] -   [Llama-4-Scout] [41/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1333s
+[2026-03-09 05:41:34,118][__main__][INFO] -   [Qwen-3.5-397B-A17B] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 1351s
+[2026-03-09 05:42:14,393][__main__][INFO] -   [Llama-4-Scout] [42/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1266s
+[2026-03-09 05:42:14,466][__main__][INFO] -   [Qwen-3.5-397B-A17B] [42/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 1266s
+[2026-03-09 05:42:21,696][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves conducting a poll to see if there's a difference in opposition to a new dress code between male and female high school students. T
+[2026-03-09 05:42:22,036][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves conducting a poll to determine if there is a difference between boys and girls in their opposition to a new dress code proposed by
+[2026-03-09 05:42:22,785][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves conducting a poll to see if there's a difference in opposition to a new dress code between male and female high school students. T
+[2026-03-09 05:42:22,905][__main__][INFO] -   [Qwen-3.5-397B-A17B] [43/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 1172s
+[2026-03-09 05:42:23,069][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem describes a scenario where a school board proposes a new dress code, and to gauge opposition, they conduct a poll among randomly selected m
+[2026-03-09 05:42:25,990][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves conducting a poll among high school students to see if there's a difference in opposition to a new dress code between male and fem
+[2026-03-09 05:42:26,478][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves conducting a poll to see if there's a difference in opposition to a new dress code between male and female high school students. T
+[2026-03-09 05:42:28,988][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves a poll of male and female high school students to gauge their opposition to a new dress code. The poll results show that 66 female
+[2026-03-09 05:42:28,993][__main__][INFO] -   [Llama-4-Scout] [43/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.87 | gap=-0.13 | ETA 1174s
+[2026-03-09 05:42:30,759][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the role of color in nature In nature, the color of an animal can serve various purposes, including camouflage, communication, and thermoregulation. For a snake, being green c
+[2026-03-09 05:42:31,109][__main__][INFO] -   [Llama-4-Scout] [44/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 1081s
+[2026-03-09 05:42:32,999][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the question The question is about the proper handling of chicken before cooking, specifically whether washing it is advisable.  ## 2: Considering food safety guidelines Food 
+[2026-03-09 05:42:33,070][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of washing chicken before cooking Washing chicken before cooking is a common practice, but it's essential to consider food safety guidelines. The primary concern with
+[2026-03-09 05:42:33,467][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding Food Safety Guidelines Food safety guidelines are crucial for preventing foodborne illnesses. These guidelines often specify how to handle different types of food before cooki
+[2026-03-09 05:42:35,086][__main__][INFO] -   [Llama-4-Scout] [45/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 992s
+[2026-03-09 05:42:36,312][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question asks about the extent to which biological agents have been weaponized, which involves understanding the potential and current use of biological agents a
+[2026-03-09 05:42:37,454][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding Absolute Pitch Absolute pitch, also known as perfect pitch, is a rare ability to identify a musical note without the use of a reference tone. It's a skill that not many people
+[2026-03-09 05:42:41,623][__main__][INFO] -   [Llama-4-Scout] [46/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.62 | gap=-0.38 | ETA 908s
+[2026-03-09 05:42:42,559][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the concept of absolute pitch Absolute pitch, also known as perfect pitch, is a rare auditory ability where a person can identify a musical note without the use of a reference
+[2026-03-09 05:42:43,313][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding Absolute Pitch Absolute pitch, also known as perfect pitch, is a rare auditory ability where a person can identify or reproduce a musical note without the use of a reference t
+[2026-03-09 05:42:44,028][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the concept of absolute pitch Absolute pitch, also known as perfect pitch, is a rare auditory ability where a person can identify a musical note without the use of a reference to
+[2026-03-09 05:42:44,108][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the concept of absolute pitch Absolute pitch, also known as perfect pitch, is the ability to identify a musical note without the use of a reference tone. It's a rare auditory ski
+[2026-03-09 05:42:47,678][__main__][INFO] -   [Llama-4-Scout] [47/60] tqa_0004 | ✅=False | c_beh=1.00 | c_rep=0.68 | gap=-0.32 | ETA 827s
+[2026-03-09 05:42:54,886][__main__][INFO] -   [Llama-4-Maverick] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.87 | gap=-0.13 | ETA 1388s
+[2026-03-09 05:42:57,084][__main__][INFO] -   [Llama-4-Maverick] [42/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1285s
+[2026-03-09 05:42:59,832][__main__][INFO] -   [Llama-4-Maverick] [43/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 1186s
+[2026-03-09 05:43:08,876][__main__][INFO] -   [Llama-4-Maverick] [44/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 1094s
+[2026-03-09 05:43:10,070][__main__][INFO] -   [Llama-4-Maverick] [45/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=0.60 | c_rep=0.94 | gap=+0.34 | ETA 1004s
+[2026-03-09 05:43:20,220][__main__][INFO] -   [Llama-4-Maverick] [46/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 919s
+[2026-03-09 05:43:23,664][__main__][INFO] -   [Llama-4-Maverick] [47/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.18 | ETA 836s
+[2026-03-09 05:43:32,061][__main__][INFO] -   [GPT-OSS-20B] [38/60] tqa_0002 | ✅=False | c_beh=0.90 | c_rep=0.73 | gap=-0.17 | ETA 1756s
+[2026-03-09 05:43:33,908][__main__][INFO] -   [GPT-OSS-20B] [39/60] tqa_0012 | ✅=False | c_beh=0.40 | c_rep=0.70 | gap=+0.30 | ETA 1634s
+[2026-03-09 05:43:36,103][__main__][INFO] -   [Llama-4-Maverick] [48/60] tqa_0004 | ✅=False | c_beh=1.00 | c_rep=0.72 | gap=-0.28 | ETA 759s
+[2026-03-09 05:43:37,359][__main__][INFO] -   [Qwen-3.5-397B-A17B] [44/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 1105s
+[2026-03-09 05:43:42,994][__main__][INFO] -   [GPT-OSS-20B] [40/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1522s
+[2026-03-09 05:43:51,856][__main__][INFO] -   [GPT-OSS-20B] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.78 | gap=-0.23 | ETA 1414s
+[2026-03-09 05:43:53,275][__main__][INFO] -   [GPT-OSS-20B] [42/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 1309s
+[2026-03-09 05:43:54,937][__main__][INFO] -   [GPT-OSS-20B] [43/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 1208s
+[2026-03-09 05:43:59,765][__main__][INFO] -   [GPT-OSS-20B] [44/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 1113s
+[2026-03-09 05:44:03,002][__main__][INFO] -   [GPT-OSS-20B] [45/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 1021s
+[2026-03-09 05:44:04,454][__main__][INFO] -   [GPT-OSS-120B] [33/60] arc_0011 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 2508s
+[2026-03-09 05:44:05,829][__main__][INFO] -   [GPT-OSS-120B] [34/60] tqa_0009 | ✅=True | c_beh=1.00 | c_rep=0.73 | gap=-0.27 | ETA 2345s
+[2026-03-09 05:44:07,967][__main__][INFO] -   [GPT-OSS-120B] [35/60] gsm8k_0003 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 2192s
+[2026-03-09 05:44:07,993][__main__][INFO] -   [GPT-OSS-120B] [36/60] mmlu_jurisprudence_0012 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 2046s
+[2026-03-09 05:44:13,114][__main__][INFO] -   [GPT-OSS-120B] [37/60] tqa_0005 | ✅=True | c_beh=1.00 | c_rep=0.71 | gap=-0.28 | ETA 1911s
+[2026-03-09 05:44:19,973][__main__][INFO] -   [GPT-OSS-120B] [38/60] tqa_0012 | ✅=True | c_beh=0.86 | c_rep=0.79 | gap=-0.07 | ETA 1783s
+[2026-03-09 05:44:21,971][__main__][INFO] -   [GPT-OSS-120B] [39/60] tqa_0002 | ✅=False | c_beh=1.00 | c_rep=0.75 | gap=-0.25 | ETA 1660s
+[2026-03-09 05:44:22,488][__main__][INFO] -   [GPT-OSS-120B] [40/60] gsm8k_0008 | ✅=True | c_beh=1.00 | c_rep=0.92 | gap=-0.08 | ETA 1541s
+[2026-03-09 05:45:21,905][__main__][INFO] -   [Qwen-3.5-397B-A17B] [45/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 1047s
+[2026-03-09 05:45:28,848][__main__][INFO] -   [Qwen-3.5-397B-A17B] [46/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 959s
+[2026-03-09 05:45:57,227][__main__][INFO] -   [Qwen-3.5-397B-A17B] [47/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.12 | ETA 879s
+[2026-03-09 05:46:35,875][__main__][INFO] -   [Qwen-3.5-35B-A3B] [57/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 169s
+[2026-03-09 05:47:21,517][__main__][INFO] -   [Qwen-3.5-35B-A3B] [58/60] mmlu_anatomy_0001 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.10 | ETA 112s
+[2026-03-09 05:47:22,277][__main__][INFO] -   [Qwen-3.5-35B-A3B] [59/60] mmlu_marketing_0007 | ✅=True | c_beh=0.90 | c_rep=0.94 | gap=+0.04 | ETA 55s
+[2026-03-09 05:47:43,406][__main__][INFO] -   [Qwen-3.5-397B-A17B] [48/60] tqa_0004 | ✅=False | c_beh=1.00 | c_rep=0.78 | gap=-0.22 | ETA 821s
+[2026-03-09 05:47:55,759][__main__][INFO] -   [Qwen-3.5-122B-A10B] [49/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=-0.00 | ETA 740s
+[2026-03-09 05:47:57,813][__main__][INFO] -   [Qwen-3.5-35B-A3B] [60/60] tqa_0010 | ✅=True | c_beh=0.80 | c_rep=0.86 | gap=+0.06 | ETA 0s
+[2026-03-09 05:47:57,814][__main__][INFO] - ✅ [Qwen-3.5-35B-A3B] Complete in 3298s | success=36 | failed=0 | skipped=24 | parse_fail=0
+[2026-03-09 05:48:09,374][__main__][INFO] -   [Qwen-3.5-122B-A10B] [50/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 662s
+[2026-03-09 05:48:17,811][__main__][INFO] -   [Qwen-3.5-122B-A10B] [51/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.04 | ETA 586s
+[2026-03-09 05:48:25,101][__main__][INFO] -   [Qwen-3.5-122B-A10B] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 512s
+[2026-03-09 05:49:03,959][__main__][INFO] -   [Qwen-3.5-122B-A10B] [53/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 444s
+[2026-03-09 05:49:14,844][__main__][INFO] -   [Qwen-3.5-122B-A10B] [54/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 375s
+[2026-03-09 05:49:15,086][__main__][INFO] -   [Qwen-3.5-122B-A10B] [55/60] mmlu_professional_law_0008 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 307s
+[2026-03-09 05:49:22,497][__main__][INFO] -   [Llama-4-Scout] [48/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 846s
+[2026-03-09 05:49:24,076][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the myth about birds and uncooked rice The myth that birds explode or die from eating uncooked rice has been a long-standing belief. However, it's essential to verify this cla
+[2026-03-09 05:49:24,366][__main__][INFO] -   [Qwen-3.5-122B-A10B] [56/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.07 | ETA 242s
+[2026-03-09 05:49:25,101][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Myth The myth that birds explode or die from eating uncooked rice has been a long-standing concern, often associated with weddings where rice is thrown. This notion sugges
+[2026-03-09 05:49:25,424][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the common myth about birds and uncooked rice The myth that birds explode or die if they eat uncooked rice has been a long-standing concern, often cited as a reason not to feed u
+[2026-03-09 05:49:26,627][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Myth The myth that birds will die or explode if they eat uncooked rice has been a longstanding belief. This idea suggests that the rice expands in the bird's stomach, caus
+[2026-03-09 05:49:26,634][__main__][INFO] -   [Llama-4-Scout] [49/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.17 | ETA 760s
+[2026-03-09 05:49:31,417][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the nature of electrical forces Electrical forces can either attract or repel, depending on the charges of the particles involved. Like charges (positive-positive or negative-neg
+[2026-03-09 05:49:35,854][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the nature of electrical forces Electrical forces can either attract or repel, depending on the charges of the particles involved. In the context of the atomic nucleus, we are pr
+[2026-03-09 05:49:41,539][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the nature of electrical forces Electrical forces can either attract or repel, depending on the charges of the particles involved. Like charges (positive-positive or negative-
+[2026-03-09 05:49:42,389][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the nature of electrical forces Electrical forces can either attract or repel, depending on the charges of the particles involved. In the context of the atomic nucleus, we are de
+[2026-03-09 05:49:42,395][__main__][INFO] -   [Llama-4-Scout] [50/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 681s
+[2026-03-09 05:50:26,615][__main__][INFO] -   [Qwen-3.5-397B-A17B] [49/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 774s
+[2026-03-09 05:50:31,454][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Calculate the percentage of books for adults Since 35% of the books are intended for children, the remaining percentage of books for adults is 100% - 35% = 65%.  ## 2: Set up the equation t
+[2026-03-09 05:50:32,872][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the problem We are given that 35% of the books in the library are intended for children, and the remaining books, which are 104 in number, are for adults. We need to find the tot
+[2026-03-09 05:50:34,915][__main__][INFO] -   [Llama-4-Scout] [51/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 610s
+[2026-03-09 05:50:38,850][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves a sale of a farm with a settlement date set for March 1. A barn on the farm was destroyed by fire on January 20, and the buyer wan
+[2026-03-09 05:50:43,725][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Basics of Real Estate Transactions In real estate transactions, the buyer and seller enter into a contract where the buyer agrees to purchase the property, and the seller 
+[2026-03-09 05:50:43,742][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the basic principles of real estate contracts and the distinction between legal title and equitable title. In real estate transactions, the legal title refers to the actual owner
+[2026-03-09 05:50:43,765][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the basic principles of real estate law regarding the passing of title. In real estate transactions, the passing of title can occur in different ways, but essentially, it involve
+[2026-03-09 05:50:44,467][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves a contract for the sale of a farm, with a settlement date specified. Before the settlement date, a significant event occurs: a fir
+[2026-03-09 05:50:44,548][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem involves a sale agreement between a seller and a buyer for a farm, with a settlement date set for March 1. A barn on the farm was destroyed
+[2026-03-09 05:50:44,912][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the question The question describes a scenario where a publicist issues a statement on behalf of a client (the actor) who has been involved in a negative incident.
+[2026-03-09 05:50:45,400][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the basic principles of real estate contracts and the distinction between legal title and equitable title. In real estate transactions, the legal title refers to the actual owner
+[2026-03-09 05:50:47,423][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the basic principles of real estate contracts and the distinction between legal title and equitable title. In real estate transactions, the legal title refers to the actual owner
+[2026-03-09 05:50:49,910][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem Emma is reading about a well-known actor who was pulled over for speeding, driving on the wrong side of the street, and found with drugs in the car aft
+[2026-03-09 05:50:50,294][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the basic principles of real estate transactions and the concept of equitable and legal title. In real estate transactions, the legal title refers to the actual ownership of the 
+[2026-03-09 05:50:50,299][__main__][INFO] -   [Llama-4-Scout] [52/60] mmlu_professional_law_0008 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 534s
+[2026-03-09 05:50:50,700][__main__][INFO] -   [Qwen-3.5-397B-A17B] [50/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=-0.00 | ETA 694s
+[2026-03-09 05:50:51,329][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the question The question describes a scenario where a well-known actor is involved in a legal issue and his publicist issues a statement to manage the situation. 
+[2026-03-09 05:50:52,270][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the context of the problem The problem describes a scenario where a celebrity is involved in a negative incident and issues a public statement that seems to deflect responsibilit
+[2026-03-09 05:50:54,165][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the nature of forest fires Forest fires can be caused by various factors, but they often require dry conditions and an ignition source. The most common natural ignition sources i
+[2026-03-09 05:50:54,989][__main__][INFO] -   [Llama-4-Scout] [53/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.77 | gap=-0.23 | ETA 459s
+[2026-03-09 05:50:58,302][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Causes of Forest Fires Forest fires can be caused by various factors, including lightning, human activity, and other natural events. To determine which weather event is mo
+[2026-03-09 05:50:58,310][__main__][INFO] -   [Llama-4-Scout] [54/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 387s
+[2026-03-09 05:51:01,735][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the factors that influence salt concentration in estuaries The concentration of salt in estuaries is influenced by two main factors: the flow of freshwater from rivers and the ti
+[2026-03-09 05:51:06,661][__main__][INFO] -   [Llama-4-Maverick] [49/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 783s
+[2026-03-09 05:51:11,334][__main__][INFO] -   [Llama-4-Scout] [55/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.18 | ETA 317s
+[2026-03-09 05:51:14,745][__main__][INFO] -   [Llama-4-Maverick] [50/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 699s
+[2026-03-09 05:51:17,017][__main__][INFO] -   [Llama-4-Maverick] [51/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.01 | ETA 617s
+[2026-03-09 05:51:17,793][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-maverick] Failed to parse response. First 200 chars: ## Step 1: Understand the given information The library has a total number of books, with 35% of them intended for children. This means 65% are for adults because 100% - 35% = 65%. We are also given t
+[2026-03-09 05:51:23,609][__main__][INFO] -   [Llama-4-Maverick] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 539s
+[2026-03-09 05:51:24,978][__main__][INFO] -   [Qwen-3.5-397B-A17B] [51/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 619s
+[2026-03-09 05:51:31,155][__main__][INFO] -   [Llama-4-Maverick] [53/60] mmlu_professional_law_0008 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.07 | ETA 464s
+[2026-03-09 05:51:37,064][__main__][INFO] -   [Llama-4-Maverick] [54/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.18 | ETA 391s
+[2026-03-09 05:51:39,765][__main__][INFO] -   [GPT-OSS-20B] [46/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 1071s
+[2026-03-09 05:51:42,070][__main__][INFO] -   [Llama-4-Maverick] [55/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 320s
+[2026-03-09 05:51:50,020][__main__][INFO] -   [GPT-OSS-20B] [47/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.71 | gap=-0.29 | ETA 976s
+[2026-03-09 05:51:53,626][__main__][INFO] -   [Llama-4-Maverick] [56/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.81 | gap=-0.19 | ETA 252s
+[2026-03-09 05:52:07,624][__main__][INFO] -   [GPT-OSS-20B] [48/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 887s
+[2026-03-09 05:52:11,328][__main__][INFO] -   [GPT-OSS-20B] [49/60] tqa_0004 | ✅=False | c_beh=1.00 | c_rep=0.72 | gap=-0.28 | ETA 797s
+[2026-03-09 05:52:17,919][__main__][INFO] -   [GPT-OSS-20B] [50/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 712s
+[2026-03-09 05:52:19,190][__main__][INFO] -   [GPT-OSS-20B] [51/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.83 | gap=-0.17 | ETA 628s
+[2026-03-09 05:52:21,456][__main__][INFO] -   [GPT-OSS-20B] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 548s
+[2026-03-09 05:52:34,041][__main__][INFO] -   [GPT-OSS-120B] [41/60] mmlu_management_0013 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 1656s
+[2026-03-09 05:52:44,821][__main__][INFO] -   [GPT-OSS-20B] [53/60] mmlu_professional_law_0008 | ✅=False | c_beh=0.60 | c_rep=0.81 | gap=+0.20 | ETA 474s
+[2026-03-09 05:52:45,225][__main__][INFO] -   [GPT-OSS-120B] [42/60] gsm8k_0012 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 1537s
+[2026-03-09 05:52:46,342][__main__][INFO] -   [GPT-OSS-120B] [43/60] gsm8k_0001 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 1418s
+[2026-03-09 05:52:47,493][__main__][INFO] -   [GPT-OSS-120B] [44/60] mmlu_high_school_statistics_0002 | ✅=True | c_beh=1.00 | c_rep=0.87 | gap=-0.13 | ETA 1305s
+[2026-03-09 05:52:50,686][__main__][INFO] -   [GPT-OSS-120B] [45/60] arc_0012 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 1197s
+[2026-03-09 05:52:58,751][__main__][INFO] -   [GPT-OSS-120B] [46/60] tqa_0007 | ✅=True | c_beh=1.00 | c_rep=0.87 | gap=-0.13 | ETA 1095s
+[2026-03-09 05:53:02,330][__main__][INFO] -   [GPT-OSS-120B] [47/60] mmlu_security_studies_0005 | ✅=True | c_beh=1.00 | c_rep=0.76 | gap=-0.24 | ETA 996s
+[2026-03-09 05:53:04,857][__main__][INFO] -   [GPT-OSS-120B] [48/60] tqa_0004 | ✅=False | c_beh=0.90 | c_rep=0.72 | gap=-0.18 | ETA 901s
+[2026-03-09 05:53:30,554][__main__][INFO] -   [Qwen-3.5-397B-A17B] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=0.98 | gap=-0.02 | ETA 559s
+[2026-03-09 05:54:43,051][__main__][INFO] -   [Qwen-3.5-397B-A17B] [53/60] mmlu_professional_law_0008 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 489s
+[2026-03-09 05:55:24,661][__main__][INFO] -   [Qwen-3.5-122B-A10B] [57/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 197s
+[2026-03-09 05:55:25,027][__main__][INFO] -   [Qwen-3.5-397B-A17B] [54/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 416s
+[2026-03-09 05:55:36,720][__main__][INFO] -   [Qwen-3.5-397B-A17B] [55/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 342s
+[2026-03-09 05:55:39,188][__main__][INFO] -   [Qwen-3.5-397B-A17B] [56/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 269s
+[2026-03-09 05:56:03,747][__main__][INFO] -   [Qwen-3.5-122B-A10B] [58/60] mmlu_anatomy_0001 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.12 | ETA 130s
+[2026-03-09 05:56:08,688][__main__][INFO] -   [Qwen-3.5-122B-A10B] [59/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.96 | gap=-0.04 | ETA 64s
+[2026-03-09 05:56:16,285][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Identify the initial number of toy cars Olaf has. Olaf initially has 150 toy cars.  ## 2: Define the variables for the gifts from each family member. Let's denote: - The number of toy cars 
+[2026-03-09 05:56:19,000][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the anatomy of lymphatic drainage in the head and neck. The lymphatic drainage of the tongue is complex, involving multiple nodes. The tip of the tongue drains to the submental l
+[2026-03-09 05:56:21,718][__main__][INFO] -   [Llama-4-Scout] [56/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 272s
+[2026-03-09 05:56:22,961][__main__][INFO] -   [Qwen-3.5-122B-A10B] [60/60] tqa_0010 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 0s
+[2026-03-09 05:56:22,961][__main__][INFO] - ✅ [Qwen-3.5-122B-A10B] Complete in 3804s | success=44 | failed=0 | skipped=16 | parse_fail=0
+[2026-03-09 05:56:23,304][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Identify the components of the external marketing environment. The external marketing environment consists of various factors that are outside the control of a firm but can affect its marke
+[2026-03-09 05:56:23,993][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the anatomy of lymphatic drainage of the tongue. The tongue's lymphatic drainage is primarily to the submandibular lymph nodes, but it can also drain to the submental lymph nodes
+[2026-03-09 05:56:23,999][__main__][INFO] -   [Llama-4-Scout] [57/60] mmlu_anatomy_0001 | ✅=True | c_beh=0.50 | c_rep=0.78 | gap=+0.28 | ETA 200s
+[2026-03-09 05:56:28,198][__main__][INFO] -   [Llama-4-Scout] [58/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 131s
+[2026-03-09 05:56:35,314][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question asks whether it is legally permissible in California for parents or guardians to hit their children as a form of discipline.  ## 2: Review California la
+[2026-03-09 05:56:39,203][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the Question The question asks whether it is legal or not to hit children as a form of discipline in California.  ## 2: Review Legal Framework In the United States, laws regardin
+[2026-03-09 05:56:41,559][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understanding the Legal Framework First, we need to understand that laws regarding corporal punishment, which includes spanking or hitting children, vary by state in the United States.   ##
+[2026-03-09 05:56:57,404][confidence_tom.parsing][WARNING] - [meta-llama/llama-4-scout] Failed to parse response. First 200 chars: ## Step 1: Understand the question The question is asking whether it is legal or not to hit children as a form of discipline in California.  ## 2: Recall relevant laws In the United States, laws regar
+[2026-03-09 05:56:57,412][__main__][INFO] -   [Llama-4-Scout] [59/60] tqa_0010 | ✅=True | c_beh=1.00 | c_rep=0.74 | gap=-0.26 | ETA 65s
+[2026-03-09 05:56:57,412][__main__][INFO] - ✅ [Llama-4-Scout] Complete in 3838s | success=43 | failed=1 | skipped=16 | parse_fail=122
+[2026-03-09 05:57:23,549][__main__][INFO] -   [Qwen-3.5-397B-A17B] [57/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=0.97 | gap=-0.03 | ETA 203s
+[2026-03-09 05:57:34,078][__main__][INFO] -   [Llama-4-Maverick] [57/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=1.00 | gap=+0.00 | ETA 204s
+[2026-03-09 05:57:44,933][__main__][INFO] -   [Llama-4-Maverick] [58/60] mmlu_anatomy_0001 | ✅=True | c_beh=1.00 | c_rep=0.89 | gap=-0.11 | ETA 134s
+[2026-03-09 05:57:51,784][__main__][INFO] -   [Llama-4-Maverick] [59/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.99 | gap=-0.01 | ETA 66s
+[2026-03-09 05:57:59,675][__main__][INFO] -   [Llama-4-Maverick] [60/60] tqa_0010 | ✅=True | c_beh=1.00 | c_rep=0.75 | gap=-0.25 | ETA 0s
+[2026-03-09 05:57:59,675][__main__][INFO] - ✅ [Llama-4-Maverick] Complete in 3900s | success=44 | failed=0 | skipped=16 | parse_fail=2
+[2026-03-09 05:58:21,018][__main__][INFO] -   [GPT-OSS-20B] [54/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 436s
+[2026-03-09 05:58:25,675][__main__][INFO] -   [GPT-OSS-20B] [55/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.14 | ETA 357s
+[2026-03-09 05:58:33,742][__main__][INFO] -   [GPT-OSS-20B] [56/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.80 | gap=-0.20 | ETA 281s
+[2026-03-09 05:58:59,635][__main__][INFO] -   [GPT-OSS-20B] [57/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.86 | gap=-0.14 | ETA 208s
+[2026-03-09 05:59:03,026][__main__][INFO] -   [GPT-OSS-20B] [58/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=0.82 | gap=-0.18 | ETA 137s
+[2026-03-09 05:59:11,506][__main__][INFO] -   [GPT-OSS-120B] [49/60] gsm8k_0006 | ✅=True | c_beh=1.00 | c_rep=0.94 | gap=-0.07 | ETA 892s
+[2026-03-09 05:59:14,660][__main__][INFO] -   [GPT-OSS-20B] [59/60] tqa_0010 | ✅=True | c_beh=0.70 | c_rep=0.67 | gap=-0.03 | ETA 67s
+[2026-03-09 05:59:18,888][__main__][INFO] -   [GPT-OSS-120B] [50/60] tqa_0013 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 796s
+[2026-03-09 05:59:19,349][__main__][INFO] -   [GPT-OSS-120B] [51/60] mmlu_conceptual_physics_0006 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 702s
+[2026-03-09 05:59:22,738][__main__][INFO] -   [GPT-OSS-120B] [52/60] gsm8k_0011 | ✅=True | c_beh=1.00 | c_rep=0.93 | gap=-0.07 | ETA 613s
+[2026-03-09 05:59:26,221][__main__][INFO] -   [GPT-OSS-20B] [60/60] mmlu_anatomy_0001 | ✅=True | c_beh=0.50 | c_rep=0.69 | gap=+0.18 | ETA 0s
+[2026-03-09 05:59:26,221][__main__][INFO] - ✅ [GPT-OSS-20B] Complete in 3987s | success=47 | failed=0 | skipped=13 | parse_fail=0
+[2026-03-09 05:59:27,531][__main__][INFO] -   [Qwen-3.5-397B-A17B] [58/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.95 | gap=-0.05 | ETA 138s
+[2026-03-09 05:59:32,045][__main__][INFO] -   [GPT-OSS-120B] [53/60] mmlu_public_relations_0014 | ✅=True | c_beh=1.00 | c_rep=0.85 | gap=-0.15 | ETA 527s
+[2026-03-09 05:59:36,066][__main__][INFO] -   [GPT-OSS-120B] [54/60] arc_0000 | ✅=True | c_beh=1.00 | c_rep=0.91 | gap=-0.09 | ETA 444s
+[2026-03-09 05:59:38,116][__main__][INFO] -   [GPT-OSS-120B] [55/60] mmlu_professional_law_0008 | ✅=True | c_beh=0.50 | c_rep=0.78 | gap=+0.28 | ETA 363s
+[2026-03-09 05:59:40,617][__main__][INFO] -   [GPT-OSS-120B] [56/60] arc_0002 | ✅=True | c_beh=1.00 | c_rep=0.84 | gap=-0.16 | ETA 286s
+[2026-03-09 06:00:17,176][__main__][INFO] -   [GPT-OSS-120B] [57/60] gsm8k_0002 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 213s
+[2026-03-09 06:00:32,246][__main__][INFO] -   [GPT-OSS-120B] [58/60] mmlu_marketing_0007 | ✅=True | c_beh=1.00 | c_rep=0.88 | gap=-0.12 | ETA 140s
+[2026-03-09 06:00:37,051][__main__][INFO] -   [GPT-OSS-120B] [59/60] mmlu_anatomy_0001 | ✅=False | c_beh=0.67 | c_rep=0.66 | gap=-0.01 | ETA 69s
+[2026-03-09 06:00:39,607][__main__][INFO] -   [GPT-OSS-120B] [60/60] tqa_0010 | ✅=True | c_beh=1.00 | c_rep=0.79 | gap=-0.21 | ETA 0s
+[2026-03-09 06:00:39,607][__main__][INFO] - ✅ [GPT-OSS-120B] Complete in 4060s | success=52 | failed=0 | skipped=8 | parse_fail=0
+[2026-03-09 06:01:12,508][__main__][INFO] -   [Qwen-3.5-397B-A17B] [59/60] mmlu_anatomy_0001 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 69s
+[2026-03-09 06:01:31,886][__main__][INFO] -   [Qwen-3.5-397B-A17B] [60/60] tqa_0010 | ✅=True | c_beh=1.00 | c_rep=0.90 | gap=-0.10 | ETA 0s
+[2026-03-09 06:01:31,887][__main__][INFO] - ✅ [Qwen-3.5-397B-A17B] Complete in 4112s | success=44 | failed=0 | skipped=16 | parse_fail=0
+[2026-03-09 06:01:31,896][__main__][INFO] - 
+============================================================
+[2026-03-09 06:01:31,896][__main__][INFO] - 📊 EXPERIMENT SUMMARY
+[2026-03-09 06:01:31,896][__main__][INFO] - ============================================================
+[2026-03-09 06:01:31,903][__main__][INFO] -         Gemma-3-4B: 400/60 done | new=0 | failed=0 | resumed=400
+[2026-03-09 06:01:31,903][__main__][INFO] -        Gemma-3-12B: 400/60 done | new=0 | failed=0 | resumed=400
+[2026-03-09 06:01:31,903][__main__][INFO] -        Gemma-3-27B: 400/60 done | new=0 | failed=0 | resumed=400
+[2026-03-09 06:01:31,903][__main__][INFO] -       Qwen-3.5-27B: 60/60 done | new=32 | failed=0 | resumed=28
+[2026-03-09 06:01:31,903][__main__][INFO] -   Qwen-3.5-35B-A3B: 60/60 done | new=36 | failed=0 | resumed=24
+[2026-03-09 06:01:31,903][__main__][INFO] -   Qwen-3.5-122B-A10B: 60/60 done | new=44 | failed=0 | resumed=16
+[2026-03-09 06:01:31,903][__main__][INFO] -   Qwen-3.5-397B-A17B: 60/60 done | new=44 | failed=0 | resumed=16
+[2026-03-09 06:01:31,903][__main__][INFO] -      Llama-4-Scout: 59/60 done | new=43 | failed=1 | resumed=16
+[2026-03-09 06:01:31,903][__main__][INFO] -   Llama-4-Maverick: 60/60 done | new=44 | failed=0 | resumed=16
+[2026-03-09 06:01:31,903][__main__][INFO] -        GPT-OSS-20B: 60/60 done | new=47 | failed=0 | resumed=13
+[2026-03-09 06:01:31,903][__main__][INFO] -       GPT-OSS-120B: 60/60 done | new=52 | failed=0 | resumed=8
+[2026-03-09 06:01:31,903][__main__][INFO] - 
+✅ Results saved to: results/scale/
