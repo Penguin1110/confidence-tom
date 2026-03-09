@@ -130,11 +130,13 @@ def _try_json_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
     json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
     text = json_match.group(1) if json_match else raw
 
-    # Also try finding raw JSON object
+    # Also try finding raw JSON object if no code block
     if not json_match:
-        json_match = re.search(r"\{[^{}]*\}", raw, re.DOTALL)
-        if json_match:
-            text = json_match.group(0)
+        start_idx = raw.find("{")
+        end_idx = raw.rfind("}")
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            text = raw[start_idx : end_idx + 1]
+            json_match = True
 
     try:
         data = json.loads(text)

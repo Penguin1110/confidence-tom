@@ -31,8 +31,33 @@ plt.rcParams.update(
     }
 )
 
-SUBJECT_ORDER = ["Gemma-3-4B", "Gemma-3-12B", "Gemma-3-27B"]
-COLORS = ["#f97583", "#79c0ff", "#56d364"]
+SUBJECT_ORDER = [
+    "Gemma-3-4B",
+    "Gemma-3-12B",
+    "Gemma-3-27B",
+    "Qwen-3.5-27B",
+    "Qwen-3.5-35B-A3B",
+    "Qwen-3.5-122B-A10B",
+    "Qwen-3.5-397B-A17B",
+    "Llama-4-Scout",
+    "Llama-4-Maverick",
+    "GPT-OSS-20B",
+    "GPT-OSS-120B",
+]
+# A cohesive color palette for 11 elements
+COLORS = [
+    "#f97583",
+    "#f97583",
+    "#f97583",  # Gemma
+    "#79c0ff",
+    "#79c0ff",
+    "#79c0ff",
+    "#79c0ff",  # Qwen
+    "#56d364",
+    "#56d364",  # Llama
+    "#d2a8ff",
+    "#d2a8ff",  # GPT
+]
 
 
 def load_observer_results(data_dir: Path) -> dict[str, dict[str, list[dict]]]:

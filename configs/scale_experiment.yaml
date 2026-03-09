@@ -20,11 +20,35 @@ scale_models:
   - id: "google/gemma-3-27b-it"
     label: "Gemma-3-27B"
     scale: "large"
+  - id: "qwen/qwen3.5-27b"
+    label: "Qwen-3.5-27B"
+    scale: "dense"
+  - id: "qwen/qwen3.5-35b-a3b"
+    label: "Qwen-3.5-35B-A3B"
+    scale: "moe"
+  - id: "qwen/qwen3.5-122b-a10b"
+    label: "Qwen-3.5-122B-A10B"
+    scale: "moe"
+  - id: "qwen/qwen3.5-397b-a17b"
+    label: "Qwen-3.5-397B-A17B"
+    scale: "moe"
+  - id: "meta-llama/llama-4-scout"
+    label: "Llama-4-Scout"
+    scale: "base"
+  - id: "meta-llama/llama-4-maverick"
+    label: "Llama-4-Maverick"
+    scale: "base"
+  - id: "openai/gpt-oss-20b"
+    label: "GPT-OSS-20B"
+    scale: "base"
+  - id: "openai/gpt-oss-120b"
+    label: "GPT-OSS-120B"
+    scale: "base"
 
 # --- Generator Settings ---
 generator:
   temperature: 1.0      # Increased for K-sample diversity to avoid C_beh saturation
-  max_tokens: 2048       # MC answers are shorter than free-form
+  max_tokens: 8192       # MC answers are shorter than free-form
   k_samples: 10          # Behavioral confidence via repeated sampling
 
 # --- Dataset Settings ---

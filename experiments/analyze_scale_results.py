@@ -47,8 +47,34 @@ plt.rcParams.update(
     }
 )
 
-SCALE_ORDER = ["Gemma-3-4B", "Gemma-3-12B", "Gemma-3-27B"]
-SCALE_COLORS = {"Gemma-3-4B": "#f97583", "Gemma-3-12B": "#79c0ff", "Gemma-3-27B": "#56d364"}
+SCALE_ORDER = [
+    "Gemma-3-4B",
+    "Gemma-3-12B",
+    "Gemma-3-27B",
+    "Qwen-3.5-27B",
+    "Qwen-3.5-35B-A3B",
+    "Qwen-3.5-122B-A10B",
+    "Qwen-3.5-397B-A17B",
+    "Llama-4-Scout",
+    "Llama-4-Maverick",
+    "GPT-OSS-20B",
+    "GPT-OSS-120B",
+]
+
+SCALE_COLORS = {
+    "Gemma-3-4B": "#f97583",
+    "Gemma-3-12B": "#79c0ff",
+    "Gemma-3-27B": "#56d364",
+    "Qwen-3.5-27B": "#d2a8ff",
+    "Qwen-3.5-35B-A3B": "#d2a8ff",
+    "Qwen-3.5-122B-A10B": "#d2a8ff",
+    "Qwen-3.5-397B-A17B": "#d2a8ff",
+    "Llama-4-Scout": "#ffa657",
+    "Llama-4-Maverick": "#ffa657",
+    "GPT-OSS-20B": "#ff7b72",
+    "GPT-OSS-120B": "#ff7b72",
+}
+
 CATEGORY_COLORS = {
     "math": "#ff7b72",
     "science": "#79c0ff",
@@ -60,8 +86,11 @@ CATEGORY_COLORS = {
 def load_all_results(results_dir: Path) -> pd.DataFrame:
     """Load results from all scale model JSON files into a single DataFrame."""
     all_rows = []
-
-    for json_file in sorted(results_dir.glob("Gemma-3-*.json")):
+    for json_file in sorted(results_dir.glob("*.json")):
+        if json_file.name.endswith(".tmp.json"):
+            continue
+        if json_file.name == "calibration_summary.json":
+            continue
         logger.info(f"Loading {json_file.name}...")
         with open(json_file, "r", encoding="utf-8") as f:
             data = json.load(f)
