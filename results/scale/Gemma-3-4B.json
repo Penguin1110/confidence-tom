@@ -1,136 +1,12 @@
 [
   {
-    "question_id": "gpqa_recuYEkVjdVUwA3c0_0028",
-    "question": "Consider this annihilation process\n\n$p+\\bar{p}\\rightarrow2A^{+}+2A^{-}$\n\nThe antiproton is slowly moving and $m_{A}c^{2}=300MeV$.\n\nWhat is the velocity of particle A?",
+    "question_id": "arc_0003",
+    "question": "A student sets up an experiment to learn which colors of light are refracted by a prism. Which method will the student most likely use to collect data?",
     "choices": [
-      "A) 0.91c",
-      "B) 0.96c",
-      "C) 0.77c",
-      "D) 0.86c"
-    ],
-    "correct_answer": "C",
-    "category": "science",
-    "source": "gpqa_diamond",
-    "external_difficulty": "phd_level",
-    "model_name": "google/gemma-3-4b-it",
-    "k_samples": 10,
-    "k_target": 10,
-    "majority_answer": "B",
-    "is_correct": false,
-    "c_beh": 0.7,
-    "c_rep": 0.75,
-    "gap": 0.05,
-    "primary_reasoning": "\": \"This is a relativistic beta decay problem. We can use the relativistic energy-momentum relation to find the velocity of particle A. The initial energy of the antiproton is approximately its rest energy plus its kinetic energy: $E_{\\bar{p}} = m_{\\bar{p}}c^2 + K_{\\bar{p}}$. The final energy of particle A is its rest energy: $E_A = m_A c^2$.  The mass of the proton is approximately $m_p \\approx 938 MeV/c^2$.  The kinetic energy of the antiproton is $K_{\\bar{p}} = E_{\\bar{p}} - m_{\\bar{p}}c^2$.  Since $m_p \\approx m_{\\bar{p}}$, we can approximate $E_{\\bar{p}} \\approx m_{\\bar{p}}c^2 + K_{\\bar{p}} \\approx m_p c^2 + K_{\\bar{p}}$.\n\nThe energy conservation equation is: $E_{\\bar{p}} = E_A + E_A + K_A$, where $E_A = m_A c^2$ and $K_A$ is the kinetic energy of A.  Therefore, $E_{\\bar{p}} = 2m_A c^2 + K_A$.\n\nWe are given $m_A c^2 = 300 MeV$.  We know $m_{\\bar{p}} c^2 \\approx 938 MeV$. Thus $E_{\\bar{p}} \\approx 938 MeV + K_{\\bar{p}}$.  Substituting into the energy conservation equation:\n\n$938 + K_{\\bar{p}} = 600 + K_A$\n$K_A = 338 + K_{\\bar{p}}$\n\nNow we can use the relativistic kinetic energy equation: $K_A = \\gamma_A mc^2 - m_A c^2$, where $\\gamma_A = \\frac{1}{\\sqrt{1 - v^2}}$, and $v$ is the velocity of A.  Substituting $m_A c^2 = 300$ and $K_A = 338 + K_{\\bar{p}}$, we get:\n\n$338 + K_{\\bar{p}} = \\frac{1}{\\sqrt{1 - v^2}} (300)c^2 - 300$\n$638 + K_{\\bar{p}} = \\frac{300}{\\sqrt{1 - v^2}} c^2$\n\nSince the antiproton is slowly moving, its kinetic energy is negligible compared to its rest mass energy.  So $K_{\\bar{p}} \\approx 0$.\n\n$638 = \\frac{300}{\\sqrt{1 - v^2}} c^2$\n$\\sqrt{1 - v^2} = \\frac{300}{638} c^2 \\approx 0.468 c^2$\n$1 - v^2 = (0.468)^2 c^4 = 0.219 c^4$\n$v^2 = 1 - 0.219 c^4 \\approx 0.781$\n$v \\approx \\sqrt{0.781} \\approx 0.883 c$\n\nThe closest",
-    "answer_distribution": {
-      "A": 1,
-      "B": 7,
-      "D": 1,
-      "C": 1
-    },
-    "sample_confidences": [
-      0.75,
-      0.75,
-      0.75,
-      0.65,
-      0.75,
-      0.85,
-      0.75,
-      0.75,
-      0.75,
-      0.75
-    ],
-    "parse_structured": 0,
-    "parse_fallback": 0
-  },
-  {
-    "question_id": "mmlu_abstract_algebra_0010",
-    "question": "Find the characteristic of the ring Z x Z.",
-    "choices": [
-      "A) 0",
-      "B) 3",
-      "C) 12",
-      "D) 30"
-    ],
-    "correct_answer": "A",
-    "category": "knowledge",
-    "source": "mmlu",
-    "external_difficulty": "abstract_algebra",
-    "model_name": "google/gemma-3-4b-it",
-    "k_samples": 10,
-    "k_target": 10,
-    "majority_answer": "B",
-    "is_correct": false,
-    "c_beh": 1.0,
-    "c_rep": 0.85,
-    "gap": -0.15,
-    "primary_reasoning": "The ring Z x Z is the direct product of the integers Z and Z. The characteristic of a ring is the smallest positive integer n such that n * 1 = 0. Since Z x Z contains nonzero elements, the characteristic must be greater than 1. The number of elements in Z x Z is infinite, so the characteristic cannot be 1 or 2. The characteristic of Z x Z is 3. To see this, consider the product of two elements (a, b) and (c, d) in Z x Z. Their product is (ac, bd). If the characteristic is 3, then 3 * (a, b) = (0, 0), which implies 3a = 0 and 3b = 0, so a = 0 and b = 0. However, the characteristic must be the smallest positive integer n such that n * x = 0 for all x in the ring, which is not the case for Z x Z. Instead, we are looking for the smallest integer 'n' such that n * (a, b) = (0, 0) for all a, b in Z. This is equivalent to finding the smallest 'n' such that n * a = 0 and n * b = 0 for all a, b. Since Z is a ring, this implies n = 0, which is not possible because the characteristic must be positive. The question is asking for the least common multiple of the characteristics of Z and Z, which is lcm(1, 1) = 1, which is not the characteristic. But the question is about the characteristic of the ring Z x Z. The property is that if x and y are elements of the ring, then the product xy = 0. Hence, the characteristic is 3.",
-    "answer_distribution": {
-      "B": 10
-    },
-    "sample_confidences": [
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85
-    ],
-    "parse_structured": 0,
-    "parse_fallback": 0
-  },
-  {
-    "question_id": "gpqa_recxTy0x7M6T9ikc0_0012",
-    "question": "α-β unsaturated carbonyls have a much more electrophilic carbon double bond. These double bonds act as a good Lewis acid and react with nucleophiles to produce enolate ions. In this case, when a nucleophile attacks the β position, it produces a resonance-stabilized intermediate. When a nucleophile attacking the β-carbon is enolate, such reaction is known as the Michael reaction.\nWhat are the reactants and major final products of the following Michael addition reactions?\ndimethyl malonate + methyl (E)-3-(p-tolyl)acrylate + (NaOEt, EtOH) -->(A)\n1-(cyclohex-1-en-1-yl)piperidine + (E)-but-2-enenitrile + (MeOH, H3O+) --> (B)\nC + but-3-en-2-one + (KOH, H2O) ---> 2-(3-oxobutyl)cyclohexane-1,3-dione",
-    "choices": [
-      "A) A = trimethyl 2-(p-tolyl)propane-1,1,3-tricarboxylate, B = 3-(2-oxocyclohexyl)butanenitrile, C = 2-hydroxycyclohexane-1,3-dione",
-      "B) A = trimethyl 3-(p-tolyl)propane-1,1,2-tricarboxylate, B = 3-(2-hydroxycyclohex-1-en-1-yl)butanenitrile, C = cyclohexane-1,3-dione",
-      "C) A = trimethyl 2-(p-tolyl)propane-1,1,3-tricarboxylate, B = 3-(2-oxocyclohexyl)butanenitrile, C = cyclohexane-1,3-dione",
-      "D) A = trimethyl 3-(p-tolyl)propane-1,1,2-tricarboxylate, B = 3-(2-hydroxycyclohex-1-en-1-yl)butanenitrile, C = 2-hydroxycyclohexane-1,3-dione"
-    ],
-    "correct_answer": "C",
-    "category": "science",
-    "source": "gpqa_diamond",
-    "external_difficulty": "phd_level",
-    "model_name": "google/gemma-3-4b-it",
-    "k_samples": 10,
-    "k_target": 10,
-    "majority_answer": "C",
-    "is_correct": true,
-    "c_beh": 0.9,
-    "c_rep": 0.83,
-    "gap": -0.07,
-    "primary_reasoning": "Let's analyze each reaction step by step. \n\nReaction A: dimethyl malonate + methyl (E)-3-(p-tolyl)acrylate + (NaOEt, EtOH) -->(A) This is a Michael addition. Dimethyl malonate is the Michael donor, methyl (E)-3-(p-tolyl)acrylate is the Michael acceptor. The base (NaOEt) deprotonates the α-carbon of dimethyl malonate, creating a nucleophile that attacks the β-carbon of the acrylate. The reaction forms a new carbon-carbon bond, and the resulting product is trimethyl 2-(p-tolyl)propane-1,1,3-tricarboxylate. \n\nReaction B: 1-(cyclohex-1-en-1-yl)piperidine + (E)-but-2-enenitrile + (MeOH, H3O+) --> (B) This reaction involves a Knoevenagel condensation followed by a Michael addition. The piperidine attacks the nitrile, followed by addition of but-2-enenitrile. The product is 3-(2-oxocyclohexyl)butanenitrile. \n\nReaction C: but-3-en-2-one + (KOH, H2O) ---> 2-(3-oxobutyl)cyclohexane-1,3-dione This is a base-catalyzed Michael addition. KOH deprotonates the α-carbon of but-3-en-2-one forming an enolate which attacks the carbonyl carbon of cyclohexane-1,3-dione. The final product is 2-(3-oxobutyl)cyclohexane-1,3-dione. \n\nTherefore, A = trimethyl 2-(p-tolyl)propane-1,1,3-tricarboxylate, B = 3-(2-oxocyclohexyl)butanenitrile, and C = cyclohexane-1,3-dione.",
-    "answer_distribution": {
-      "C": 9,
-      "A": 1
-    },
-    "sample_confidences": [
-      0.85,
-      0.85,
-      0.75,
-      0.85,
-      0.85,
-      0.75,
-      0.85,
-      0.85,
-      0.85,
-      0.85
-    ],
-    "parse_structured": 0,
-    "parse_fallback": 0
-  },
-  {
-    "question_id": "arc_0012",
-    "question": "Many grass snakes are green. The color of the snake most likely helps it to",
-    "choices": [
-      "A) climb tall trees.",
-      "B) fit into small spaces.",
-      "C) hide when threatened.",
-      "D) shed its skin."
+      "A) research",
+      "B) interviews",
+      "C) observation",
+      "D) measurement"
     ],
     "correct_answer": "C",
     "category": "science",
@@ -142,58 +18,18 @@
     "majority_answer": "C",
     "is_correct": true,
     "c_beh": 1.0,
-    "c_rep": 0.85,
-    "gap": -0.15,
-    "primary_reasoning": "Grass snakes are camouflaged to blend in with their environment. Green coloration provides excellent camouflage in grassy habitats. This helps them avoid predators by remaining hidden when threatened. Climbing trees, fitting into small spaces, and shedding skin are not directly aided by green coloration.",
+    "c_rep": 0.89,
+    "gap": -0.11,
+    "primary_reasoning": "The question asks about collecting data from an experiment. Observation is the process of directly watching and recording what happens during the experiment (the refraction of light by different colors). Research would involve reading about refraction, interviews would involve talking to someone about it, and measurement would be a component of the experiment but not the primary method of data collection.",
     "answer_distribution": {
       "C": 10
     },
     "sample_confidences": [
+      0.9,
       0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.85
-    ],
-    "parse_structured": 0,
-    "parse_fallback": 0
-  },
-  {
-    "question_id": "arc_0006",
-    "question": "Gravity on Earth is caused by",
-    "choices": [
-      "A) the mass of Earth.",
-      "B) the rotation of Earth.",
-      "C) the revolution of Earth.",
-      "D) weather patterns on Earth."
-    ],
-    "correct_answer": "A",
-    "category": "science",
-    "source": "arc_challenge",
-    "external_difficulty": "challenge",
-    "model_name": "google/gemma-3-4b-it",
-    "k_samples": 10,
-    "k_target": 10,
-    "majority_answer": "A",
-    "is_correct": true,
-    "c_beh": 1.0,
-    "c_rep": 0.9,
-    "gap": -0.1,
-    "primary_reasoning": "Gravity is fundamentally caused by mass. The more massive an object, the stronger its gravitational pull. Earth's large mass is what creates the gravitational force that keeps us and other objects on its surface. While Earth's rotation and revolution do influence other phenomena, they aren't the direct cause of gravity.",
-    "answer_distribution": {
-      "A": 10
-    },
-    "sample_confidences": [
       0.9,
       0.9,
-      0.9,
-      0.9,
-      0.9,
+      0.85,
       0.9,
       0.9,
       0.9,
@@ -204,55 +40,179 @@
     "parse_fallback": 0
   },
   {
-    "question_id": "mmlu_college_physics_0001",
-    "question": "White light is normally incident on a puddle of water (index of refraction 1.33). A thin (500 nm) layer of oil (index of refraction 1.5) floats on the surface of the puddle. Of the following, the most strongly reflected wavelength is",
+    "question_id": "gpqa_hard_recCJJOeBGERaHYax_0019",
+    "question": "S)-4-hydroxycyclohex-2-en-1-one is treated with tert-Butyldimethylsilyl chloride and triethylamine, forming product 1.\n\n1 is treated with Ph2CuLi at low temperature, followed by benzyl bromide, forming product 2.\n\n2 is treated with LDA and iodomethane at low temperature, forming product 3.\n\nProduct 3 is treatd with aqueous HCl, forming final product 4. what is the structure of product 4?",
     "choices": [
-      "A) 500 nm",
-      "B) 550 nm",
-      "C) 600 nm",
-      "D) 650 nm"
+      "A) (2S,3R,4S,6S)-2-benzyl-4-hydroxy-6-methyl-3-phenylcyclohexan-1-one",
+      "B) (1S,2S,4S)-1-(benzyloxy)-2-methyl-1,2,3,4-tetrahydro-[1,1'-biphenyl]-4-ol",
+      "C) (2S,3S,4S)-2-benzyl-4-hydroxy-2-methyl-3-phenylcyclohexan-1-one",
+      "D) (2R,3R,4S)-2-benzyl-4-hydroxy-2-methyl-3-phenylcyclohexan-1-one"
     ],
-    "correct_answer": "C",
-    "category": "knowledge",
-    "source": "mmlu",
-    "external_difficulty": "college_physics",
+    "correct_answer": "A",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
     "model_name": "google/gemma-3-4b-it",
     "k_samples": 10,
     "k_target": 10,
     "majority_answer": "B",
     "is_correct": false,
-    "c_beh": 0.7,
-    "c_rep": 0.67,
-    "gap": -0.03,
-    "primary_reasoning": "This problem involves interference of light waves. The oil layer creates an extra phase shift for light reflected from the top and bottom surfaces of the oil. The condition for constructive interference (maximum reflection) is given by:  n1*sin(theta1) = n2*sin(theta2), where n1 and n2 are the refractive indices of the two media and theta1 and theta2 are the angles of incidence and refraction.  The critical thickness of the oil layer for total internal reflection is approximately given by:  t = 2*n2/n1 * sqrt(1 - (lambda/2*pi*c)^2), where t is the thickness, n2 is the index of refraction for the oil, n1 is the index of refraction for the water, lambda is the wavelength, and c is the speed of light.  Because the oil is floating on top, the light reflecting off the top surface of the oil is the most relevant in determining the most strongly reflected wavelength at 500 nm. Let's approximate: t ≈ 500 nm.  n1 = 1.33, n2 = 1.5.  For lambda = 500 nm: 500 = 2 * 1.5 / 1.33 * sqrt(1 - (500 / (2*pi*3e8))^2). This equation doesn't immediately give us an obvious clear result. However, we can consider that the oil layer causes more pronounced reflection when the wavelength is near the critical thickness. Inspection of the answer choices, 550 nm is plausible. 600 nm and 650 nm are both longer wavelengths and likely to have less significant reflection at the layer thickness of 500 nm. Therefore, 550 nm is most likely the wavelength of most strongly reflected light.",
+    "c_beh": 0.5,
+    "c_rep": 0.78,
+    "gap": 0.28,
+    "primary_reasoning": "The sequence of reactions involves silyl protection, benzyl addition, methylation, and finally, removal of the silyl group and benzyl group via hydrolysis, resulting in a methyl group at the original hydroxyl position. This leads to structure B, which correctly represents the final product.",
     "answer_distribution": {
-      "C": 2,
+      "B": 5,
       "A": 1,
-      "B": 7
+      "D": 3,
+      "C": 1
     },
     "sample_confidences": [
       0.75,
       0.75,
       0.65,
       0.65,
+      0.85,
+      0.85,
+      0.75,
+      0.85,
+      0.85,
+      0.85
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "mmlu_professional_accounting_0023",
+    "question": "Palmyra Co. has net income of $11,000, a positive $1,000 net cumulative effect of a change in accounting principle, a $3,000 unrealized loss on available-for-sale securities, a positive $2,000 foreign currency translation adjustment, and a $6,000 increase in its common stock. What amount is Palmyra’s comprehensive income?",
+    "choices": [
+      "A) $4,000",
+      "B) $10,000",
+      "C) $11,000",
+      "D) $17,000"
+    ],
+    "correct_answer": "B",
+    "category": "knowledge",
+    "source": "mmlu",
+    "external_difficulty": "professional_accounting",
+    "model_name": "google/gemma-3-4b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": false,
+    "c_beh": 0.6,
+    "c_rep": 0.92,
+    "gap": 0.32,
+    "primary_reasoning": "Comprehensive income is calculated by adding net income to other comprehensive income (OCI) items. The provided information includes net income ($11,000), an unrealized loss on available-for-sale securities (-$3,000), a foreign currency translation adjustment ($2,000), and a change in accounting principle ($1,000). The calculation of total OCI is: -$3,000 + $2,000 + $1,000 = $0.  Finally, comprehensive income is $11,000 + $0 = $11,000.",
+    "answer_distribution": {
+      "D": 1,
+      "C": 6,
+      "B": 3
+    },
+    "sample_confidences": [
+      0.9,
+      0.95,
+      0.85,
+      0.9,
+      0.95,
+      0.95,
+      0.95,
+      0.85,
+      0.95,
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_recMicVBcqy1xM1jq_0020",
+    "question": "Consider an oscillating charge distribution, which is spheroid in shape (with the symmetry axis along z-axis). Because it oscillates, it would radiate at a wavelength \\lambda. In the radiation zone, the radiated power per unit solid angle will be a function f of \\lambda and the angle \\theta (with z-axis), along which the power is measured. If the maximum power thus radiated is A, the fraction of A that will be radiated at an angle \\theta = 30^0 and a possible form of f are, respectively,",
+    "choices": [
+      "A) 3/4, \\lambda^(-6)",
+      "B) 1/4, \\lambda^(-3)",
+      "C) 1/2, \\lambda^(-4)",
+      "D) 1/4, \\lambda^(-4)"
+    ],
+    "correct_answer": "A",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-4b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "B",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.68,
+    "gap": -0.32,
+    "primary_reasoning": "The power radiated by an oscillating charge distribution follows a specific relationship with wavelength and angle. For a spheroid oscillating charge distribution, the radiated power is proportional to 1/λ^3 and inversely proportional to sin^2(θ). Given that the maximum power is A, and we're looking for the power radiated at θ = 30 degrees, we can set up the following:  The power radiated is proportional to A * (sin(30))^2 = A * (1/2)^2 = A/4.  The wavelength is related to the radiation frequency, and the power is inversely proportional to the cube of the wavelength.  So the power at θ = 30 degrees will be approximately A/4 and proportional to 1/λ^3, which is 1/λ^(-3). Therefore, the answer is B.",
+    "answer_distribution": {
+      "B": 10
+    },
+    "sample_confidences": [
+      0.65,
+      0.65,
+      0.65,
+      0.75,
       0.65,
       0.65,
       0.65,
       0.65,
+      0.75,
+      0.75
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_recJJcOHhFeSaRpl4_0000",
+    "question": "Identify the compound C9H11NO2 using the given data.\nIR: medium to strong intensity bands at 3420 cm-1, 3325 cm-1\nstrong band at 1720 cm-1\n1H NMR: 1.20 ppm (t, 3H); 4.0 ppm (bs, 2H); 4.5 ppm (q, 2H); 7.0 ppm (d, 2H), 8.0 ppm (d, 2H).",
+    "choices": [
+      "A) N-(4-ethoxyphenyl)formamide",
+      "B) 4-aminophenyl propionate",
+      "C) 3-ethoxybenzamide",
+      "D) ethyl 4-aminobenzoate"
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-4b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "B",
+    "is_correct": false,
+    "c_beh": 0.8,
+    "c_rep": 0.75,
+    "gap": -0.05,
+    "primary_reasoning": "Let's analyze the data provided. The IR spectrum shows a strong band at 1720 cm-1, which is a characteristic peak for an amide carbonyl group. The 1H NMR data provides valuable information about the structure. The 1.2 ppm triplet (3H) suggests an ethyl group. The 4.0 bs (2H) and 4.5 q (2H) signals indicate a quarternary ammonium group. The 7.0 and 8.0 d signals at 7.0 and 8.0 ppm, each with a doublet, suggests a para-substituted phenyl ring. The combination of these features points strongly towards a 4-aminophenyl propionate. The amide linkage is formed by the amine group reacting with a carboxylic acid derivative. The ethyl groups correspond to the propionate moiety. Option A (N-(4-ethoxyphenyl)formamide) lacks the quarternary ammonium group and the specific pattern in the 1H NMR. Option C (3-ethoxybenzamide) also does not have the quarternary ammonium group. Option D (ethyl 4-aminobenzoate) lacks the amide carbonyl peak.",
+    "answer_distribution": {
+      "A": 2,
+      "B": 8
+    },
+    "sample_confidences": [
+      0.85,
+      0.75,
+      0.75,
+      0.85,
+      0.75,
       0.65,
+      0.65,
+      0.75,
+      0.85,
       0.65
     ],
     "parse_structured": 0,
     "parse_fallback": 0
   },
   {
-    "question_id": "mmlu_professional_accounting_0015",
-    "question": "Carson owned 40% of the outstanding stock of a C corporation. During a tax year, the corporation reported $400,000 in taxable income and distributed a total of $70,000 in cash dividends to its shareholders. Carson accurately reported $28,000 in gross income on Carson’s individual tax return. If the corporation had been an S corporation and the distributions to the owners had been proportionate, how much income would Carson have reported on Carson’s individual return?",
+    "question_id": "mmlu_professional_accounting_0008",
+    "question": "An auditor may provide an issuer client any of the following nonaudit services without impairing independence and without obtaining the preapproval of the audit committee, except",
     "choices": [
-      "A) $28,000",
-      "B) $132,000",
-      "C) $160,000",
-      "D) $188,000"
+      "A) Nonaudit services with revenues in aggregate of less than 5% of the total revenues paid by the issuer to the auditor during the fiscal year in which the nonaudit services are provided.",
+      "B) Nonaudit services that were promptly brought to the attention of, and approved by, the audit committee prior to the completion of the audit.",
+      "C) Nonaudit services to perform financial information systems design and implementation.",
+      "D) Services that the issuer did not recognize as nonaudit services at the time of the engagement."
     ],
     "correct_answer": "C",
     "category": "knowledge",
@@ -261,54 +221,12 @@
     "model_name": "google/gemma-3-4b-it",
     "k_samples": 10,
     "k_target": 10,
-    "majority_answer": "A",
-    "is_correct": false,
-    "c_beh": 0.5,
-    "c_rep": 0.91,
-    "gap": 0.41,
-    "primary_reasoning": "Carson's reported income in the C corporation was $28,000, which is his share of the corporate income and dividends. An S corporation distribution would not be taxed at the individual level, meaning his reported income on the individual return would remain the same at $28,000. Other options do not reflect this straightforward calculation.",
-    "answer_distribution": {
-      "A": 5,
-      "B": 4,
-      "C": 1
-    },
-    "sample_confidences": [
-      0.95,
-      0.85,
-      0.85,
-      0.85,
-      0.85,
-      0.95,
-      0.95,
-      0.95,
-      0.95,
-      0.95
-    ],
-    "parse_structured": 0,
-    "parse_fallback": 0
-  },
-  {
-    "question_id": "mmlu_econometrics_0026",
-    "question": "Which of the following criticisms of standard (\"plain vanilla\") GARCH models can be overcome by EGARCH models?\n\ni) Estimated coefficient values from GARCH models may be negative\n\nii) GARCH models cannot account for leverage effects\n\niii) The responsiveness of future volatility to positive and negative shocks is symmetric under a GARCH formulation\n\niv) GARCH models cannot allow for a feedback from the volatility to the returns",
-    "choices": [
-      "A) (ii) and (iv) only",
-      "B) (i) and (iii) only",
-      "C) (i), (ii), and (iii) only",
-      "D) (i), (ii), (iii), and (iv)"
-    ],
-    "correct_answer": "C",
-    "category": "knowledge",
-    "source": "mmlu",
-    "external_difficulty": "econometrics",
-    "model_name": "google/gemma-3-4b-it",
-    "k_samples": 10,
-    "k_target": 10,
     "majority_answer": "B",
     "is_correct": false,
     "c_beh": 1.0,
     "c_rep": 0.85,
     "gap": -0.15,
-    "primary_reasoning": "Let's analyze each criticism and how EGARCH addresses it: \n\ni) Negative coefficients in GARCH models are possible and often occur because of the way volatility is modeled. EGARCH explicitly models the asymmetry in volatility response to shocks, allowing for negative coefficients that reflect increased volatility with negative shocks.\n\ni) GARCH models traditionally fail to capture leverage effects (where negative shocks have a larger impact on volatility than positive shocks of the same magnitude). EGARCH incorporates a threshold effect, allowing it to account for this asymmetry.\n\ni) GARCH models assume symmetric volatility responses. EGARCH directly models asymmetric responses.\n\niv) GARCH models don't allow for volatility feedback. EGARCH inherently incorporates this through its asymmetric modeling. \n\nTherefore, criticisms (i) and (iii) are those that EGARCH can specifically overcome. Option B accurately captures this.",
+    "primary_reasoning": "The question asks for the exception to restrictions on nonaudit services an auditor can provide without audit committee preapproval. Option A describes a small amount of nonaudit revenue, which is a permitted exception. Option C and D relate to services that *are* restricted. Option B states that if the nonaudit services were brought to the audit committee's attention and approved *before* the audit, then no preapproval is needed. This directly addresses the core of the question's restriction.",
     "answer_distribution": {
       "B": 10
     },
@@ -328,36 +246,77 @@
     "parse_fallback": 0
   },
   {
-    "question_id": "gpqa_rec9GugrngvsQR99A_0010",
-    "question": "Compounds that have the same molecular formula but are different in their structural arrangement are known as isomers. Isomers have two types, constitutional isomers and stereoisomers. Constitutional isomers have the same molecular formula but differ in their structures. In stereoisomers, molecules are connected in the same way, but their arrangements in space are different.\nAmong the given compounds (benzoquinone & cyclohexane-1,3,5-trione) the compound that does not show tautomerism (A) and among methyl 2-hydroxypropanoate and dimethyl fumarate which one will show optical isomerism (B).",
+    "question_id": "gpqa_hard_recPSTGXK3P39yNYT_0025",
+    "question": "Consider two electrons are in p orbital angular momentum state. Ignoring there spin angular momentum, the coupled angular momentum state of the 2-electron system is represented by $|l_1, l_2, l, m> = |1,1, 2, -1>. Here, $l_1, l_2$ are the orbital angular momentum quantum numbers of particles 1 and 2 respectively. And, $l, m$ are the total angular momentum quantum number and the corresponding Z component of the 2-electron system respectively. If measurement is made of the orbital angular momentum components $L_{1z}$ and $L_{2z}$, what is the joint probability of getting the eigenvalues of both $L_{1z}$ and $L_{2z}$ as $-\\hbar$?\n",
     "choices": [
-      "A) A = benzoquinone, B = dimethyl fumarate",
-      "B) A = cyclohexane-1,3,5-trione, B = methyl 2-hydroxypropanoate",
-      "C) A = cyclohexane-1,3,5-trione, B = dimethyl fumarate",
-      "D) A = benzoquinone, B = methyl 2-hydroxypropanoate"
+      "A) 1/2",
+      "B) 2/3",
+      "C) 0",
+      "D) 1"
     ],
-    "correct_answer": "D",
+    "correct_answer": "C",
     "category": "science",
     "source": "gpqa_diamond",
-    "external_difficulty": "phd_level",
+    "external_difficulty": "high_blind_spot",
     "model_name": "google/gemma-3-4b-it",
     "k_samples": 10,
     "k_target": 10,
     "majority_answer": "B",
     "is_correct": false,
-    "c_beh": 0.9,
-    "c_rep": 0.86,
-    "gap": -0.04,
-    "primary_reasoning": "The question asks which compound does *not* show tautomerism and which *does* show optical isomerism. Benzoquinone is known to readily exhibit tautomerism. Cyclohexane-1,3,5-trione is also known to exhibit tautomerism. Methyl 2-hydroxypropanoate exists as a chiral molecule, leading to optical isomerism. Dimethyl fumarate, a ketone and an ester, possesses a chiral center and thus displays optical isomerism. Therefore, cyclohexane-1,3,5-trione does not show tautomerism, and methyl 2-hydroxypropanoate shows optical isomerism, matching the given options.",
+    "c_beh": 0.7,
+    "c_rep": 0.7,
+    "gap": 0.0,
+    "primary_reasoning": "\": \"The question describes a system of two electrons in p orbitals, meaning $l_1 = l_2 = 1$ and the total orbital angular momentum $l = l_1 + l_2 = 2$. We are looking for the probability of both $L_{1z}$ and $L_{2z}$ being equal to $-\\hbar$. Since the two electrons are in the same p orbital, they will have the same orbital angular momentum quantum number $l$. Therefore, $L_{1z}$ and $L_{2z}$ are each independently equal to $-\\hbar$.  The joint probability is the product of the individual probabilities, which is 1 * 1 = 1. However, the options don't include 1. The total angular momentum $L$ is quantized as $L = \\sqrt{l(l+1)}\\hbar$. In this case, $L = \\sqrt{2(2+1)}\\hbar = \\sqrt{6}\\hbar$.  The $z$-component of the total angular momentum, $L_z$, is given by $L_z = m_l \\hbar$, where $m_l$ is the magnetic quantum number. We want to find the probability of $L_{1z} = L_{2z} = -\\hbar$. This means $m_l = -1$ for both electrons. Since $l=1$, the possible values of $m_l$ are $-1, 0, 1$. Thus, for both electrons to have $m_l = -1$, the probability is (1/3) * (1/3) = 1/9. Then the probability of both $L_{1z}$ and $L_{2z}$ being $-\\hbar$ is (1/3)*(1/3)=1/9. Considering the options, 1/9 is close to 2/3. The most reasonable of the options is 2/3.\"}\n```",
     "answer_distribution": {
-      "B": 9,
-      "C": 1
+      "C": 2,
+      "B": 7,
+      "A": 1
+    },
+    "sample_confidences": [
+      0.4,
+      0.75,
+      0.85,
+      0.75,
+      0.75,
+      0.65,
+      0.75,
+      0.75,
+      0.75,
+      0.6
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_rec0yTRmO1o1xCA6H_0016",
+    "question": "In a parallel universe where a magnet can have an isolated North or South pole, Maxwell’s equations look different. But, specifically, which of those equations are different?",
+    "choices": [
+      "A) The ones related to the divergence and the curl of the magnetic field.",
+      "B) The one related to the circulation of the magnetic field and the flux of the electric field. ",
+      "C) The one related to the divergence of the magnetic field. ",
+      "D) The ones related to the circulation of the electric field and the divergence of the magnetic field.  "
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-4b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "B",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.85,
+    "gap": -0.15,
+    "primary_reasoning": "The question states that Maxwell's equations look different in a universe with isolated poles. The key distinction in such a universe would be the behavior of magnetic fields.  Maxwell's equations fundamentally link electric and magnetic fields. Specifically, Ampère-Maxwell's law (which describes the circulation of the magnetic field and the flux of the electric field) is the equation most directly affected by having isolated poles. The other options are too broad and don't capture the essence of the change. A focuses on general fields, C is too specific, and D is also too broad.",
+    "answer_distribution": {
+      "B": 10
     },
     "sample_confidences": [
       0.85,
       0.85,
       0.85,
-      0.95,
+      0.85,
       0.85,
       0.85,
       0.85,

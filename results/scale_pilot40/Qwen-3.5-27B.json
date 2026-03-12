@@ -1,0 +1,94 @@
+[
+  {
+    "question_id": "mmlu_pro_economics_0009",
+    "question": "Under which of the following situations would bootstrapping be preferred to pure simulation?\n\ni) If it is desired that the distributional properties of the data in the experiment\n\nare the same as those of some actual data\n\n\nii) If it is desired that the distributional properties of the data in the experiment\n\nare known exactly\n\n\niii) If the distributional properties of the actual data are unknown\n\n\niv) If the sample of actual data available is very small",
+    "choices": [
+      "A) (i) and (ii) only",
+      "B) (ii) and (iii) only",
+      "C) (i) and (iii) only",
+      "D) (i) and (iv) only",
+      "E) (ii) and (iv) only",
+      "F) (iii) and (iv) only",
+      "G) (i), (ii), (iii), and (iv)",
+      "H) (i), (iii), and (iv) only",
+      "I) (ii), (iii), and (iv) only",
+      "J) (i), (ii), and (iv) only"
+    ],
+    "correct_answer": "C",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "economics",
+    "model_name": "qwen/qwen3.5-27b",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.895,
+    "gap": -0.105,
+    "primary_reasoning": "Bootstrapping is a non-parametric resampling technique that relies on the empirical distribution of the observed data. It is preferred when one wants the simulated data to reflect the exact distributional properties of the actual data (i) and when the underlying population distribution is unknown, avoiding the need for parametric assumptions (iii). Pure simulation is preferred when the distributional properties are known exactly (ii), as the model is specified by the user. Small sample sizes (iv) are generally a limitation for bootstrapping, as the empirical distribution may not adequately represent the population.",
+    "answer_distribution": {
+      "C": 10
+    },
+    "sample_confidences": [
+      0.85,
+      0.95,
+      0.9,
+      0.85,
+      0.9,
+      0.9,
+      0.9,
+      0.85,
+      0.95,
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "mmlu_pro_history_0003",
+    "question": "This question refers to the following information.\nAn Act to place certain restrictions on Immigration and to provide for the removal from the Commonwealth of Prohibited Immigrants.\n…\n3. The immigration into the Commonwealth of the persons described in any of the following paragraphs in this section (hereinafter called \"prohibited immigrants\") is prohibited, namely\n(a) Any person who when asked to do so by an officer fails to write out at dictation and sign in the presence of the officer a passage of fifty words in length in a European language directed by the officer;\n(b) Any person in the opinion of the Minister or of an officer to become a charge upon the public or upon any public or charitable organisation;\n…\n(g) Any persons under a contract or agreement to perform manual labour within the Commonwealth: Provided that this paragraph shall not apply to workmen exempted by the Minister for special skill required by Australia…\nImmigration Restriction Act of 1901 (Australia)\nWhereas in the opinion of the Government of the United States the coming of Chinese laborers to this country endangers the good order of certain localities within the territory thereof;\nTherefore,\nBe it enacted by the Senate and House of Representatives of the United States of America in Congress assembled, That from and after the expiration of ninety days next after the passage of this act, the coming of Chinese laborers to the United States be suspended; and during such suspension it shall not be lawful for any Chinese laborer to come, or having so come after the expiration of said ninety days to remain within the United States.\nSEC. 2. That the master of every vessel who shall knowingly bring within the United States on such vessel, and land or permit to be landed, any Chinese laborer, from any foreign port or place, shall be deemed guilty of a misdemeanor, and on conviction thereof shall be punished by a fine of not more than five hundred dollars for each and every such Chinese laborer so brought, and may be also imprisoned for a term not exceeding one year….\nChinese Exclusion Act of 1882 (United States)\nWhich of the following economic activities did the most to drive the rising levels of immigration that led to the enactment of the law described in the second passage?",
+    "choices": [
+      "A) Iron smelting",
+      "B) Fertilizer harvesting",
+      "C) Coal mining",
+      "D) Fur trading",
+      "E) Cotton farming",
+      "F) Tobacco cultivation",
+      "G) Silk production",
+      "H) Sugarcane production",
+      "I) Railroad construction",
+      "J) Gold mining"
+    ],
+    "correct_answer": "I",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "history",
+    "model_name": "qwen/qwen3.5-27b",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "I",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.86,
+    "gap": -0.14,
+    "primary_reasoning": "The second passage describes the Chinese Exclusion Act of 1882 in the United States. While the California Gold Rush (Option J) initiated Chinese immigration to the U.S. in the late 1840s, the construction of the First Transcontinental Railroad (Option I) in the 1860s brought a massive, sustained wave of Chinese laborers, particularly for the Central Pacific Railroad line. The completion of the railroad in 1869 left many of these workers unemployed, contributing to economic tensions and labor competition on the West Coast during the 1870s. This specific post-railroad labor environment was the primary driver for the nativist sentiment and political pressure that led directly to the enactment of the Chinese Exclusion Act in 1882. Therefore, railroad construction is the economic activity most closely linked to the conditions causing the law's passage.",
+    "answer_distribution": {
+      "I": 10
+    },
+    "sample_confidences": [
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.9,
+      0.85,
+      0.9,
+      0.85,
+      0.85
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  }
+]

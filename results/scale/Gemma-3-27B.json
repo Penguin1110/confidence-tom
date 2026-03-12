@@ -1,41 +1,323 @@
 [
   {
-    "question_id": "mmlu_formal_logic_0009",
-    "question": " Select the best English interpretation of the given proposition, using the following translation key: Ax: x is an apartment Hx: x is a house Lx: x is large Bxy: x is bigger than y (∃x)[Hx • (∀y)(Ay ⊃ Bxy)]",
+    "question_id": "gpqa_hard_recCJJOeBGERaHYax_0019",
+    "question": "S)-4-hydroxycyclohex-2-en-1-one is treated with tert-Butyldimethylsilyl chloride and triethylamine, forming product 1.\n\n1 is treated with Ph2CuLi at low temperature, followed by benzyl bromide, forming product 2.\n\n2 is treated with LDA and iodomethane at low temperature, forming product 3.\n\nProduct 3 is treatd with aqueous HCl, forming final product 4. what is the structure of product 4?",
     "choices": [
-      "A) Some houses are smaller than all apartments.",
-      "B) Every house is bigger than every apartment.",
-      "C) Some apartment is smaller than every house.",
-      "D) Some houses are bigger than every apartment."
+      "A) (2S,3R,4S,6S)-2-benzyl-4-hydroxy-6-methyl-3-phenylcyclohexan-1-one",
+      "B) (1S,2S,4S)-1-(benzyloxy)-2-methyl-1,2,3,4-tetrahydro-[1,1'-biphenyl]-4-ol",
+      "C) (2S,3S,4S)-2-benzyl-4-hydroxy-2-methyl-3-phenylcyclohexan-1-one",
+      "D) (2R,3R,4S)-2-benzyl-4-hydroxy-2-methyl-3-phenylcyclohexan-1-one"
     ],
-    "correct_answer": "D",
-    "category": "knowledge",
-    "source": "mmlu",
-    "external_difficulty": "formal_logic",
+    "correct_answer": "A",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
     "model_name": "google/gemma-3-27b-it",
     "k_samples": 10,
     "k_target": 10,
     "majority_answer": "B",
     "is_correct": false,
-    "c_beh": 0.9,
-    "c_rep": 0.8,
-    "gap": -0.1,
-    "primary_reasoning": "\": \"Let's break down the proposition: (∃x)[Hx • (∀y)(Ay ⊃ Bxy)]. This reads as 'There exists an x such that x is a house AND for all y, if y is an apartment, then x is bigger than y.'  This means there's at least one house that is bigger than every apartment.\n\nA) 'Some houses are smaller than all apartments' would require a different logical structure.\nC) 'Some apartment is smaller than every house' would also need a different structure, using Ay instead of Hx as the starting point.\nD) 'Some houses are bigger than every apartment' is similar but uses 'some' for both, which is wrong since the original proposition asserts this about *every* apartment given *one* house.\n\nThus, B, 'Every house is bigger than every apartment' accurately rephrases the logic of the given symbolic proposition.\"}",
+    "c_beh": 0.7,
+    "c_rep": 0.57,
+    "gap": -0.13,
+    "primary_reasoning": "Let's break down the reaction sequence step-by-step: \n1. **S)-4-hydroxycyclohex-2-en-1-one + TBDMSCl/Et3N:** This protects the alcohol as a TBDMS ether. \n2. **Product 1 + Ph2CuLi then Benzyl Bromide:** This is a 1,4-addition of phenyl to the enone, followed by alkylation with benzyl bromide at the position which was alpha to the carbonyl. \n3. **Product 2 + LDA, then Iodomethane:** LDA deprotonates at the alpha position to the carbonyl (next to the methyl). Iodomethane adds a methyl group. \n4. **Product 3 + aq. HCl:** Aqueous HCl removes the TBDMS protecting group, unveiling the alcohol. The structure formed appears to be a bicyclic ketone/alcohol close to a tetrahydro-[1,1'-biphenyl] structure, which is best represented by option B.\n\nOptions C and D are cyclohexanone derivatives, but the reaction sequence suggests a ring closing and different final connectivity. Option A is similar to C & D, implying a similar limitation. Considering the initial 1,4-addition, B is the only logical choice. ",
     "answer_distribution": {
-      "B": 9,
-      "D": 1
+      "B": 7,
+      "D": 1,
+      "C": 2
+    },
+    "sample_confidences": [
+      0.55,
+      0.65,
+      0.45,
+      0.65,
+      0.65,
+      0.6,
+      0.5,
+      0.6,
+      0.6,
+      0.45
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "arc_0003",
+    "question": "A student sets up an experiment to learn which colors of light are refracted by a prism. Which method will the student most likely use to collect data?",
+    "choices": [
+      "A) research",
+      "B) interviews",
+      "C) observation",
+      "D) measurement"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "arc_challenge",
+    "external_difficulty": "challenge",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.86,
+    "gap": -0.14,
+    "primary_reasoning": "The question asks about collecting data to learn about light refraction. Refraction is a visual phenomenon – you *see* how light bends. Therefore, the student will most likely *observe* how different colors of light bend when passing through the prism. Research (A) would be done *before* the experiment. Interviews (B) wouldn't directly collect data about the refraction itself. While measurement (D) could be *part* of data collection (measuring angles), the primary method will be visually observing the effect.",
+    "answer_distribution": {
+      "C": 10
     },
     "sample_confidences": [
       0.85,
       0.85,
       0.85,
+      0.9,
       0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_recMicVBcqy1xM1jq_0020",
+    "question": "Consider an oscillating charge distribution, which is spheroid in shape (with the symmetry axis along z-axis). Because it oscillates, it would radiate at a wavelength \\lambda. In the radiation zone, the radiated power per unit solid angle will be a function f of \\lambda and the angle \\theta (with z-axis), along which the power is measured. If the maximum power thus radiated is A, the fraction of A that will be radiated at an angle \\theta = 30^0 and a possible form of f are, respectively,",
+    "choices": [
+      "A) 3/4, \\lambda^(-6)",
+      "B) 1/4, \\lambda^(-3)",
+      "C) 1/2, \\lambda^(-4)",
+      "D) 1/4, \\lambda^(-4)"
+    ],
+    "correct_answer": "A",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "D",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.68,
+    "gap": -0.32,
+    "primary_reasoning": "\": \"For an oscillating dipole, the radiated power is proportional to the square of the acceleration and inversely proportional to the wavelength squared. Since the spheroid is oscillating, it behaves like a dipole. The power radiated per unit solid angle is given by f, which depends on the wavelength \\lambda and the angle \\theta. In the radiation zone, the angular distribution of the radiation is proportional to sin^2(theta). The maximum power A occurs at θ=90 degrees where sin(θ) = 1.  At θ = 30 degrees, sin(30) = 1/2, thus sin^2(30) = 1/4. So the fraction of A radiated at 30 degrees will be 1/4. For dipole radiation, the power is proportional to square of frequency. Since frequency is inversely proportional to wavelength (lambda), the power is also inversely proportional to lambda squared. The given function should be related to this relationship. Since the power is also proportional to acceleration squared, which is associated with lambda to the fourth power in the overall formula. For a simple dipole, the radiated power is proportional to 1/λ^2, but since this spheroid is oscillating, we can consider it as a non-relativistic charge distribution, where the far-field approximation gives power proportional to 1/λ^4. Thus the radiated power per unit solid angle is proportional to λ^(-4). Thus option D is the most appropriate",
+    "answer_distribution": {
+      "D": 10
+    },
+    "sample_confidences": [
+      0.75,
+      0.75,
+      0.65,
+      0.65,
+      0.65,
+      0.65,
+      0.65,
+      0.65,
+      0.65,
+      0.75
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_recJJcOHhFeSaRpl4_0000",
+    "question": "Identify the compound C9H11NO2 using the given data.\nIR: medium to strong intensity bands at 3420 cm-1, 3325 cm-1\nstrong band at 1720 cm-1\n1H NMR: 1.20 ppm (t, 3H); 4.0 ppm (bs, 2H); 4.5 ppm (q, 2H); 7.0 ppm (d, 2H), 8.0 ppm (d, 2H).",
+    "choices": [
+      "A) N-(4-ethoxyphenyl)formamide",
+      "B) 4-aminophenyl propionate",
+      "C) 3-ethoxybenzamide",
+      "D) ethyl 4-aminobenzoate"
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "D",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.75,
+    "gap": -0.25,
+    "primary_reasoning": "\": \"Let's analyze the data to deduce the structure.\n\n1. **IR Spectrum:** The bands at 3420 cm-1 and 3325 cm-1 suggest the presence of N-H stretches (amine or amide). The strong band at 1720 cm-1 is characteristic of a C=O stretch, indicating an ester or carboxylic acid derivative.\n\n2. **1H NMR Spectrum:**\n   - 1.20 ppm (t, 3H): This is a triplet, consistent with a methyl group (CH3) attached to a carbon next to two other carbons, likely part of an ethyl group.\n   - 4.0 ppm (bs, 2H): A broad singlet suggests NH2 protons, confirming the presence of an amine group.\n   - 4.5 ppm (q, 2H): This quartet is also part of an ethyl group (CH2) attached to the CH3 at 1.20 ppm.\n   - 7.0 ppm (d, 2H) & 8.0 ppm (d, 2H): These two doublets suggest a para-substituted aromatic ring.\n\nNow, let's evaluate the options:\n\n*   **A) N-(4-ethoxyphenyl)formamide:** This would have a formyl group (CHO), which isn't supported by the NMR data, which instead suggests an ester. Additionally, the NMR spectrum wouldn't display the characteristic ethyl group signals.\n*   **B) 4-aminophenyl propionate:** This has a propionate group, but the NMR doesn't have signals for a -CH2CH2- group.\n*   **C) 3-ethoxybenzamide:** This implies an amide, but the NMR signals don't fit that structure. Specifically the clear ethyl group signals.\n*   **D) ethyl 4-aminobenzoate:** This structure contains an ethyl ester (explaining the 1.2 ppm triplet and 4.5 ppm quartet), an amine group (4.0 ppm broad singlet), and a para-substituted benzene ring (7.0 ppm and 8.0 ppm). It fits all the spectral data perfectly.\n\nTherefore, the most probable",
+    "answer_distribution": {
+      "D": 10
+    },
+    "sample_confidences": [
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "mmlu_professional_accounting_0023",
+    "question": "Palmyra Co. has net income of $11,000, a positive $1,000 net cumulative effect of a change in accounting principle, a $3,000 unrealized loss on available-for-sale securities, a positive $2,000 foreign currency translation adjustment, and a $6,000 increase in its common stock. What amount is Palmyra’s comprehensive income?",
+    "choices": [
+      "A) $4,000",
+      "B) $10,000",
+      "C) $11,000",
+      "D) $17,000"
+    ],
+    "correct_answer": "B",
+    "category": "knowledge",
+    "source": "mmlu",
+    "external_difficulty": "professional_accounting",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 0.9,
+    "c_rep": 0.76,
+    "gap": -0.14,
+    "primary_reasoning": "\": \"Comprehensive income includes net income plus other comprehensive income (OCI). OCI includes items like unrealized gains/losses on available-for-sale securities, foreign currency translation adjustments, and changes in accounting principle. In this case:\n\n1. Net Income: $11,000\n2. Change in Accounting Principle: +$1,000\n3. Unrealized Loss on Securities: -$3,000\n4. Foreign Currency Translation Adjustment: +$2,000\n5. Increase in Common Stock: This is a capital transaction and will not be included in comprehensive income.\n\nTherefore, Comprehensive Income = $11,000 + $1,000 - $3,000 + $2,000 = $11,000.\n\nOops! Re-reading the question I saw that I included the part about the increase in common stock, which is not part of comprehensive income.\n\nTherefore, Comprehensive Income = Net Income + Cumulative Effect of Change in Accounting Principle + Unrealized Loss on Available-for-Sale Securities + Foreign Currency Translation Adjustment.\nComprehensive Income = 11000 + 1000 - 3000 + 2000 = $11,000.\n\nLet's recheck! Oh no, I made another mistake. I was off by $1000.\n\nRecheck:\n1. Net Income: $11,000\n2. Positive cumulative effect of a change in accounting principle: +$1,000\n3. Unrealized loss on available-for-sale securities: -$3,000. (This decreases comprehensive income)\n4. Positive foreign currency translation adjustment: +$2,000\n\nComprehensive Income = $11,000 + $1,000 - $3,000 + $2,000 = $11,000. Oh wait. none of the",
+    "answer_distribution": {
+      "B": 9,
+      "D": 1
+    },
+    "sample_confidences": [
+      0.75,
+      0.75,
+      0.75,
+      0.75,
       0.75,
       0.75,
       0.75,
       0.85,
       0.75,
       0.75
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_recPSTGXK3P39yNYT_0025",
+    "question": "Consider two electrons are in p orbital angular momentum state. Ignoring there spin angular momentum, the coupled angular momentum state of the 2-electron system is represented by $|l_1, l_2, l, m> = |1,1, 2, -1>. Here, $l_1, l_2$ are the orbital angular momentum quantum numbers of particles 1 and 2 respectively. And, $l, m$ are the total angular momentum quantum number and the corresponding Z component of the 2-electron system respectively. If measurement is made of the orbital angular momentum components $L_{1z}$ and $L_{2z}$, what is the joint probability of getting the eigenvalues of both $L_{1z}$ and $L_{2z}$ as $-\\hbar$?\n",
+    "choices": [
+      "A) 1/2",
+      "B) 2/3",
+      "C) 0",
+      "D) 1"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.82,
+    "gap": -0.18,
+    "primary_reasoning": "\": \"The given state is |1, 1, 2, -1>. This means the total angular momentum is l=2 and its z-component is m=-1.  We are asked to find the probability of measuring $L_{1z} = -\\hbar$ and $L_{2z} = -\\hbar$. Since $L_{1z}$ can take values $m_1\\hbar$ where $m_1 = -1, 0, 1$ and $L_{2z}$ can take values $m_2\\hbar$ where $m_2 = -1, 0, 1$, the condition $L_{1z} = -\\hbar$ and $L_{2z} = -\\hbar$ implies $m_1 = -1$ and $m_2 = -1$.  The total angular momentum z component is $m = m_1 + m_2$.  In our case, m = -1, so we have $m_1 + m_2 = -1$. If $m_1 = -1$ and $m_2 = -1$, then $m_1 + m_2 = -2$, which contradicts m=-1. Therefore, it is impossible to obtain $L_{1z} = -\\hbar$ and $L_{2z} = -\\hbar$ simultaneously. Hence, the joint probability is 0.\"}",
+    "answer_distribution": {
+      "C": 10
+    },
+    "sample_confidences": [
+      0.75,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.75,
+      0.75,
+      0.85
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "mmlu_professional_accounting_0008",
+    "question": "An auditor may provide an issuer client any of the following nonaudit services without impairing independence and without obtaining the preapproval of the audit committee, except",
+    "choices": [
+      "A) Nonaudit services with revenues in aggregate of less than 5% of the total revenues paid by the issuer to the auditor during the fiscal year in which the nonaudit services are provided.",
+      "B) Nonaudit services that were promptly brought to the attention of, and approved by, the audit committee prior to the completion of the audit.",
+      "C) Nonaudit services to perform financial information systems design and implementation.",
+      "D) Services that the issuer did not recognize as nonaudit services at the time of the engagement."
+    ],
+    "correct_answer": "C",
+    "category": "knowledge",
+    "source": "mmlu",
+    "external_difficulty": "professional_accounting",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.85,
+    "gap": -0.15,
+    "primary_reasoning": "The question asks for the *exception* – the service that *cannot* be provided without preapproval. The rules around auditor independence (specifically those related to the Sarbanes-Oxley Act) restrict certain non-audit services that could create a conflict of interest. Specifically, financial information systems design and implementation is generally prohibited because it places the auditor in a management role. Options A and B describe situations where non-audit services *are* permissible (low revenue threshold or audit committee approval). Option D seems irrelevant to the independence rules. Therefore, C is the correct answer. ",
+    "answer_distribution": {
+      "C": 10
+    },
+    "sample_confidences": [
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85,
+      0.85
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0
+  },
+  {
+    "question_id": "gpqa_hard_rec0yTRmO1o1xCA6H_0016",
+    "question": "In a parallel universe where a magnet can have an isolated North or South pole, Maxwell’s equations look different. But, specifically, which of those equations are different?",
+    "choices": [
+      "A) The ones related to the divergence and the curl of the magnetic field.",
+      "B) The one related to the circulation of the magnetic field and the flux of the electric field. ",
+      "C) The one related to the divergence of the magnetic field. ",
+      "D) The ones related to the circulation of the electric field and the divergence of the magnetic field.  "
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "google/gemma-3-27b-it",
+    "k_samples": 10,
+    "k_target": 10,
+    "majority_answer": "C",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.78,
+    "gap": -0.22,
+    "primary_reasoning": "Maxwell's equations describe the relationship between electric and magnetic fields. The key difference in a universe with isolated magnetic poles lies in the behavior of the magnetic field. The divergence of the magnetic field (Gauss's law for magnetism) is currently zero, reflecting the non-existence of magnetic monopoles. If isolated poles existed, the divergence of the magnetic field would no longer be zero; instead, it could have a source term related to the density of magnetic monopoles. The other equations wouldn’t be directly impacted by the existence of isolated magnetic poles. Therefore, the equation related to the divergence of the magnetic field must be different.",
+    "answer_distribution": {
+      "C": 10
+    },
+    "sample_confidences": [
+      0.85,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.75,
+      0.85,
+      0.75,
+      0.75,
+      0.85
     ],
     "parse_structured": 0,
     "parse_fallback": 0

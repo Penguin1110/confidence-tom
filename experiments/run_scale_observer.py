@@ -18,6 +18,7 @@ from typing import Any, Optional
 
 import hydra
 from omegaconf import DictConfig
+from tqdm import tqdm
 
 from confidence_tom.client import LLMClient
 from confidence_tom.parsing import normalize_confidence
@@ -26,6 +27,8 @@ logging.basicConfig(
     format="[%(asctime)s][%(name)s][%(levelname)s] - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("openai").setLevel(logging.WARNING)
 
 
 # ---- Checkpoint Manager ----
@@ -103,9 +106,13 @@ def parse_observer_response(raw_text: str) -> Optional[dict[str, Any]]:
     # Regex fallback
     acc_match = re.search(
         r'["\']?predicted_correctness["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
-    )
+    ) or re.search(r"\bcorrect(?:ness)?\b[^0-9]{0,20}(\d+(?:\.\d+)?)", raw_text, re.IGNORECASE)
     conf_match = re.search(
         r'["\']?predicted_subject_confidence["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
+    ) or re.search(
+        r"\b(?:subject\s*)?confidence\b[^0-9]{0,20}(\d+(?:\.\d+)?)",
+        raw_text,
+        re.IGNORECASE,
     )
     reas_match = re.search(
         r'["\']?reasoning["\']?\s*:\s*["\'](.*?)["\']\s*}', raw_text, re.IGNORECASE | re.DOTALL
@@ -149,7 +156,10 @@ def parse_observer_response(raw_text: str) -> Optional[dict[str, Any]]:
 
 
 async def evaluate_single_subject_answer(
-    client: LLMClient, subject_data: dict[str, Any]
+    client: LLMClient,
+    subject_data: dict[str, Any],
+    extract_client: Optional[LLMClient] = None,
+    subject_reasoning_max_chars: int = 0,
 ) -> Optional[dict[str, Any]]:
     choices_str = "\\n".join(subject_data["choices"])
 
@@ -167,11 +177,15 @@ async def evaluate_single_subject_answer(
         "- reasoning: Step-by-step reasoning for BOTH estimates."
     )
 
+    subject_reasoning = str(subject_data.get("primary_reasoning", ""))
+    if subject_reasoning_max_chars > 0:
+        subject_reasoning = subject_reasoning[:subject_reasoning_max_chars]
+
     user_prompt = (
         f"A language model answered the following multiple-choice question.\n\n"
         f"Question: {subject_data['question']}\n\n"
         f"Choices:\n{choices_str}\n\n"
-        f"Model's reasoning: {subject_data['primary_reasoning']}\n\n"
+        f"Model's reasoning: {subject_reasoning}\n\n"
         f"Model's final answer: {subject_data['majority_answer']}\n\n"
         f"Please estimate the two metrics required in the JSON format."
     )
@@ -181,12 +195,71 @@ async def evaluate_single_subject_answer(
         {"role": "user", "content": user_prompt},
     ]
 
+    def _extract_messages_from_raw(raw: str) -> list[dict[str, str]]:
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "You are a strict JSON information extractor.\n"
+                    "Extract two numbers from the given observer output:\n"
+                    "1) predicted_correctness (0-100)\n"
+                    "2) predicted_subject_confidence (0-100)\n\n"
+                    "Return ONLY valid JSON in this exact schema:\n"
+                    '{"predicted_correctness": 50, "predicted_subject_confidence": 70, "reasoning": "..."}\n'
+                    "Do not include markdown or extra text."
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"Observer raw output:\n\n{raw}",
+            },
+        ]
+
+    def _direct_estimate_messages() -> list[dict[str, str]]:
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "You are an expert AI evaluator.\n"
+                    "Given a question, choices, model reasoning, and final answer, estimate:\n"
+                    "1) predicted_correctness (0-100)\n"
+                    "2) predicted_subject_confidence (0-100)\n"
+                    "Return ONLY valid JSON:\n"
+                    '{"predicted_correctness": 50, "predicted_subject_confidence": 70, "reasoning": "..."}'
+                ),
+            },
+            {
+                "role": "user",
+                "content": user_prompt,
+            },
+        ]
+
     try:
         raw_text = await asyncio.to_thread(client.generate_text, messages)
         if raw_text:
             parsed = parse_observer_response(raw_text)
             if parsed:
                 return parsed
+            if extract_client is not None:
+                extract_raw = await asyncio.to_thread(
+                    extract_client.generate_text,
+                    _extract_messages_from_raw(raw_text),
+                )
+                if extract_raw:
+                    parsed_extract = parse_observer_response(extract_raw)
+                    if parsed_extract:
+                        return parsed_extract
+        # If the observer output is empty or still unparseable, fallback to direct estimation
+        # with the extractor model (still LLM-based, no default constants).
+        if extract_client is not None:
+            direct_raw = await asyncio.to_thread(
+                extract_client.generate_text,
+                _direct_estimate_messages(),
+            )
+            if direct_raw:
+                parsed_direct = parse_observer_response(direct_raw)
+                if parsed_direct:
+                    return parsed_direct
     except Exception as e:
         logger.debug(f"Observer generation failed: {e}")
 
@@ -201,6 +274,10 @@ async def worker(
     subject_label: str,
     observer_label: str,
     total_q: int,
+    pbar: tqdm,
+    extract_client: Optional[LLMClient],
+    subject_reasoning_max_chars: int,
+    save_default_on_failure: bool,
 ):
     while True:
         task = await queue.get()
@@ -215,7 +292,12 @@ async def worker(
         max_attempts = 3
         res = None
         for _ in range(max_attempts):
-            res = await evaluate_single_subject_answer(client, subject_data)
+            res = await evaluate_single_subject_answer(
+                client,
+                subject_data,
+                extract_client,
+                subject_reasoning_max_chars=subject_reasoning_max_chars,
+            )
             if res is not None:
                 break
 
@@ -245,12 +327,39 @@ async def worker(
             }
             await checkpoint_mgr.save_result(key, result_record)
             done = checkpoint_mgr.get_total_done(key)
+            pbar.update(1)
             if done % 10 == 0 or done == total_q:
                 logger.info(f"[{key}] Progress: {done}/{total_q}")
         else:
             logger.error(
                 f"Failed to get valid observer parse after {max_attempts} attempts for {q_id}"
             )
+            if save_default_on_failure:
+                # Optional neutral fallback so this question does not get stuck forever.
+                truth_is_correct = float(subject_data["is_correct"])  # 1.0 or 0.0
+                truth_c_rep = subject_data["c_rep"]
+                fallback_acc = 0.5
+                fallback_conf = 0.5
+                result_record = {
+                    "question_id": q_id,
+                    "truth_is_correct": truth_is_correct,
+                    "truth_c_rep": truth_c_rep,
+                    "truth_c_beh": subject_data.get("c_beh", 0.0),
+                    "predicted_correctness": fallback_acc,
+                    "predicted_subject_confidence": fallback_conf,
+                    "acc_error": float(fallback_acc - truth_is_correct),
+                    "conf_error": float(fallback_conf - truth_c_rep),
+                    "observer_reasoning": "fallback_default_after_parse_failure",
+                    "subject_reasoning": subject_data["primary_reasoning"],
+                    "subject_answer": subject_data["majority_answer"],
+                    "correct_answer": subject_data["correct_answer"],
+                    "category": subject_data.get("category", ""),
+                    "subject_model": subject_label,
+                    "observer_model": observer_label,
+                    "observer_parse_method": "default_fallback",
+                }
+                await checkpoint_mgr.save_result(key, result_record)
+                pbar.update(1)
 
         queue.task_done()
 
@@ -288,6 +397,17 @@ async def process_combination(
         temperature=float(cfg.observer.temperature),
         max_tokens=int(cfg.observer.max_tokens),
     )
+    extract_cfg = cfg.get("extractor", {})
+    extract_enabled = bool(extract_cfg.get("enabled", True))
+    subject_reasoning_max_chars = int(extract_cfg.get("subject_reasoning_max_chars", 0))
+    save_default_on_failure = bool(extract_cfg.get("save_default_on_failure", False))
+    extract_client: Optional[LLMClient] = None
+    if extract_enabled:
+        extract_client = LLMClient(
+            model=str(extract_cfg.get("model", "google/gemini-3.1-flash-lite-preview")),
+            temperature=float(extract_cfg.get("temperature", 0.0)),
+            max_tokens=int(extract_cfg.get("max_tokens", 512)),
+        )
 
     queue = asyncio.Queue()
     for item in to_process:
@@ -295,6 +415,13 @@ async def process_combination(
 
     # Scale concurrency for OpenAI and Anthropic compared to local/google models if needed
     concurrency = int(cfg.concurrency.max_concurrent_requests)
+    pbar = tqdm(
+        total=len(subject_data_list),
+        initial=len(existing_ids),
+        desc=key,
+        dynamic_ncols=True,
+        leave=True,
+    )
 
     workers = []
     for _ in range(concurrency):
@@ -307,6 +434,10 @@ async def process_combination(
                 subject_label,
                 observer_label,
                 len(subject_data_list),
+                pbar,
+                extract_client,
+                subject_reasoning_max_chars,
+                save_default_on_failure,
             )
         )
         workers.append(w)
@@ -317,6 +448,7 @@ async def process_combination(
     for _ in range(concurrency):
         queue.put_nowait(None)
     await asyncio.gather(*workers)
+    pbar.close()
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="scale_experiment")

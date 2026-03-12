@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class MCResponse(BaseModel):
     """Parsed response from a model answering an MC question."""
 
-    answer: str = Field(description="Answer letter: A, B, C, or D")
+    answer: str = Field(description="Answer letter: A to J")
     confidence: float = Field(description="Confidence in 0-1 scale (normalized from 0-100)")
     reasoning: str = Field(description="Step-by-step reasoning", default="")
 
@@ -95,7 +95,7 @@ def parse_mc_response(
         Parsed MCResponse or None if all strategies fail.
     """
     if valid_choices is None:
-        valid_choices = ["A", "B", "C", "D"]
+        valid_choices = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
     # Strategy 1: JSON parse
     result = _try_json_parse(raw_text, valid_choices)
@@ -164,11 +164,14 @@ def _try_regex_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
 
     # Answer patterns (accommodating quotes for invalid JSON)
     answer_patterns = [
-        r'["\']?[Aa]nswer["\']?[:\s]*["\']?\(?([A-Da-d])\)?',
-        r'["\']?[Cc]hoice["\']?[:\s]*["\']?\(?([A-Da-d])\)?',
-        r'["\']?[Ss]elect(?:ed|ion)?["\']?[:\s]*["\']?\(?([A-Da-d])\)?',
-        r"^([A-Da-d])\)",  # Just "A)" at start of line
-        r"\b(?:The answer is|I choose|My answer is|answer is)\s*\(?([A-Da-d])\)?",
+        r'["\']?[Aa]nswer["\']?[:\s]*["\']?\(?([A-Ja-j])\)?',
+        r'["\']?[Cc]hoice["\']?[:\s]*["\']?\(?([A-Ja-j])\)?',
+        r'["\']?[Ss]elect(?:ed|ion)?["\']?[:\s]*["\']?\(?([A-Ja-j])\)?',
+        r"^([A-Ja-j])\)",  # Just "A)" at start of line
+        r"\b(?:The answer is|I choose|My answer is|answer is)\s*\(?([A-Ja-j])\)?",
+        r"\b(?:option|choice)\s*(?:is|:)?\s*\(?([A-Ja-j])\)?",
+        r"\b(?:correct\s+(?:answer|option|choice))\s*(?:is|:)?\s*\(?([A-Ja-j])\)?",
+        r"\(([A-Ja-j])\)\s*(?:is\s+)?(?:the\s+)?(?:correct|best)",
     ]
 
     for pattern in answer_patterns:
@@ -187,6 +190,8 @@ def _try_regex_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
         r"(\d+(?:\.\d+)?)\s*%\s*confiden",
         r"[Ii]\s+am\s+(\d+(?:\.\d+)?)\s*%",
         r"confidence.*?(\d+(?:\.\d+)?)",
+        r"\bconfidence(?:\s*level)?\s*(?:is|:)?\s*(\d+(?:\.\d+)?)\s*%?",
+        r"\b(\d+(?:\.\d+)?)\s*/\s*100\b",
     ]
 
     for pattern in conf_patterns:
@@ -210,6 +215,21 @@ def _try_regex_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
     if answer and confidence is not None:
         return MCResponse(answer=answer, confidence=confidence, reasoning=reasoning)
 
+    # Qualitative fallback for models that refuse numeric confidence
+    if answer and confidence is None:
+        raw_lower = raw.lower()
+        qualitative_conf = [
+            (0.95, ["extremely confident", "very certain", "almost certain"]),
+            (0.85, ["very confident", "high confidence", "highly confident"]),
+            (0.70, ["confident", "fairly confident", "reasonably confident"]),
+            (0.55, ["somewhat confident", "moderately confident"]),
+            (0.35, ["uncertain", "not sure", "low confidence", "not very confident"]),
+            (0.15, ["guess", "pure guess", "wild guess"]),
+        ]
+        for val, phrases in qualitative_conf:
+            if any(p in raw_lower for p in phrases):
+                return MCResponse(answer=answer, confidence=val, reasoning=reasoning)
+
     return None
 
 
@@ -226,7 +246,7 @@ def _try_line_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
 
         # Look for a lone answer letter
         if not answer:
-            match = re.match(r"^([A-Da-d])[\s\.\)]*$", line)
+            match = re.match(r"^([A-Ja-j])[\s\.\)]*$", line)
             if match and match.group(1).upper() in valid:
                 answer = match.group(1).upper()
 

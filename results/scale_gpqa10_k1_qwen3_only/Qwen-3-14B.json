@@ -1,0 +1,558 @@
+[
+  {
+    "question_id": "gpqa_hard_reca44yABeO2fx7UB_0007",
+    "question": "3,3,6-trimethylhepta-1,5-dien-4-one is treated with 1 equivalent of meta-chloroperbenzoic acid. Two different products are formed, in approximately a 1:1 ratio.\n\nIn a separate vessel, Methyllithium is treated with copper(I)iodide. an excess of the resulting solution is slowly added to the product mixture of the first reaction. Name one product that will be formed by this reaction:",
+    "choices": [
+      "A) 2,3,4,5,5-pentamethylhept-6-ene-2,4-diol",
+      "B) 4,4,5,7,7-pentamethyloctane-3,5-diol",
+      "C) 6-hydroxy-2,2,5,5-tetramethyloctan-4-one",
+      "D) 5-hydroxy-3,3,6,6-tetramethylhept-1-en-4-one"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "D",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.45,
+    "gap": -0.55,
+    "primary_reasoning": "{\"answer\": \"D\", \"confidence\": 45, \"reasoning\": \"The first reaction with mCPBA epoxidizes one of the double bonds in 3,3,6-trimethylhepta-1,5-dien-4-one, yielding two epoxide isomers. When treated with methyllithium and CuI (forming a Gilman reagent), the epoxide ring opens via nucleophilic attack by the organocuprate. This likely introduces a hydroxyl group and methyl functionalization. Among the options, D (5-hydroxy-3,3,6,6-tetramethylhept-1-en-4-one) aligns with this scenario, incorporating a hydroxyl on position 5 (from ring opening) and preserving the ketone at C4, while adding methyl groups consistent with the starting material. The other options involve longer chains or diol structures not directly supported by the reaction steps.\"}",
+    "answer_distribution": {
+      "D": 1
+    },
+    "sample_confidences": [
+      0.45
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "D",
+        "confidence": 0.45,
+        "raw_text": "{\"answer\": \"D\", \"confidence\": 45, \"reasoning\": \"The first reaction with mCPBA epoxidizes one of the double bonds in 3,3,6-trimethylhepta-1,5-dien-4-one, yielding two epoxide isomers. When treated with methyllithium and CuI (forming a Gilman reagent), the epoxide ring opens via nucleophilic attack by the organocuprate. This likely introduces a hydroxyl group and methyl functionalization. Among the options, D (5-hydroxy-3,3,6,6-tetramethylhept-1-en-4-one) aligns with this scenario, incorporating a hydroxyl on position 5 (from ring opening) and preserving the ketone at C4, while adding methyl groups consistent with the starting material. The other options involve longer chains or diol structures not directly supported by the reaction steps.\"}",
+        "reasoning": "{\"answer\": \"D\", \"confidence\": 45, \"reasoning\": \"The first reaction with mCPBA epoxidizes one of the double bonds in 3,3,6-trimethylhepta-1,5-dien-4-one, yielding two epoxide isomers. When treated with methyllithium and CuI (forming a Gilman reagent), the epoxide ring opens via nucleophilic attack by the organocuprate. This likely introduces a hydroxyl group and methyl functionalization. Among the options, D (5-hydroxy-3,3,6,6-tetramethylhept-1-en-4-one) aligns with this scenario, incorporating a hydroxyl on position 5 (from ring opening) and preserving the ketone at C4, while adding methyl groups consistent with the starting material. The other options involve longer chains or diol structures not directly supported by the reaction steps.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recBGxVySx1pkrO1i_0003",
+    "question": "Name reactions in chemistry refer to a specific set of well-known chemical reactions that are typically named after their discoverers or the scientists who made significant contributions to their development. These reactions have had a profound impact on the field of chemistry and are often used as fundamental building blocks in various chemical syntheses.\nIdentify the reactants for the following name reactions.\nA + H2SO4 ---> 2,8-dimethylspiro[4.5]decan-6-one\nB + BuLi + H+ ---> 4-methyl-1-phenylpent-3-en-1-ol",
+    "choices": [
+      "A) A = 2,8-dimethylspiro[4.5]decan-6-ol, B = 4-methyl-1-phenylpent-3-en-1-one",
+      "B) A = 2,8-dimethylspiro[4.5]decan-6-ol, B = (((3-methylbut-2-en-1-yl)oxy)methyl)benzene",
+      "C) A = 2,7-dimethyloctahydronaphthalene-4a,8a-diol, B = (((3-methylbut-2-en-1-yl)oxy)methyl)benzene",
+      "D) A = 2,7-dimethyloctahydronaphthalene-4a,8a-diol, B = 4-methyl-1-phenylpent-3-en-1-one"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "A",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.75,
+    "gap": -0.25,
+    "primary_reasoning": "{\"answer\": \"A\", \"confidence\": 75, \"reasoning\": \"The first reaction likely involves a pinacol rearrangement, where a spiro diol (A) with H2SO4 forms the ketone product. The second reaction with BuLi and H+ suggests forming an enol from a ketone (B), matching the enol product. Option A provides A as the diol and B as the ketone, which fits both reactions.\"}",
+    "answer_distribution": {
+      "A": 1
+    },
+    "sample_confidences": [
+      0.75
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "A",
+        "confidence": 0.75,
+        "raw_text": "{\"answer\": \"A\", \"confidence\": 75, \"reasoning\": \"The first reaction likely involves a pinacol rearrangement, where a spiro diol (A) with H2SO4 forms the ketone product. The second reaction with BuLi and H+ suggests forming an enol from a ketone (B), matching the enol product. Option A provides A as the diol and B as the ketone, which fits both reactions.\"}",
+        "reasoning": "{\"answer\": \"A\", \"confidence\": 75, \"reasoning\": \"The first reaction likely involves a pinacol rearrangement, where a spiro diol (A) with H2SO4 forms the ketone product. The second reaction with BuLi and H+ suggests forming an enol from a ketone (B), matching the enol product. Option A provides A as the diol and B as the ketone, which fits both reactions.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recuyeuT5rQ6qDt8F_0002",
+    "question": "Five binary compounds of fluorine with element Y are known. The bright-red substance A1 decomposes at 293 K into A2 (ɷF=31,96%) and fluorine. A1 oxidizes xenon under normal conditions. A3 can also interact with xenon. A3 is obtained by fluorination of element Y with fluorine. By adding Y in a 1:1 molar ratio to a hot colorless concentrated solution of A4, A5 can be obtained. In water, A5 decomposes with the formation of two substances. Indicate the range in which the molecular weight of the substance A4 falls.",
+    "choices": [
+      "A) 140-160",
+      "B) 220-240",
+      "C) 160-180",
+      "D) 110-130"
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.65,
+    "gap": -0.35,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 65, \"reasoning\": \"The fluorine mass percentage in A2 (31.96%) suggests a formula like SbF3 (antimony trifluoride), where the molar mass of Sb is ~121.76 g/mol. This aligns with A2 being SbF3 and Y being antimony (Sb). A4, likely SbF5 (antimony pentafluoride), has a molar mass of 121.76 + 5×19 = 216.76 g/mol, which falls in the 220-240 range (option B). The reaction of SbF5 with Sb in a 1:1 ratio forms SbF3, which fits the description of A5 and its decomposition in water.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      0.65
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 0.65,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 65, \"reasoning\": \"The fluorine mass percentage in A2 (31.96%) suggests a formula like SbF3 (antimony trifluoride), where the molar mass of Sb is ~121.76 g/mol. This aligns with A2 being SbF3 and Y being antimony (Sb). A4, likely SbF5 (antimony pentafluoride), has a molar mass of 121.76 + 5×19 = 216.76 g/mol, which falls in the 220-240 range (option B). The reaction of SbF5 with Sb in a 1:1 ratio forms SbF3, which fits the description of A5 and its decomposition in water.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 65, \"reasoning\": \"The fluorine mass percentage in A2 (31.96%) suggests a formula like SbF3 (antimony trifluoride), where the molar mass of Sb is ~121.76 g/mol. This aligns with A2 being SbF3 and Y being antimony (Sb). A4, likely SbF5 (antimony pentafluoride), has a molar mass of 121.76 + 5×19 = 216.76 g/mol, which falls in the 220-240 range (option B). The reaction of SbF5 with Sb in a 1:1 ratio forms SbF3, which fits the description of A5 and its decomposition in water.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recvlnu8BuLmXZhSX_0008",
+    "question": "The state of a system at time t is given by the column matrix having elements (-1, 2, 1). An observable of the system is represented by the matrix operator P having elements in the first row as (0, 1/ \\sqrt{2}, 0),  in the second row as (1/ \\sqrt{2}, 0, 1/ \\sqrt{2}) and in the third row as (0, 1/ \\sqrt{2}, 0). Calculate the probability that the measurement of the observable will yield 0 at time t.",
+    "choices": [
+      "A) 1/3\n",
+      "B) 2/3\n",
+      "C) \\sqrt{2/3}\n",
+      "D) 1"
+    ],
+    "correct_answer": "A",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "A",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.9,
+    "gap": -0.1,
+    "primary_reasoning": "{\"answer\": \"A\", \"confidence\": 90, \"reasoning\": \"The observable matrix P has eigenvalues -1, 0, and 1. The eigenvector corresponding to eigenvalue 0 is [1, 0, -1]^T, normalized to [1/√2, 0, -1/√2]^T. The given state vector is [-1, 2, 1]^T, with norm √6. The inner product of the state with the normalized eigenvector is (-√2)/√6. Squaring this gives 2/6 = 1/3, which is the probability of measuring 0.\"}",
+    "answer_distribution": {
+      "A": 1
+    },
+    "sample_confidences": [
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "A",
+        "confidence": 0.9,
+        "raw_text": "{\"answer\": \"A\", \"confidence\": 90, \"reasoning\": \"The observable matrix P has eigenvalues -1, 0, and 1. The eigenvector corresponding to eigenvalue 0 is [1, 0, -1]^T, normalized to [1/√2, 0, -1/√2]^T. The given state vector is [-1, 2, 1]^T, with norm √6. The inner product of the state with the normalized eigenvector is (-√2)/√6. Squaring this gives 2/6 = 1/3, which is the probability of measuring 0.\"}",
+        "reasoning": "{\"answer\": \"A\", \"confidence\": 90, \"reasoning\": \"The observable matrix P has eigenvalues -1, 0, and 1. The eigenvector corresponding to eigenvalue 0 is [1, 0, -1]^T, normalized to [1/√2, 0, -1/√2]^T. The given state vector is [-1, 2, 1]^T, with norm √6. The inner product of the state with the normalized eigenvector is (-√2)/√6. Squaring this gives 2/6 = 1/3, which is the probability of measuring 0.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recHVUd2DkoKfedJZ_0005",
+    "question": "Enamine reactions include nucleophilic substitutions, electrophilic additions, and the condensation of secondary amines with carbonyl compounds to generate enamines. Enamine reactions are useful techniques for creating complex compounds with specified functional groups and stereochemistry.\nMention the product of the following reaction (B) and select the correct sequence of the reagents according to the reaction steps (A).\n(E)-N-methyl-N-(pentan-2-ylidene)ethanaminium + A ---> B",
+    "choices": [
+      "A) (i) LDA, DME (ii) CH3CH2I (iii) H3O+ B = pentan-2-one + N,N-dimethylethanamine",
+      "B) (i) LDA (ii) DME, CH3CH2I, H3O+, B = heptan-4-one",
+      "C) (i) LDA (ii) DME, CH3CH2I, H3O+, B = pentan-2-one + N,N-dimethylethanamine",
+      "D) A = (i) LDA, DME (ii) CH3CH2I (iii) H3O+ B = heptan-4-one"
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "D",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.65,
+    "gap": -0.35,
+    "primary_reasoning": "{\"answer\": \"D\", \"confidence\": 65, \"reasoning\": \"The reaction involves alkylation of an enamine derived from pentan-2-one. Steps (i) LDA (base in DME), (ii) CH3CH2I (alkyl halide), (iii) H3O+ (acid workup) lead to a new ketone after alkylation. Hydrolysis regenerates the ketone with an added ethyl group, resulting in heptan-4-one (7-carbon chain with ketone at position 4). Options D correctly matches the reagent sequence and this product, while A/C incorrectly suggest hydrolysis without alkylation (pentan-2-one + amine), and B has an improper reagent order.\"}",
+    "answer_distribution": {
+      "D": 1
+    },
+    "sample_confidences": [
+      0.65
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "D",
+        "confidence": 0.65,
+        "raw_text": "{\"answer\": \"D\", \"confidence\": 65, \"reasoning\": \"The reaction involves alkylation of an enamine derived from pentan-2-one. Steps (i) LDA (base in DME), (ii) CH3CH2I (alkyl halide), (iii) H3O+ (acid workup) lead to a new ketone after alkylation. Hydrolysis regenerates the ketone with an added ethyl group, resulting in heptan-4-one (7-carbon chain with ketone at position 4). Options D correctly matches the reagent sequence and this product, while A/C incorrectly suggest hydrolysis without alkylation (pentan-2-one + amine), and B has an improper reagent order.\"}",
+        "reasoning": "{\"answer\": \"D\", \"confidence\": 65, \"reasoning\": \"The reaction involves alkylation of an enamine derived from pentan-2-one. Steps (i) LDA (base in DME), (ii) CH3CH2I (alkyl halide), (iii) H3O+ (acid workup) lead to a new ketone after alkylation. Hydrolysis regenerates the ketone with an added ethyl group, resulting in heptan-4-one (7-carbon chain with ketone at position 4). Options D correctly matches the reagent sequence and this product, while A/C incorrectly suggest hydrolysis without alkylation (pentan-2-one + amine), and B has an improper reagent order.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recKm6LNWykGapmCr_0006",
+    "question": "If a charge q is placed d distance away from the center of a grounded conducting sphere of radius R. Calculate the net potential energy of this system.",
+    "choices": [
+      "A) U=- kq^2 d/(d^2 -R^2)",
+      "B) U=-(1/2) kq^2 R^2/(d^2 -R^2)",
+      "C) U=- (1/2) *kq^2 R/(d^2 -R^2)",
+      "D) U=- (1/2) kq^2 d/(d^2 +R^2)"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.85,
+    "gap": -0.15,
+    "primary_reasoning": "{\"answer\": \"C\", \"confidence\": 85, \"reasoning\": \"The potential energy of the system is calculated using the method of image charges. For a grounded conducting sphere, an image charge q' = - (R/d) q is induced inside the sphere at a distance R²/d from the center. The separation between q and q' is (d² - R²)/d. The potential energy is derived as (1/2) * q * V, where V is the potential at q due to q'. Calculating this gives - (1/2) * k q² R / (d² - R²), matching option C.\"}",
+    "answer_distribution": {
+      "C": 1
+    },
+    "sample_confidences": [
+      0.85
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "C",
+        "confidence": 0.85,
+        "raw_text": "{\"answer\": \"C\", \"confidence\": 85, \"reasoning\": \"The potential energy of the system is calculated using the method of image charges. For a grounded conducting sphere, an image charge q' = - (R/d) q is induced inside the sphere at a distance R²/d from the center. The separation between q and q' is (d² - R²)/d. The potential energy is derived as (1/2) * q * V, where V is the potential at q due to q'. Calculating this gives - (1/2) * k q² R / (d² - R²), matching option C.\"}",
+        "reasoning": "{\"answer\": \"C\", \"confidence\": 85, \"reasoning\": \"The potential energy of the system is calculated using the method of image charges. For a grounded conducting sphere, an image charge q' = - (R/d) q is induced inside the sphere at a distance R²/d from the center. The separation between q and q' is (d² - R²)/d. The potential energy is derived as (1/2) * q * V, where V is the potential at q due to q'. Calculating this gives - (1/2) * k q² R / (d² - R²), matching option C.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_rec1oj2DveQWl9Rpw_0009",
+    "question": "We would like to dissolve (at 25°С) 0.1 g Fe(OH)3 in 100 cm3 total volume. What is the minimum volume (cm3) of a 0.1 M monobasic strong acid that is needed to prepare the solution and what is the pH of the resulting solution?",
+    "choices": [
+      "A) pH 4.94; 20.40 cm3",
+      "B) pH 3.16; 32.14 cm3",
+      "C) pH 2.69; 30.09 cm3",
+      "D) pH 2.04; 28.05 cm3"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "D",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.7,
+    "gap": -0.3,
+    "primary_reasoning": "{\"answer\": \"D\", \"confidence\": 70, \"reasoning\": \"To dissolve 0.1 g Fe(OH)₃, calculate moles (0.1 g / 106.85 g/mol ≈ 0.000936 mol). The neutralization reaction requires 3 moles of H⁺ per mole of Fe(OH)₃ (3 × 0.000936 ≈ 0.002808 mol H⁺). Using a 0.1 M acid, the volume needed is 0.002808 mol / 0.1 mol/L ≈ 28.08 cm³, closest to option D. The pH is determined by Fe³⁺ hydrolysis. Assuming [Fe³⁺] = 0.00936 M (from 0.000936 mol in 0.1 L), use Ksp of Fe(OH)₃ (2.5×10⁻³⁹) to find [OH⁻] ≈ 6.45×10⁻¹³ M, leading to [H⁺] ≈ 1.55×10⁻² M and pH ≈ 1.81. The closest option (D) has pH 2.04, likely due to approximations or experimental factors.\"}",
+    "answer_distribution": {
+      "D": 1
+    },
+    "sample_confidences": [
+      0.7
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "D",
+        "confidence": 0.7,
+        "raw_text": "{\"answer\": \"D\", \"confidence\": 70, \"reasoning\": \"To dissolve 0.1 g Fe(OH)₃, calculate moles (0.1 g / 106.85 g/mol ≈ 0.000936 mol). The neutralization reaction requires 3 moles of H⁺ per mole of Fe(OH)₃ (3 × 0.000936 ≈ 0.002808 mol H⁺). Using a 0.1 M acid, the volume needed is 0.002808 mol / 0.1 mol/L ≈ 28.08 cm³, closest to option D. The pH is determined by Fe³⁺ hydrolysis. Assuming [Fe³⁺] = 0.00936 M (from 0.000936 mol in 0.1 L), use Ksp of Fe(OH)₃ (2.5×10⁻³⁹) to find [OH⁻] ≈ 6.45×10⁻¹³ M, leading to [H⁺] ≈ 1.55×10⁻² M and pH ≈ 1.81. The closest option (D) has pH 2.04, likely due to approximations or experimental factors.\"}",
+        "reasoning": "{\"answer\": \"D\", \"confidence\": 70, \"reasoning\": \"To dissolve 0.1 g Fe(OH)₃, calculate moles (0.1 g / 106.85 g/mol ≈ 0.000936 mol). The neutralization reaction requires 3 moles of H⁺ per mole of Fe(OH)₃ (3 × 0.000936 ≈ 0.002808 mol H⁺). Using a 0.1 M acid, the volume needed is 0.002808 mol / 0.1 mol/L ≈ 28.08 cm³, closest to option D. The pH is determined by Fe³⁺ hydrolysis. Assuming [Fe³⁺] = 0.00936 M (from 0.000936 mol in 0.1 L), use Ksp of Fe(OH)₃ (2.5×10⁻³⁹) to find [OH⁻] ≈ 6.45×10⁻¹³ M, leading to [H⁺] ≈ 1.55×10⁻² M and pH ≈ 1.81. The closest option (D) has pH 2.04, likely due to approximations or experimental factors.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recGee5m84dg5FZkc_0004",
+    "question": "Substances 1-6 undergo an electrophilic substitution reaction with an excess of bromine (it is assumed that only one monobromo derivative is formed):\n1) С6H5-CH3\n2) C6H5-COOC2H5\n3) C6H5-Cl\n4) C6H5-NO2\n5) C6H5-C2H5\n6) C6H5-COOH\nC6H5 - means benzene ring\nArrange the substances in order of increasing the weight fraction of the yield of the para-isomer.",
+    "choices": [
+      "A) 4<2<6<3<1<5",
+      "B) 6<2<4<5<1<3",
+      "C) 3<5<1<6<2<4",
+      "D) 4<6<2<1<5<3"
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 0,
+    "k_target": 1,
+    "majority_answer": "",
+    "is_correct": false,
+    "c_beh": 0.0,
+    "c_rep": 0.0,
+    "gap": 0.0,
+    "primary_reasoning": "",
+    "answer_distribution": {},
+    "sample_confidences": [],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 1,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": true,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "empty",
+        "answer": null,
+        "confidence": null,
+        "raw_text": "",
+        "reasoning": "",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": false,
+        "original_has_confidence": false,
+        "missing_answer_in_original": true,
+        "missing_confidence_in_original": true,
+        "note": "empty_raw_response"
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recJJcOHhFeSaRpl4_0000",
+    "question": "Identify the compound C9H11NO2 using the given data.\nIR: medium to strong intensity bands at 3420 cm-1, 3325 cm-1\nstrong band at 1720 cm-1\n1H NMR: 1.20 ppm (t, 3H); 4.0 ppm (bs, 2H); 4.5 ppm (q, 2H); 7.0 ppm (d, 2H), 8.0 ppm (d, 2H).",
+    "choices": [
+      "A) N-(4-ethoxyphenyl)formamide",
+      "B) 4-aminophenyl propionate",
+      "C) 3-ethoxybenzamide",
+      "D) ethyl 4-aminobenzoate"
+    ],
+    "correct_answer": "D",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "D",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.85,
+    "gap": -0.15,
+    "primary_reasoning": "{\"answer\": \"D\", \"confidence\": 85, \"reasoning\": \"The IR spectrum shows a carbonyl stretch at 1720 cm⁻¹, characteristic of an ester (option D) rather than an amide (options A or C). The NMR data includes a triplet (1.20 ppm, CH₃), quartet (4.5 ppm, CH₂ of ethoxy), and aromatic protons (7.0 and 8.0 ppm, para-substituted benzene). The broad signal at 4.0 ppm (2H) likely corresponds to the amino group (NH₂) in ethyl 4-aminobenzoate (D), matching the molecular formula C₉H₁₁NO₂. The aromatic protons align with a para-disubstituted benzene ring (amine and ester groups).\"}",
+    "answer_distribution": {
+      "D": 1
+    },
+    "sample_confidences": [
+      0.85
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "D",
+        "confidence": 0.85,
+        "raw_text": "{\"answer\": \"D\", \"confidence\": 85, \"reasoning\": \"The IR spectrum shows a carbonyl stretch at 1720 cm⁻¹, characteristic of an ester (option D) rather than an amide (options A or C). The NMR data includes a triplet (1.20 ppm, CH₃), quartet (4.5 ppm, CH₂ of ethoxy), and aromatic protons (7.0 and 8.0 ppm, para-substituted benzene). The broad signal at 4.0 ppm (2H) likely corresponds to the amino group (NH₂) in ethyl 4-aminobenzoate (D), matching the molecular formula C₉H₁₁NO₂. The aromatic protons align with a para-disubstituted benzene ring (amine and ester groups).\"}",
+        "reasoning": "{\"answer\": \"D\", \"confidence\": 85, \"reasoning\": \"The IR spectrum shows a carbonyl stretch at 1720 cm⁻¹, characteristic of an ester (option D) rather than an amide (options A or C). The NMR data includes a triplet (1.20 ppm, CH₃), quartet (4.5 ppm, CH₂ of ethoxy), and aromatic protons (7.0 and 8.0 ppm, para-substituted benzene). The broad signal at 4.0 ppm (2H) likely corresponds to the amino group (NH₂) in ethyl 4-aminobenzoate (D), matching the molecular formula C₉H₁₁NO₂. The aromatic protons align with a para-disubstituted benzene ring (amine and ester groups).\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "gpqa_hard_recI1ls9OXdxatHQn_0001",
+    "question": "We have a large ensemble of 10.000 (ten thousand) identical systems. Each system has a particle that are the same and under the same conditions. Each particle can move along along a tube (the x-axis direction).\nWe know from theoretical modeling that the wave function (from Schrodinger equation) of each particle, in a part of space where it can exist, can be described as:\n( a / sqrt(1 + x) ) - 0.5*i; where “i” is the square root of -1, and “sqrt()” means the square root of.\nWhen measuring the position of the particles, none were found at x<1 and x>3 (only in between x=1 and x=3).\nWhat is the numerical value of “a”?",
+    "choices": [
+      "A) 0.35",
+      "B) 0.6",
+      "C) 0.85",
+      "D) 1.1"
+    ],
+    "correct_answer": "C",
+    "category": "science",
+    "source": "gpqa_diamond",
+    "external_difficulty": "high_blind_spot",
+    "model_name": "qwen/qwen3-14b:nitro",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.9,
+    "gap": -0.1,
+    "primary_reasoning": "{\"answer\": \"C\", \"confidence\": 90, \"reasoning\": \"The wave function's modulus squared is |ψ|² = (a²)/(1+x) + 0.25. Integrating this from x=1 to 3 gives a²*ln(2) + 0.5 = 1. Solving for a² = 0.5/ln(2) ≈ 0.721, so a ≈ 0.85, which matches option C.\"}",
+    "answer_distribution": {
+      "C": 1
+    },
+    "sample_confidences": [
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "C",
+        "confidence": 0.9,
+        "raw_text": "{\"answer\": \"C\", \"confidence\": 90, \"reasoning\": \"The wave function's modulus squared is |ψ|² = (a²)/(1+x) + 0.25. Integrating this from x=1 to 3 gives a²*ln(2) + 0.5 = 1. Solving for a² = 0.5/ln(2) ≈ 0.721, so a ≈ 0.85, which matches option C.\"}",
+        "reasoning": "{\"answer\": \"C\", \"confidence\": 90, \"reasoning\": \"The wave function's modulus squared is |ψ|² = (a²)/(1+x) + 0.25. Integrating this from x=1 to 3 gives a²*ln(2) + 0.5 = 1. Solving for a² = 0.5/ln(2) ≈ 0.721, so a ≈ 0.85, which matches option C.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  }
+]

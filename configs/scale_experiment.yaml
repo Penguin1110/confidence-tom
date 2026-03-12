@@ -11,27 +11,15 @@ wandb_project: "confidence-tom-scale"
 
 # --- Subject Models (same family, different scale) ---
 scale_models:
-  - id: "google/gemma-3-4b-it"
-    label: "Gemma-3-4B"
-    scale: "small"
-  - id: "google/gemma-3-12b-it"
-    label: "Gemma-3-12B"
-    scale: "medium"
-  - id: "google/gemma-3-27b-it"
-    label: "Gemma-3-27B"
-    scale: "large"
-  - id: "qwen/qwen3.5-27b"
-    label: "Qwen-3.5-27B"
+  - id: "qwen/qwen3-8b:nitro"
+    label: "Qwen-3-8B"
     scale: "dense"
-  - id: "qwen/qwen3.5-35b-a3b"
-    label: "Qwen-3.5-35B-A3B"
-    scale: "moe"
-  - id: "qwen/qwen3.5-122b-a10b"
-    label: "Qwen-3.5-122B-A10B"
-    scale: "moe"
-  - id: "qwen/qwen3.5-397b-a17b"
-    label: "Qwen-3.5-397B-A17B"
-    scale: "moe"
+  - id: "qwen/qwen3-14b:nitro"
+    label: "Qwen-3-14B"
+    scale: "dense"
+  - id: "qwen/qwen3-32b:nitro"
+    label: "Qwen-3-32B"
+    scale: "dense"
   - id: "meta-llama/llama-4-scout"
     label: "Llama-4-Scout"
     scale: "base"
@@ -53,7 +41,14 @@ generator:
 
 # --- Dataset Settings ---
 dataset:
-  num_per_source: 30    # Total = 60 (MMLU + ARC + TruthfulQA + GSM8K) for MVP test
+  num_per_source: 100    # Total ~300 (MMLU-Pro + GPQA-Zero + MATH-L5 + HardMMLU)
+  # Optional explicit per-dataset counts (preferred for pilots / controlled runs).
+  # When provided, these override num_per_source-derived defaults.
+  # counts:
+  #   mmlu_pro: 10
+  #   gpqa: 10
+  #   math_l5: 10
+  #   mmlu_hard: 10
 
 # --- Observer Models (for Part B: second-order experiment) ---
 observer:
@@ -62,7 +57,7 @@ observer:
     - "anthropic/claude-opus-4.6"
     - "google/gemini-3.1-pro-preview"
   temperature: 0
-  max_tokens: 4096
+  max_tokens: 8192
 
 # --- Concurrency ---
 concurrency:

@@ -1,0 +1,568 @@
+[
+  {
+    "question_id": "harp_mcq_2011_AMC_8_11_0007",
+    "question": "The graph shows the number of minutes studied by both Asha (black bar) and Sasha (grey bar) in one week. On the average, how many more minutes per day did Sasha study than Asha? [asy] size(300); real i; defaultpen(linewidth(0.8)); draw((0,140)--origin--(220,0)); for(i=1;i<13;i=i+1) { draw((0,10*i)--(220,10*i)); } label(\"$0$\",origin,W); label(\"$20$\",(0,20),W); label(\"$40$\",(0,40),W); label(\"$60$\",(0,60),W); label(\"$80$\",(0,80),W); label(\"$100$\",(0,100),W); label(\"$120$\",(0,120),W); path MonD=(20,0)--(20,60)--(30,60)--(30,0)--cycle,MonL=(30,0)--(30,70)--(40,70)--(40,0)--cycle,TuesD=(60,0)--(60,90)--(70,90)--(70,0)--cycle,TuesL=(70,0)--(70,80)--(80,80)--(80,0)--cycle,WedD=(100,0)--(100,100)--(110,100)--(110,0)--cycle,WedL=(110,0)--(110,120)--(120,120)--(120,0)--cycle,ThurD=(140,0)--(140,80)--(150,80)--(150,0)--cycle,ThurL=(150,0)--(150,110)--(160,110)--(160,0)--cycle,FriD=(180,0)--(180,70)--(190,70)--(190,0)--cycle,FriL=(190,0)--(190,50)--(200,50)--(200,0)--cycle; fill(MonD,grey); fill(MonL,lightgrey); fill(TuesD,grey); fill(TuesL,lightgrey); fill(WedD,grey); fill(WedL,lightgrey); fill(ThurD,grey); fill(ThurL,lightgrey); fill(FriD,grey); fill(FriL,lightgrey); draw(MonD^^MonL^^TuesD^^TuesL^^WedD^^WedL^^ThurD^^ThurL^^FriD^^FriL); label(\"M\",(30,-5),S); label(\"Tu\",(70,-5),S); label(\"W\",(110,-5),S); label(\"Th\",(150,-5),S); label(\"F\",(190,-5),S); label(\"M\",(-25,85),W); label(\"I\",(-27,75),W); label(\"N\",(-25,65),W); label(\"U\",(-25,55),W); label(\"T\",(-25,45),W); label(\"E\",(-25,35),W); label(\"S\",(-26,25),W);[/asy]",
+    "choices": [
+      "A) $9$",
+      "B) $6$",
+      "C) $10$",
+      "D) $12$",
+      "E) $8$"
+    ],
+    "correct_answer": "B",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AMC_8_1",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 95, \"reasoning\": \"1. Extract data from the graph code: Asha (darker bar) studied 60, 90, 100, 80, 70 minutes. Sasha (lighter bar) studied 70, 80, 120, 110, 50 minutes. 2. Calculate totals: Asha = 400 mins, Sasha = 430 mins. 3. Calculate difference: 430 - 400 = 30 mins total difference. 4. Calculate daily average difference: 30 mins / 5 days = 6 mins per day. 5. Match with Option B.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 95, \"reasoning\": \"1. Extract data from the graph code: Asha (darker bar) studied 60, 90, 100, 80, 70 minutes. Sasha (lighter bar) studied 70, 80, 120, 110, 50 minutes. 2. Calculate totals: Asha = 400 mins, Sasha = 430 mins. 3. Calculate difference: 430 - 400 = 30 mins total difference. 4. Calculate daily average difference: 30 mins / 5 days = 6 mins per day. 5. Match with Option B.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 95, \"reasoning\": \"1. Extract data from the graph code: Asha (darker bar) studied 60, 90, 100, 80, 70 minutes. Sasha (lighter bar) studied 70, 80, 120, 110, 50 minutes. 2. Calculate totals: Asha = 400 mins, Sasha = 430 mins. 3. Calculate difference: 430 - 400 = 30 mins total difference. 4. Calculate daily average difference: 30 mins / 5 days = 6 mins per day. 5. Match with Option B.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_1957_AHSME_5_0003",
+    "question": "Through the use of theorems on logarithms \\[\\log{\\frac{a}{b}} + \\log{\\frac{b}{c}} + \\log{\\frac{c}{d}} - \\log{\\frac{ay}{dx}}\\] can be reduced to:",
+    "choices": [
+      "A) $\\log{\\frac{x}{y}}$",
+      "B) $140x-24x^2+x^3$",
+      "C) $\\log{\\frac{y}{x}}$",
+      "D) $1$",
+      "E) $\\text{none of these}$"
+    ],
+    "correct_answer": "A",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AHSME_2",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "A",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"A\", \"confidence\": 95, \"reasoning\": \"Apply the product rule for logarithms to the first three terms: log(a/b) + log(b/c) + log(c/d) = log((a/b)*(b/c)*(c/d)) = log(a/d). Then apply the quotient rule for the subtraction: log(a/d) - log(ay/dx) = log((a/d) / (ay/dx)). Simplify the fraction inside the logarithm: (a/d) * (dx/ay) = (adx)/(day) = x/y. The final expression is log(x/y), which corresponds to option A.\"}",
+    "answer_distribution": {
+      "A": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "A",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"A\", \"confidence\": 95, \"reasoning\": \"Apply the product rule for logarithms to the first three terms: log(a/b) + log(b/c) + log(c/d) = log((a/b)*(b/c)*(c/d)) = log(a/d). Then apply the quotient rule for the subtraction: log(a/d) - log(ay/dx) = log((a/d) / (ay/dx)). Simplify the fraction inside the logarithm: (a/d) * (dx/ay) = (adx)/(day) = x/y. The final expression is log(x/y), which corresponds to option A.\"}",
+        "reasoning": "{\"answer\": \"A\", \"confidence\": 95, \"reasoning\": \"Apply the product rule for logarithms to the first three terms: log(a/b) + log(b/c) + log(c/d) = log((a/b)*(b/c)*(c/d)) = log(a/d). Then apply the quotient rule for the subtraction: log(a/d) - log(ay/dx) = log((a/d) / (ay/dx)). Simplify the fraction inside the logarithm: (a/d) * (dx/ay) = (adx)/(day) = x/y. The final expression is log(x/y), which corresponds to option A.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_2003_AMC_10A_17_0002",
+    "question": "The number of inches in the perimeter of an equilateral triangle equals the number of square inches in the area of its circumscribed circle. What is the radius, in inches, of the circle?",
+    "choices": [
+      "A) $\\sqrt{3}$",
+      "B) $\\frac{6}{\\pi}$",
+      "C) $\\frac{3\\sqrt{3}}{\\pi}$",
+      "D) $\\sqrt{3}\\pi$",
+      "E) $\\frac{3\\sqrt{2}}{\\pi}$"
+    ],
+    "correct_answer": "C",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AMC_10A_2",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"C\", \"confidence\": 95, \"reasoning\": \"Let r be the radius of the circumscribed circle and s be the side length of the equilateral triangle. The relationship between them is s = r * sqrt(3). The perimeter of the triangle is 3s = 3 * r * sqrt(3). The area of the circle is pi * r^2. Setting the perimeter equal to the area gives 3 * r * sqrt(3) = pi * r^2. Dividing both sides by r (since r > 0) results in r = (3 * sqrt(3)) / pi. This matches option C.\"}",
+    "answer_distribution": {
+      "C": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "C",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"C\", \"confidence\": 95, \"reasoning\": \"Let r be the radius of the circumscribed circle and s be the side length of the equilateral triangle. The relationship between them is s = r * sqrt(3). The perimeter of the triangle is 3s = 3 * r * sqrt(3). The area of the circle is pi * r^2. Setting the perimeter equal to the area gives 3 * r * sqrt(3) = pi * r^2. Dividing both sides by r (since r > 0) results in r = (3 * sqrt(3)) / pi. This matches option C.\"}",
+        "reasoning": "{\"answer\": \"C\", \"confidence\": 95, \"reasoning\": \"Let r be the radius of the circumscribed circle and s be the side length of the equilateral triangle. The relationship between them is s = r * sqrt(3). The perimeter of the triangle is 3s = 3 * r * sqrt(3). The area of the circle is pi * r^2. Setting the perimeter equal to the area gives 3 * r * sqrt(3) = pi * r^2. Dividing both sides by r (since r > 0) results in r = (3 * sqrt(3)) / pi. This matches option C.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_1999_AMC_8_10_0008",
+    "question": "A complete cycle of a traffic light takes 60 seconds. During each cycle the light is green for 25 seconds, yellow for 5 seconds, and red for 30 seconds. At a randomly chosen time, what is the probability that the light will NOT be green?",
+    "choices": [
+      "A) $\\frac{5}{12}$",
+      "B) $\\frac{7}{12}$",
+      "C) $\\frac{1}{4}$",
+      "D) $\\frac{1}{3}$",
+      "E) $\\frac{1}{2}$"
+    ],
+    "correct_answer": "B",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AMC_8_1",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 1.0,
+    "gap": 0.0,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"The total cycle time is 60 seconds. The light is green for 25 seconds. The time the light is NOT green is the total time minus the green time: 60 - 25 = 35 seconds. The probability is the ratio of the time not green to the total time: 35/60. Simplifying this fraction by dividing both the numerator and denominator by 5 results in 7/12.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      1.0
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 1.0,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"The total cycle time is 60 seconds. The light is green for 25 seconds. The time the light is NOT green is the total time minus the green time: 60 - 25 = 35 seconds. The probability is the ratio of the time not green to the total time: 35/60. Simplifying this fraction by dividing both the numerator and denominator by 5 results in 7/12.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"The total cycle time is 60 seconds. The light is green for 25 seconds. The time the light is NOT green is the total time minus the green time: 60 - 25 = 35 seconds. The probability is the ratio of the time not green to the total time: 35/60. Simplifying this fraction by dividing both the numerator and denominator by 5 results in 7/12.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_2004_AMC_8_14_0005",
+    "question": "What is the area enclosed by the geoboard quadrilateral below? [asy] unitsize(3mm); defaultpen(linewidth(.8pt)); dotfactor=2; for(int a=0; a<=10; ++a) for(int b=0; b<=10; ++b) { dot((a,b)); }; draw((4,0)--(0,5)--(3,4)--(10,10)--cycle); [/asy]",
+    "choices": [
+      "A) $27$",
+      "B) $41$",
+      "C) $18\\frac12$",
+      "D) $22\\frac12$",
+      "E) $15$"
+    ],
+    "correct_answer": "D",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AMC_8_1",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 0,
+    "k_target": 1,
+    "majority_answer": "",
+    "is_correct": false,
+    "c_beh": 0.0,
+    "c_rep": 0.0,
+    "gap": 0.0,
+    "primary_reasoning": "",
+    "answer_distribution": {},
+    "sample_confidences": [],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 1,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": true,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "empty",
+        "answer": null,
+        "confidence": null,
+        "raw_text": "",
+        "reasoning": "",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": false,
+        "original_has_confidence": false,
+        "missing_answer_in_original": true,
+        "missing_confidence_in_original": true,
+        "note": "empty_raw_response"
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_1998_AHSME_14_0006",
+    "question": "A parabola has vertex of $(4,-5)$ and has two $x-$intercepts, one positive, and one negative. If this parabola is the graph of $y = ax^2 + bx + c,$ which of $a,b,$ and $c$ must be positive?",
+    "choices": [
+      "A) $\\text{only} c$",
+      "B) $\\text{only} a$",
+      "C) $\\text{only} b$",
+      "D) $\\text{none}$",
+      "E) $a \\text{and} b \\text{only}$"
+    ],
+    "correct_answer": "B",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AHSME_3",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 1.0,
+    "gap": 0.0,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"1. Determine the sign of a: The vertex is at (4, -5). Since the y-coordinate of the vertex is negative and the parabola has two x-intercepts (crossing y=0), the parabola must open upwards. Thus, a > 0. 2. Determine the sign of b: The x-coordinate of the vertex is given by -b/(2a). We know this equals 4. So, -b/(2a) = 4, which implies b = -8a. Since a is positive, b must be negative. 3. Determine the sign of c: The product of the x-intercepts (roots) is given by c/a. Since one intercept is positive and one is negative, their product is negative. Therefore, c/a < 0. Since a is positive, c must be negative. Conclusion: Only a is positive.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      1.0
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 1.0,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"1. Determine the sign of a: The vertex is at (4, -5). Since the y-coordinate of the vertex is negative and the parabola has two x-intercepts (crossing y=0), the parabola must open upwards. Thus, a > 0. 2. Determine the sign of b: The x-coordinate of the vertex is given by -b/(2a). We know this equals 4. So, -b/(2a) = 4, which implies b = -8a. Since a is positive, b must be negative. 3. Determine the sign of c: The product of the x-intercepts (roots) is given by c/a. Since one intercept is positive and one is negative, their product is negative. Therefore, c/a < 0. Since a is positive, c must be negative. Conclusion: Only a is positive.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"1. Determine the sign of a: The vertex is at (4, -5). Since the y-coordinate of the vertex is negative and the parabola has two x-intercepts (crossing y=0), the parabola must open upwards. Thus, a > 0. 2. Determine the sign of b: The x-coordinate of the vertex is given by -b/(2a). We know this equals 4. So, -b/(2a) = 4, which implies b = -8a. Since a is positive, b must be negative. 3. Determine the sign of c: The product of the x-intercepts (roots) is given by c/a. Since one intercept is positive and one is negative, their product is negative. Therefore, c/a < 0. Since a is positive, c must be negative. Conclusion: Only a is positive.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_1951_AHSME_10_0009",
+    "question": "Of the following statements, the one that is incorrect is:",
+    "choices": [
+      "A) $\\text{Doubling the divisor of a fraction and dividing its numerator by 2 changes the quotient.}$",
+      "B) $\\text{Doubling the radius of a given circle doubles the area.}$",
+      "C) $\\text{Doubling a given quantity may make it less than it originally was.}$",
+      "D) $\\text{Doubling the base of a given rectangle doubles the area.}$",
+      "E) $\\text{Doubling the altitude of a triangle doubles the area.}$"
+    ],
+    "correct_answer": "B",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AHSME_2",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 1.0,
+    "gap": 0.0,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"Analyze each statement: A) New quotient is (N/2)/(2D) = N/4D, which differs from N/D, so it changes. B) Circle area A = πr². Doubling radius gives A' = π(2r)² = 4πr² = 4A, quadrupling the area, not doubling. C) True for negative numbers (e.g., -5 becomes -10). D) Rectangle area A = bh, doubling base gives 2bh = 2A. E) Triangle area A = ½bh, doubling altitude gives ½b(2h) = 2A. Statement B is mathematically incorrect.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      1.0
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 1.0,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"Analyze each statement: A) New quotient is (N/2)/(2D) = N/4D, which differs from N/D, so it changes. B) Circle area A = πr². Doubling radius gives A' = π(2r)² = 4πr² = 4A, quadrupling the area, not doubling. C) True for negative numbers (e.g., -5 becomes -10). D) Rectangle area A = bh, doubling base gives 2bh = 2A. E) Triangle area A = ½bh, doubling altitude gives ½b(2h) = 2A. Statement B is mathematically incorrect.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"Analyze each statement: A) New quotient is (N/2)/(2D) = N/4D, which differs from N/D, so it changes. B) Circle area A = πr². Doubling radius gives A' = π(2r)² = 4πr² = 4A, quadrupling the area, not doubling. C) True for negative numbers (e.g., -5 becomes -10). D) Rectangle area A = bh, doubling base gives 2bh = 2A. E) Triangle area A = ½bh, doubling altitude gives ½b(2h) = 2A. Statement B is mathematically incorrect.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_1990_AHSME_4_0004",
+    "question": "[asy] draw((0,0)--(16,0)--(21,5*sqrt(3))--(5,5*sqrt(3))--cycle,dot); draw((5,5*sqrt(3))--(1,5*sqrt(3))--(16,0),dot); MP(\"A\",(0,0),S);MP(\"B\",(16,0),S);MP(\"C\",(21,5sqrt(3)),NE);MP(\"D\",(5,5sqrt(3)),N);MP(\"E\",(1,5sqrt(3)),N); MP(\"16\",(8,0),S);MP(\"10\",(18.5,5sqrt(3)/2),E);MP(\"4\",(3,5sqrt(3)),N); dot((4,4sqrt(3))); MP(\"F\",(4,4sqrt(3)),dir(210)); [/asy] Let $ABCD$ be a parallelogram with $\\angle{ABC}=120^\\circ, AB=16$ and $BC=10.$ Extend $\\overline{CD}$ through $D$ to $E$ so that $DE=4.$ If $\\overline{BE}$ intersects $\\overline{AD}$ at $F$, then $FD$ is closest to",
+    "choices": [
+      "A) $4$",
+      "B) $5$",
+      "C) $1$",
+      "D) $3$",
+      "E) $2$"
+    ],
+    "correct_answer": "E",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AHSME_2",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "E",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 1.0,
+    "gap": 0.0,
+    "primary_reasoning": "{\"answer\": \"E\", \"confidence\": 100, \"reasoning\": \"In parallelogram ABCD, AB is parallel to CD. Since E is on the extension of CD, AB is parallel to DE. The intersection F of BE and AD forms two similar triangles, triangle ABF and triangle DEF, because alternate interior angles are equal (angle FAB = angle FDE and angle FBA = angle FED). The ratio of similarity is DE/AB = 4/16 = 1/4. This implies FD/AF = 1/4, so AF = 4*FD. Since F lies on the segment AD, AD = AF + FD = 5*FD. Given that opposite sides of a parallelogram are equal, AD = BC = 10. Therefore, 5*FD = 10, which yields FD = 2.\"}",
+    "answer_distribution": {
+      "E": 1
+    },
+    "sample_confidences": [
+      1.0
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "E",
+        "confidence": 1.0,
+        "raw_text": "{\"answer\": \"E\", \"confidence\": 100, \"reasoning\": \"In parallelogram ABCD, AB is parallel to CD. Since E is on the extension of CD, AB is parallel to DE. The intersection F of BE and AD forms two similar triangles, triangle ABF and triangle DEF, because alternate interior angles are equal (angle FAB = angle FDE and angle FBA = angle FED). The ratio of similarity is DE/AB = 4/16 = 1/4. This implies FD/AF = 1/4, so AF = 4*FD. Since F lies on the segment AD, AD = AF + FD = 5*FD. Given that opposite sides of a parallelogram are equal, AD = BC = 10. Therefore, 5*FD = 10, which yields FD = 2.\"}",
+        "reasoning": "{\"answer\": \"E\", \"confidence\": 100, \"reasoning\": \"In parallelogram ABCD, AB is parallel to CD. Since E is on the extension of CD, AB is parallel to DE. The intersection F of BE and AD forms two similar triangles, triangle ABF and triangle DEF, because alternate interior angles are equal (angle FAB = angle FDE and angle FBA = angle FED). The ratio of similarity is DE/AB = 4/16 = 1/4. This implies FD/AF = 1/4, so AF = 4*FD. Since F lies on the segment AD, AD = AF + FD = 5*FD. Given that opposite sides of a parallelogram are equal, AD = BC = 10. Therefore, 5*FD = 10, which yields FD = 2.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_1965_AHSME_17_0000",
+    "question": "Given the true statement: The picnic on Sunday will not be held only if the weather is not fair. We can then conclude that:",
+    "choices": [
+      "A) $\\text{If it is fair Sunday, the picnic must be held.}$",
+      "B) $\\text{If it is not fair Sunday, the picnic will not be held.}$",
+      "C) $\\text{If the picnic is held, Sunday's weather is undoubtedly fair.}$",
+      "D) $\\text{If the picnic is not held, Sunday's weather is possibly unfair.}$",
+      "E) $\\text{If it is fair Sunday, the picnic may be held.}$"
+    ],
+    "correct_answer": "A",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AHSME_3",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "A",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"A\", \"confidence\": 95, \"reasoning\": \"The statement 'The picnic will not be held only if the weather is not fair' translates logically to 'If the picnic is not held, then the weather is not fair' (~P -> ~W). The logical equivalent (contrapositive) of this statement is 'If the weather is fair, then the picnic is held' (W -> P). Option A matches this contrapositive exactly. Options B and C represent the converse and inverse respectively, which are logical fallacies. Option D and E are weaker than the definite conclusion provided by Option A.\"}",
+    "answer_distribution": {
+      "A": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "A",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"A\", \"confidence\": 95, \"reasoning\": \"The statement 'The picnic will not be held only if the weather is not fair' translates logically to 'If the picnic is not held, then the weather is not fair' (~P -> ~W). The logical equivalent (contrapositive) of this statement is 'If the weather is fair, then the picnic is held' (W -> P). Option A matches this contrapositive exactly. Options B and C represent the converse and inverse respectively, which are logical fallacies. Option D and E are weaker than the definite conclusion provided by Option A.\"}",
+        "reasoning": "{\"answer\": \"A\", \"confidence\": 95, \"reasoning\": \"The statement 'The picnic will not be held only if the weather is not fair' translates logically to 'If the picnic is not held, then the weather is not fair' (~P -> ~W). The logical equivalent (contrapositive) of this statement is 'If the weather is fair, then the picnic is held' (W -> P). Option A matches this contrapositive exactly. Options B and C represent the converse and inverse respectively, which are logical fallacies. Option D and E are weaker than the definite conclusion provided by Option A.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "harp_mcq_2012_AMC_12B_13_0001",
+    "question": "Two parabolas have equations $y= x^2 + ax +b$ and $y= x^2 + cx +d$, where $a, b, c,$ and $d$ are integers, each chosen independently by rolling a fair six-sided die. What is the probability that the parabolas will have at least one point in common?",
+    "choices": [
+      "A) $1$",
+      "B) $\\frac{31}{36}$",
+      "C) $\\frac{25}{36}$",
+      "D) $\\frac{1}{2}$",
+      "E) $\\frac{5}{6}$"
+    ],
+    "correct_answer": "B",
+    "category": "math_hard",
+    "source": "harp_mcq",
+    "external_difficulty": "AMC_12B_3",
+    "model_name": "qwen/qwen3.5-397b-a17b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 1.0,
+    "gap": 0.0,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"To determine if the parabolas intersect, we set their equations equal: $x^2 + ax + b = x^2 + cx + d$. Simplifying this yields the linear equation $(a-c)x = d-b$. The parabolas have no points in common if and only if this linear equation has no solution, which occurs when the coefficient of $x$ is zero ($a-c=0 \\implies a=c$) and the constant term is non-zero ($d-b \\neq 0 \\implies b \\neq d$). The probability that $a=c$ is $1/6$, and the probability that $b \\neq d$ is $5/6$. Since the coefficients are chosen independently, the probability of no intersection is $(1/6) \\times (5/6) = 5/36$. Therefore, the probability that they have at least one point in common is $1 - 5/36 = 31/36$.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      1.0
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 1.0,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"To determine if the parabolas intersect, we set their equations equal: $x^2 + ax + b = x^2 + cx + d$. Simplifying this yields the linear equation $(a-c)x = d-b$. The parabolas have no points in common if and only if this linear equation has no solution, which occurs when the coefficient of $x$ is zero ($a-c=0 \\implies a=c$) and the constant term is non-zero ($d-b \\neq 0 \\implies b \\neq d$). The probability that $a=c$ is $1/6$, and the probability that $b \\neq d$ is $5/6$. Since the coefficients are chosen independently, the probability of no intersection is $(1/6) \\times (5/6) = 5/36$. Therefore, the probability that they have at least one point in common is $1 - 5/36 = 31/36$.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"To determine if the parabolas intersect, we set their equations equal: $x^2 + ax + b = x^2 + cx + d$. Simplifying this yields the linear equation $(a-c)x = d-b$. The parabolas have no points in common if and only if this linear equation has no solution, which occurs when the coefficient of $x$ is zero ($a-c=0 \\implies a=c$) and the constant term is non-zero ($d-b \\neq 0 \\implies b \\neq d$). The probability that $a=c$ is $1/6$, and the probability that $b \\neq d$ is $5/6$. Since the coefficients are chosen independently, the probability of no intersection is $(1/6) \\times (5/6) = 5/36$. Therefore, the probability that they have at least one point in common is $1 - 5/36 = 31/36$.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  }
+]

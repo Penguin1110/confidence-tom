@@ -10,10 +10,15 @@ Supported benchmarks:
 - GSM8K: math reasoning (converted to MC with distractors)
 """
 
+import io
+import json
 import logging
 import random
+import re
+import zipfile
 from typing import Optional, cast
 
+import requests
 from datasets import load_dataset
 
 from confidence_tom.dataset_models import MCQuestion
@@ -87,6 +92,50 @@ def load_mmlu(
         )
 
     logger.info(f"  Loaded {len(questions)} MMLU questions")
+    return questions
+
+
+def load_mmlu_pro(
+    num_samples: int = 100,
+    split: str = "test",
+) -> list[MCQuestion]:
+    """Load MMLU-Pro questions (10-choice MC, much harder than MMLU)."""
+    logger.info(f"Loading MMLU-Pro ({num_samples} questions)...")
+
+    dataset = load_dataset("TIGER-Lab/MMLU-Pro", split=split)
+    dataset = dataset.shuffle(seed=_SEED)
+
+    choice_labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+    questions: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+
+        raw_choices = item["options"]
+        correct_idx = int(item["answer_index"])
+
+        # Construct options up to mapping (some may have fewer than 10, but we standardize)
+        formatted_choices = []
+        for j in range(len(raw_choices)):
+            if j < len(choice_labels):
+                formatted_choices.append(f"{choice_labels[j]}) {raw_choices[j]}")
+
+        questions.append(
+            MCQuestion(
+                id=f"mmlu_pro_{item['category']}_{i:04d}",
+                question=str(item["question"]),
+                choices=formatted_choices,
+                correct_answer=choice_labels[correct_idx]
+                if correct_idx < len(choice_labels)
+                else "A",
+                category="knowledge_pro",
+                source="mmlu_pro",
+                external_difficulty=item["category"],
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} MMLU-Pro questions")
     return questions
 
 
@@ -360,41 +409,89 @@ def load_gsm8k_mc(
     return questions
 
 
+def load_math_level5(
+    num_samples: int = 100,
+) -> list[MCQuestion]:
+    """Load MATH Level 5 questions (competition grade) as MC.
+
+    Converts open-ended math problems to MC using numeric distractors.
+    """
+    logger.info(f"Loading MATH Level 5 ({num_samples} questions)...")
+
+    dataset = load_dataset("HuggingFaceH4/MATH", split="test")
+    dataset = dataset.shuffle(seed=_SEED)
+    dataset = dataset.filter(lambda x: x["level"] == "Level 5")
+
+    rng = random.Random(_SEED)
+    choice_labels = ["A", "B", "C", "D"]
+    questions: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+
+        correct_ans = str(item["solution"]).split("####")[-1].strip()
+        # Clean up LaTeX or complex strings if possible, but keep numeric core
+
+        distractors = _generate_gsm8k_distractors(correct_ans, rng)
+
+        all_options = [correct_ans] + distractors
+        rng.shuffle(all_options)
+        correct_idx = all_options.index(correct_ans)
+
+        formatted_choices = [f"{choice_labels[j]}) {all_options[j]}" for j in range(4)]
+
+        questions.append(
+            MCQuestion(
+                id=f"math_l5_{i:04d}",
+                question=str(item["problem"]),
+                choices=formatted_choices,
+                correct_answer=choice_labels[correct_idx],
+                category="math_hard",
+                source="math_level5",
+                external_difficulty="competition_grade",
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} MATH L5 questions")
+    return questions
+
+
 def load_gpqa_mc(
     num_samples: int = 100,
 ) -> list[MCQuestion]:
     """Load GPQA (Diamond split) to intentionally challenge frontier models.
-    
+
     GPQA is specifically designed to be extremely difficult even for PhDs.
     """
     logger.info(f"Loading GPQA Diamond ({num_samples} questions)...")
-    
+
     # Using the standard huggingface gpqa dataset
     dataset = load_dataset("Idavidrein/gpqa", "gpqa_diamond", split="train")
     dataset = dataset.shuffle(seed=_SEED)
-    
+
     rng = random.Random(_SEED)
     choice_labels = ["A", "B", "C", "D"]
     questions: list[MCQuestion] = []
-    
+
     for i, item in enumerate(dataset):
         if len(questions) >= num_samples:
             break
-            
+
         correct_ans = str(item["Correct Answer"])
         distractors = [
             str(item["Incorrect Answer 1"]),
             str(item["Incorrect Answer 2"]),
             str(item["Incorrect Answer 3"]),
         ]
-        
+
         # Build 4-choice list and shuffle
         all_options = [correct_ans] + distractors
         rng.shuffle(all_options)
         correct_idx = all_options.index(correct_ans)
-        
+
         formatted_choices = [f"{choice_labels[j]}) {all_options[j]}" for j in range(4)]
-        
+
         questions.append(
             MCQuestion(
                 id=f"gpqa_{item['Record ID']}_{i:04d}",
@@ -406,35 +503,326 @@ def load_gpqa_mc(
                 external_difficulty="phd_level",
             )
         )
-        
+
     logger.info(f"  Loaded {len(questions)} GPQA questions")
+    return questions
+
+
+def _parse_mc_choices_from_prompt(prompt: str) -> list[str]:
+    """Extract A-J style options from a prompt into standardized 'A) ...' format."""
+    # Match labels like "A)", "B.", "C:" and slice text until next label.
+    matches = list(re.finditer(r"(?<![A-Za-z0-9])([A-J])[\)\.\:]\s*", prompt))
+    if len(matches) < 2:
+        return []
+
+    choices: list[str] = []
+    for i, m in enumerate(matches):
+        label = m.group(1)
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(prompt)
+        text = " ".join(prompt[start:end].strip().split())
+        if text:
+            choices.append(f"{label}) {text}")
+    return choices
+
+
+def load_hle_mc_text_only(
+    num_samples: int = 10,
+    split: str = "test",
+) -> list[MCQuestion]:
+    """Load text-only multiple-choice subset from CAIS HLE."""
+    logger.info(f"Loading HLE text-only MC ({num_samples} questions)...")
+
+    dataset = load_dataset("cais/hle", split=split).shuffle(seed=_SEED)
+    questions: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+
+        # Only keep text-only + MC questions
+        img = str(item.get("image", ""))
+        if img.startswith("data:image"):
+            continue
+        if str(item.get("answer_type")) != "multipleChoice":
+            continue
+
+        question_text = str(item["question"])
+        choices = _parse_mc_choices_from_prompt(question_text)
+        if len(choices) < 4:
+            continue
+
+        ans = str(item.get("answer", "")).strip().upper()
+        if not ans or ans[0] not in "ABCDEFGHIJ":
+            continue
+
+        questions.append(
+            MCQuestion(
+                id=f"hle_mc_{item['id']}_{i:04d}",
+                question=question_text,
+                choices=choices,
+                correct_answer=ans[0],
+                category="hle_mc",
+                source="hle_mc",
+                external_difficulty=str(item.get("category", "unknown")),
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} HLE text-only MC questions")
+    return questions
+
+
+def load_supergpqa_mc(
+    num_samples: int = 10,
+    split: str = "train",
+) -> list[MCQuestion]:
+    """Load SuperGPQA as standardized MC format."""
+    logger.info(f"Loading SuperGPQA ({num_samples} questions)...")
+
+    dataset = load_dataset("m-a-p/SuperGPQA", split=split).shuffle(seed=_SEED)
+    questions: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+
+        options = cast(list[str], item.get("options", []))
+        if len(options) < 4:
+            continue
+        if len(options) > 10:
+            options = options[:10]
+
+        labels = [chr(ord("A") + j) for j in range(len(options))]
+        formatted = [f"{labels[j]}) {options[j]}" for j in range(len(options))]
+
+        ans = str(item.get("answer_letter", "")).strip().upper()
+        if ans not in labels:
+            continue
+
+        questions.append(
+            MCQuestion(
+                id=f"supergpqa_{item['uuid']}_{i:04d}",
+                question=str(item["question"]),
+                choices=formatted,
+                correct_answer=ans,
+                category="supergpqa",
+                source="supergpqa",
+                external_difficulty=str(item.get("difficulty", "unknown")),
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} SuperGPQA questions")
+    return questions
+
+
+def load_simplebench_mc(
+    num_samples: int = 10,
+    url: str = "https://raw.githubusercontent.com/simple-bench/SimpleBench/main/simple_bench_public.json",
+) -> list[MCQuestion]:
+    """Load SimpleBench public set and parse MC options from prompt text."""
+    logger.info(f"Loading SimpleBench public ({num_samples} questions)...")
+
+    resp = requests.get(url, timeout=30)
+    resp.raise_for_status()
+    payload = resp.json()
+    eval_data = payload.get("eval_data", [])
+    rng = random.Random(_SEED)
+    rng.shuffle(eval_data)
+
+    questions: list[MCQuestion] = []
+    for i, item in enumerate(eval_data):
+        if len(questions) >= num_samples:
+            break
+
+        prompt = str(item.get("prompt", ""))
+        choices = _parse_mc_choices_from_prompt(prompt)
+        if len(choices) < 4:
+            continue
+
+        ans = str(item.get("answer", "")).strip().upper()
+        if not ans or ans[0] not in "ABCDEFGHIJ":
+            continue
+
+        questions.append(
+            MCQuestion(
+                id=f"simplebench_{item.get('question_id', i)}_{i:04d}",
+                question=prompt,
+                choices=choices,
+                correct_answer=ans[0],
+                category="simplebench",
+                source="simplebench",
+                external_difficulty="public",
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} SimpleBench questions")
+    return questions
+
+
+def load_harp_mcq(
+    num_samples: int = 10,
+    url: str = "https://github.com/aadityasingh/HARP/raw/refs/heads/main/HARP_mcq.jsonl.zip",
+) -> list[MCQuestion]:
+    """Load HARP MCQ benchmark from official zip and normalize to MCQuestion."""
+    logger.info(f"Loading HARP_mcq ({num_samples} questions)...")
+
+    resp = requests.get(url, timeout=60)
+    resp.raise_for_status()
+
+    zf = zipfile.ZipFile(io.BytesIO(resp.content))
+    name = "HARP_mcq.jsonl" if "HARP_mcq.jsonl" in zf.namelist() else zf.namelist()[0]
+
+    rows: list[dict] = []
+    with zf.open(name) as f:
+        for line in f:
+            if not line.strip():
+                continue
+            rows.append(json.loads(line))
+
+    rng = random.Random(_SEED)
+    rng.shuffle(rows)
+
+    questions: list[MCQuestion] = []
+    for i, item in enumerate(rows):
+        if len(questions) >= num_samples:
+            break
+
+        problem = str(item.get("problem", "")).strip()
+        choices_raw = cast(dict[str, str], item.get("choices", {}))
+        answer_choice = str(item.get("answer_choice", "")).strip().upper()
+        if not problem or not choices_raw or answer_choice not in choices_raw:
+            continue
+
+        labels = sorted([k for k in choices_raw.keys() if len(k) == 1 and k.isalpha()])
+        if len(labels) < 4:
+            continue
+
+        formatted = [f"{lab}) {str(choices_raw[lab]).strip()}" for lab in labels]
+        difficulty = f"{item.get('contest', 'unknown')}_{item.get('level', 'unknown')}"
+
+        questions.append(
+            MCQuestion(
+                id=f"harp_mcq_{item.get('year', 'na')}_{item.get('contest', 'na')}_{item.get('number', i)}_{i:04d}",
+                question=problem,
+                choices=formatted,
+                correct_answer=answer_choice,
+                category="math_hard",
+                source="harp_mcq",
+                external_difficulty=difficulty,
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} HARP_mcq questions")
     return questions
 
 
 def load_scale_experiment_dataset(
     num_per_source: int = 100,
+    counts: Optional[dict[str, int]] = None,
 ) -> list[MCQuestion]:
-    """Load the complete scale experiment dataset focusing on HARD tasks.
+    """Load the complete scale experiment dataset focusing on ULTRA-HARD tasks.
 
-    Returns a balanced dataset from hard sources (e.g., GPQA, hard MMLU),
-    all in standardized MC format. This guarantees that model accuracy gets crushed,
-    preventing ceiling effects for models like Qwen 397B.
+    Composition:
+    - MMLU-Pro: Hard reasoning general knowledge
+    - GPQA Diamond: Science questions where non-experts score 0%
+    - MATH Level 5: Competition-grade mathematical reasoning
+    - Hard MMLU: Specialized STEM subjects
     """
-    logger.info(f"Loading HARD scale experiment dataset (target {num_per_source} per hard source)...")
+    logger.info("Loading ULTRA-HARD scale experiment dataset (2026 Frontier Edition)...")
 
-    # Load hard MMLU
-    mmlu_qs = load_mmlu(subjects=HARD_MMLU_SUBJECTS, num_samples=num_per_source)
-    # Load GPQA Diamond
-    gpqa_qs = load_gpqa_mc(num_samples=num_per_source)
-    # We can still add some ARC/GSM but they might be too easy, keeping a small batch
-    arc_qs = load_arc_challenge(num_samples=num_per_source // 2)
-    tqa_qs = load_truthfulqa_mc(num_samples=num_per_source // 2)
+    # Allow explicit per-dataset counts for pilot/final runs.
+    # If not provided, preserve legacy behavior.
+    target = {
+        "mmlu_pro": num_per_source,
+        "gpqa": num_per_source,
+        "math_l5": num_per_source // 2,
+        "mmlu_hard": num_per_source // 2,
+        "hle_mc": 0,
+        "supergpqa": 0,
+        "simplebench": 0,
+        "truthfulqa_mc": 0,
+        "harp_mcq": 0,
+    }
+    if counts:
+        target.update({k: max(0, int(v)) for k, v in counts.items() if k in target})
 
-    combined = mmlu_qs + gpqa_qs + arc_qs + tqa_qs
+    # If new frontier text-MC sources are requested, prioritize that composition.
+    if (
+        target["hle_mc"] > 0
+        or target["supergpqa"] > 0
+        or target["simplebench"] > 0
+        or target["truthfulqa_mc"] > 0
+        or target["harp_mcq"] > 0
+    ):
+        hle_qs = load_hle_mc_text_only(num_samples=target["hle_mc"])
+        super_qs = load_supergpqa_mc(num_samples=target["supergpqa"])
+        simple_qs = load_simplebench_mc(num_samples=target["simplebench"])
+        truthful_qs = load_truthfulqa_mc(num_samples=target["truthfulqa_mc"])
+        harp_qs = load_harp_mcq(num_samples=target["harp_mcq"])
+        combined = hle_qs + super_qs + simple_qs + truthful_qs + harp_qs
+        random.Random(_SEED).shuffle(combined)
+        logger.info(
+            f"Frontier text-MC dataset ready: {len(combined)} total questions "
+            f"(HLE-MC={len(hle_qs)}, SuperGPQA={len(super_qs)}, "
+            f"SimpleBench={len(simple_qs)}, TruthfulQA-MC={len(truthful_qs)}, "
+            f"HARP-MCQ={len(harp_qs)})"
+        )
+        return combined
+
+    # 1. Load MMLU-Pro
+    pro_qs = load_mmlu_pro(num_samples=target["mmlu_pro"])
+
+    # 2. Load GPQA Diamond (Filtered for 0% NEV Accuracy only)
+    logger.info("Filtering GPQA for 0% Non-Expert Accuracy...")
+    dataset = load_dataset("Idavidrein/gpqa", "gpqa_diamond", split="train")
+    dataset = dataset.shuffle(seed=_SEED)
+    dataset = dataset.filter(lambda x: x["Non-Expert Validator Accuracy"] == 0.0)
+
+    rng = random.Random(_SEED)
+    choice_labels = ["A", "B", "C", "D"]
+    gpqa_qs: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(gpqa_qs) >= target["gpqa"]:
+            break
+
+        correct_ans = str(item["Correct Answer"])
+        distractors = [
+            str(item["Incorrect Answer 1"]),
+            str(item["Incorrect Answer 2"]),
+            str(item["Incorrect Answer 3"]),
+        ]
+
+        all_options = [correct_ans] + distractors
+        rng.shuffle(all_options)
+        correct_idx = all_options.index(correct_ans)
+
+        formatted_choices = [f"{choice_labels[j]}) {all_options[j]}" for j in range(4)]
+
+        gpqa_qs.append(
+            MCQuestion(
+                id=f"gpqa_hard_{item['Record ID']}_{i:04d}",
+                question=str(item["Question"]),
+                choices=formatted_choices,
+                correct_answer=choice_labels[correct_idx],
+                category="science",
+                source="gpqa_diamond",
+                external_difficulty="high_blind_spot",
+            )
+        )
+
+    # 3. Load MATH Level 5
+    math_qs = load_math_level5(num_samples=target["math_l5"])
+
+    # 4. Load Hard MMLU
+    mmlu_qs = load_mmlu(subjects=HARD_MMLU_SUBJECTS, num_samples=target["mmlu_hard"])
+
+    combined = pro_qs + gpqa_qs + math_qs + mmlu_qs
     random.Random(_SEED).shuffle(combined)
 
     logger.info(
-        f"Hard datasets ready: {len(combined)} total questions "
-        f"(GPQA={len(gpqa_qs)}, hard_MMLU={len(mmlu_qs)}, ARC={len(arc_qs)}, TQA={len(tqa_qs)})"
+        f"Ultra-Hard dataset ready: {len(combined)} total questions "
+        f"(MMLU-Pro={len(pro_qs)}, GPQA-ZeroAcc={len(gpqa_qs)}, "
+        f"MATH-L5={len(math_qs)}, MMLU-Hard={len(mmlu_qs)})"
     )
     return combined

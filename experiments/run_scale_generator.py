@@ -22,6 +22,7 @@ import asyncio
 import collections
 import json
 import logging
+import re
 import signal
 import sys
 import time
@@ -33,7 +34,12 @@ from omegaconf import DictConfig
 
 from confidence_tom.client import LLMClient
 from confidence_tom.dataset_models import MCQuestion
-from confidence_tom.parsing import get_parse_stats, parse_mc_response, reset_parse_stats
+from confidence_tom.parsing import (
+    get_parse_stats,
+    normalize_confidence,
+    parse_mc_response,
+    reset_parse_stats,
+)
 from confidence_tom.scale_dataset import load_scale_experiment_dataset
 
 logging.basicConfig(
@@ -44,6 +50,101 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("openai").setLevel(logging.WARNING)
+
+
+def _extract_answer_explicit(raw_text: str) -> str | None:
+    """Recover answer only from explicit final-answer style statements.
+
+    Important: We intentionally DO NOT infer from option text mentions,
+    because models often discuss multiple options during reasoning.
+    """
+    patterns = [
+        r"\bfinal answer\b\s*[:\-]?\s*\(?([A-Ja-j])\)?",
+        r"\bmy answer\b\s*[:\-]?\s*\(?([A-Ja-j])\)?",
+        r"\banswer is\b\s*[:\-]?\s*\(?([A-Ja-j])\)?",
+        r"\bi (?:choose|select)\b\s*\(?([A-Ja-j])\)?",
+        r"\btherefore\b.*?\b(?:answer|option|choice)\b\s*(?:is|:)?\s*\(?([A-Ja-j])\)?",
+    ]
+    matches: list[str] = []
+    for pat in patterns:
+        for m in re.finditer(pat, raw_text, re.IGNORECASE | re.DOTALL):
+            matches.append(m.group(1).upper())
+
+    if not matches:
+        return None
+
+    unique = sorted(set(matches))
+    if len(unique) == 1:
+        return unique[0]
+    # Conflicting explicit answers -> treat as unresolved.
+    return None
+
+
+def _extract_confidence_loose(raw_text: str) -> float:
+    """Recover confidence from unstructured text; fallback to neutral 0.5."""
+    patterns = [
+        r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
+        r'["\']?[Cc]onfident["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)',
+        r"(\d+(?:\.\d+)?)\s*/\s*100\b",
+        r"(\d+(?:\.\d+)?)\s*%\s*confiden",
+        r"(\d+(?:\.\d+)?)\s*%?\s*confident",
+    ]
+    for pat in patterns:
+        m = re.search(pat, raw_text, re.IGNORECASE)
+        if m:
+            try:
+                return normalize_confidence(float(m.group(1)))
+            except ValueError:
+                pass
+
+    lower = raw_text.lower()
+    if any(p in lower for p in ["extremely confident", "very certain", "almost certain"]):
+        return 0.95
+    if any(p in lower for p in ["very confident", "high confidence", "highly confident"]):
+        return 0.85
+    if any(p in lower for p in ["confident", "fairly confident", "reasonably confident"]):
+        return 0.70
+    if any(p in lower for p in ["somewhat confident", "moderately confident"]):
+        return 0.55
+    if any(p in lower for p in ["uncertain", "not sure", "low confidence", "not very confident"]):
+        return 0.35
+    if any(p in lower for p in ["guess", "pure guess", "wild guess"]):
+        return 0.15
+    return 0.50
+
+
+def _has_explicit_confidence(raw_text: str) -> bool:
+    """Whether the raw response explicitly contains confidence signal."""
+    numeric_patterns = [
+        r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
+        r'["\']?[Cc]onfident["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)',
+        r"(\d+(?:\.\d+)?)\s*/\s*100\b",
+        r"(\d+(?:\.\d+)?)\s*%\s*confiden",
+        r"(\d+(?:\.\d+)?)\s*%?\s*confident",
+    ]
+    for pat in numeric_patterns:
+        if re.search(pat, raw_text, re.IGNORECASE):
+            return True
+
+    lower = raw_text.lower()
+    qualitative = [
+        "extremely confident",
+        "very certain",
+        "almost certain",
+        "very confident",
+        "high confidence",
+        "highly confident",
+        "fairly confident",
+        "reasonably confident",
+        "somewhat confident",
+        "moderately confident",
+        "not very confident",
+        "low confidence",
+        "uncertain",
+        "not sure",
+        "guess",
+    ]
+    return any(p in lower for p in qualitative)
 
 
 # ---- Pydantic models for structured output ----
@@ -142,6 +243,9 @@ async def solve_question_k_times(
     model_id: str,
     question: MCQuestion,
     k: int = 10,
+    extract_client: LLMClient | None = None,
+    store_raw_samples: bool = False,
+    raw_truncate_chars: int = 800,
 ) -> dict[str, Any] | None:
     """Run a model on a single MC question K times.
 
@@ -156,8 +260,12 @@ async def solve_question_k_times(
         "and choose the best answer.\n\n"
         "You MUST respond in this EXACT JSON format:\n"
         '{"answer": "B", "confidence": 45, "reasoning": "..."}\n\n'
+        "Output policy (STRICT):\n"
+        "- Output ONLY a single valid JSON object.\n"
+        "- Do NOT output markdown, code fences, headings, bullet points, or any text before/after JSON.\n"
+        "- If your output is not valid JSON with the required keys, it will be treated as INVALID.\n\n"
         "Rules:\n"
-        "- answer: MUST be exactly one letter: A, B, C, or D\n"
+        "- answer: MUST be exactly one letter: A, B, C, D, E, F, G, H, I, or J\n"
         "- confidence: integer from 0 to 100. Your confidence should reflect the probability "
         "that your answer is correct. For example, confidence 70 means you expect to be "
         "correct about 70% of the time on similar questions.\n"
@@ -179,6 +287,33 @@ async def solve_question_k_times(
     ]
 
     samples: list[dict[str, Any]] = []
+    sample_traces: list[dict[str, Any]] = []
+    unresolved_samples = 0
+    n_extract_success = 0
+    n_extract_attempts = 0
+
+    def _extractor_messages(raw_text: str, valid_labels: str) -> list[dict[str, str]]:
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "You are a strict information extractor.\n"
+                    "From the model output below, extract ONLY:\n"
+                    "1) final answer letter\n"
+                    "2) confidence (0-100)\n\n"
+                    "Return ONLY valid JSON:\n"
+                    '{"answer":"A","confidence":50}\n\n'
+                    f"Rules:\n- answer must be one of: {valid_labels}\n"
+                    "- confidence must be numeric in [0,100]\n"
+                    "- Do not infer from alternative options unless explicitly selected.\n"
+                    "- If unresolved, still output best extraction."
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"Raw model output:\n\n{raw_text}",
+            },
+        ]
 
     async def fetch_one(i: int) -> dict[str, Any] | None:
         """Fetch a single sample via text generation + robust parsing.
@@ -187,32 +322,190 @@ async def solve_question_k_times(
         Structured output was removed because Gemma 12B couldn't
         use it, causing systematic bias.
         """
+        result: dict[str, Any] = {
+            "sample_index": i,
+            "parse_method": "request_error",
+            "answer": None,
+            "confidence": None,
+            "reasoning": "",
+            "raw_text": "",
+            "extract_attempted": False,
+            "extract_model": str(extract_client.model) if extract_client is not None else "",
+            "extract_raw": "",
+            "extract_answer": None,
+            "extract_confidence": None,
+            "original_has_explicit_answer": False,
+            "original_has_confidence": False,
+            "missing_answer_in_original": True,
+            "missing_confidence_in_original": True,
+            "note": "",
+        }
         try:
             raw_text = await asyncio.to_thread(client.generate_text, messages)
-            if raw_text:
-                mc_resp = parse_mc_response(raw_text, model_name=model_id)
-                if mc_resp:
-                    return {
+            if not raw_text:
+                result["parse_method"] = "empty"
+                result["note"] = "empty_raw_response"
+                return result
+
+            result["raw_text"] = raw_text[:raw_truncate_chars] if store_raw_samples else ""
+            explicit_answer = _extract_answer_explicit(raw_text)
+            has_conf = _has_explicit_confidence(raw_text)
+            result["original_has_explicit_answer"] = explicit_answer is not None
+            result["original_has_confidence"] = has_conf
+            result["missing_answer_in_original"] = explicit_answer is None
+            result["missing_confidence_in_original"] = not has_conf
+
+            mc_resp = parse_mc_response(raw_text, model_name=model_id)
+            if mc_resp:
+                result["original_has_explicit_answer"] = True
+                result["missing_answer_in_original"] = False
+                result.update(
+                    {
                         "answer": mc_resp.answer,
                         "confidence": mc_resp.confidence,
-                        "reasoning": mc_resp.reasoning,
+                        "reasoning": raw_text,
                         "parse_method": "text",
                     }
+                )
+                return result
+
+            if explicit_answer:
+                result.update(
+                    {
+                        "answer": explicit_answer,
+                        "confidence": _extract_confidence_loose(raw_text),
+                        "reasoning": raw_text,
+                        "parse_method": "fallback",
+                    }
+                )
+                return result
+
+            if extract_client is not None:
+                valid_labels = ", ".join(
+                    sorted({c.split(")")[0].strip() for c in question.choices if ")" in c})
+                )
+                extract_raw = await asyncio.to_thread(
+                    extract_client.generate_text,
+                    _extractor_messages(raw_text, valid_labels or "A, B, C, D"),
+                )
+                result["extract_attempted"] = True
+                result["extract_raw"] = (
+                    extract_raw[:raw_truncate_chars] if (store_raw_samples and extract_raw) else ""
+                )
+                extracted = (
+                    parse_mc_response(
+                        extract_raw,
+                        model_name=f"{model_id}::extractor",
+                    )
+                    if extract_raw
+                    else None
+                )
+                if extracted:
+                    result.update(
+                        {
+                            "answer": extracted.answer,
+                            "confidence": extracted.confidence,
+                            "reasoning": raw_text,
+                            "parse_method": "llm_extract",
+                            "extract_answer": extracted.answer,
+                            "extract_confidence": extracted.confidence,
+                            "note": (
+                                "extracted_missing_answer"
+                                if result["missing_answer_in_original"]
+                                else (
+                                    "extracted_missing_confidence"
+                                    if result["missing_confidence_in_original"]
+                                    else "extracted_after_parse_failure"
+                                )
+                            ),
+                        }
+                    )
+                    return result
+                result["parse_method"] = "unparsed"
+                result["note"] = "extract_attempted_but_unresolved"
+                return result
+
+            result["parse_method"] = "unparsed"
+            result["note"] = "no_extract_client"
+            return result
         except Exception as e:
             logger.debug(f"  Sample {i + 1} failed: {e}")
-
-        return None
+            result["note"] = f"request_exception:{type(e).__name__}"
+            return result
 
     # Run K samples concurrently
     tasks = [fetch_one(i) for i in range(k)]
     results = await asyncio.gather(*tasks)
 
     for r in results:
-        if r is not None:
+        if r.get("answer") is not None and r.get("confidence") is not None:
             samples.append(r)
+            if r.get("parse_method") == "llm_extract":
+                n_extract_success += 1
+        else:
+            unresolved_samples += 1
+        if r.get("extract_attempted"):
+            n_extract_attempts += 1
+        sample_traces.append(
+            {
+                "sample_index": int(r.get("sample_index", -1)),
+                "parse_method": str(r.get("parse_method", "unknown")),
+                "answer": r.get("answer"),
+                "confidence": (
+                    round(float(r["confidence"]), 4)
+                    if isinstance(r.get("confidence"), (int, float))
+                    else None
+                ),
+                "raw_text": r.get("raw_text", "") if store_raw_samples else "",
+                "reasoning": str(r.get("reasoning", "")),
+                "extract_attempted": bool(r.get("extract_attempted", False)),
+                "extract_model": str(r.get("extract_model", "")),
+                "extract_raw": r.get("extract_raw", "") if store_raw_samples else "",
+                "extract_answer": r.get("extract_answer"),
+                "extract_confidence": (
+                    round(float(r["extract_confidence"]), 4)
+                    if isinstance(r.get("extract_confidence"), (int, float))
+                    else None
+                ),
+                "original_has_explicit_answer": bool(r.get("original_has_explicit_answer", False)),
+                "original_has_confidence": bool(r.get("original_has_confidence", False)),
+                "missing_answer_in_original": bool(r.get("missing_answer_in_original", True)),
+                "missing_confidence_in_original": bool(
+                    r.get("missing_confidence_in_original", True)
+                ),
+                "note": str(r.get("note", "")),
+            }
+        )
 
     if not samples:
-        return None
+        return {
+            "question_id": question.id,
+            "question": question.question,
+            "choices": question.choices,
+            "correct_answer": question.correct_answer,
+            "category": question.category,
+            "source": question.source,
+            "external_difficulty": question.external_difficulty,
+            "model_name": model_id,
+            "k_samples": 0,
+            "k_target": k,
+            "majority_answer": "",
+            "is_correct": False,
+            "c_beh": 0.0,
+            "c_rep": 0.0,
+            "gap": 0.0,
+            "primary_reasoning": "",
+            "answer_distribution": {},
+            "sample_confidences": [],
+            "parse_structured": 0,
+            "parse_fallback": 0,
+            "parse_llm_extract": 0,
+            "parse_unresolved": len(results),
+            "extract_attempts": n_extract_attempts,
+            "extract_success": n_extract_success,
+            "all_samples_failed": True,
+            "sample_traces": sample_traces,
+        }
 
     # Compute behavioral confidence
     answers = [s["answer"] for s in samples]
@@ -234,6 +527,7 @@ async def solve_question_k_times(
 
     n_structured = sum(1 for s in samples if s.get("parse_method") == "structured")
     n_fallback = sum(1 for s in samples if s.get("parse_method") == "fallback")
+    n_llm_extract = sum(1 for s in samples if s.get("parse_method") == "llm_extract")
 
     return {
         "question_id": question.id,
@@ -256,6 +550,12 @@ async def solve_question_k_times(
         "sample_confidences": [round(s["confidence"], 4) for s in samples],
         "parse_structured": n_structured,
         "parse_fallback": n_fallback,
+        "parse_llm_extract": n_llm_extract,
+        "parse_unresolved": unresolved_samples,
+        "extract_attempts": n_extract_attempts,
+        "extract_success": n_extract_success,
+        "all_samples_failed": False,
+        "sample_traces": sample_traces,
     }
 
 
@@ -267,6 +567,7 @@ async def run_model(
     model_label: str,
     questions: list[MCQuestion],
     gen_cfg: Any,
+    extract_cfg: Any,
     checkpoint: CheckpointManager,
     semaphore: asyncio.Semaphore,
 ) -> None:
@@ -284,6 +585,13 @@ async def run_model(
         temperature=gen_cfg.temperature,
         max_tokens=gen_cfg.max_tokens,
     )
+    extract_client: LLMClient | None = None
+    if bool(extract_cfg.get("enabled", False)):
+        extract_client = LLMClient(
+            model=str(extract_cfg.get("model", "google/gemini-3.1-flash-lite-preview")),
+            temperature=float(extract_cfg.get("temperature", 0.0)),
+            max_tokens=int(extract_cfg.get("max_tokens", 512)),
+        )
 
     total = len(questions)
     start_time = time.time()
@@ -298,6 +606,9 @@ async def run_model(
                 model_id=model_id,
                 question=q,
                 k=gen_cfg.k_samples,
+                extract_client=extract_client,
+                store_raw_samples=bool(extract_cfg.get("store_raw_samples", True)),
+                raw_truncate_chars=int(extract_cfg.get("raw_truncate_chars", 1200)),
             )
 
             if result:
@@ -313,6 +624,7 @@ async def run_model(
                     f"✅={result['is_correct']} | "
                     f"c_beh={result['c_beh']:.2f} | "
                     f"c_rep={result['c_rep']:.2f} | "
+                    f"xtr={result.get('parse_llm_extract', 0)}/{result.get('extract_attempts', 0)} | "
                     f"gap={result['gap']:+.2f} | "
                     f"ETA {eta:.0f}s"
                 )
@@ -353,8 +665,27 @@ def main(cfg: DictConfig) -> None:
 
 async def amain(cfg: DictConfig) -> None:
     # Load dataset once (shared across all models)
-    questions = load_scale_experiment_dataset(num_per_source=cfg.dataset.num_per_source)
+    dataset_counts = None
+    if "counts" in cfg.dataset:
+        dataset_counts = {
+            "mmlu_pro": int(cfg.dataset.counts.get("mmlu_pro", 0)),
+            "gpqa": int(cfg.dataset.counts.get("gpqa", 0)),
+            "math_l5": int(cfg.dataset.counts.get("math_l5", 0)),
+            "mmlu_hard": int(cfg.dataset.counts.get("mmlu_hard", 0)),
+            "hle_mc": int(cfg.dataset.counts.get("hle_mc", 0)),
+            "supergpqa": int(cfg.dataset.counts.get("supergpqa", 0)),
+            "simplebench": int(cfg.dataset.counts.get("simplebench", 0)),
+            "truthfulqa_mc": int(cfg.dataset.counts.get("truthfulqa_mc", 0)),
+            "harp_mcq": int(cfg.dataset.counts.get("harp_mcq", 0)),
+        }
+
+    questions = load_scale_experiment_dataset(
+        num_per_source=int(cfg.dataset.num_per_source),
+        counts=dataset_counts,
+    )
     logger.info(f"📦 Loaded {len(questions)} questions")
+
+    extract_cfg = cfg.get("extractor", {})
 
     # Checkpoint manager (thread-safe per-model saving)
     checkpoint = CheckpointManager(Path(cfg.output_dir))
@@ -362,12 +693,18 @@ async def amain(cfg: DictConfig) -> None:
     # Concurrency: semaphore per model
     max_per_model = cfg.concurrency.get("max_per_model", 8)
 
+    selected_models = list(cfg.scale_models)
+    exclude_labels = {str(x) for x in cfg.get("exclude_model_labels", [])}
+    if exclude_labels:
+        selected_models = [m for m in selected_models if str(m.label) not in exclude_labels]
+        logger.info(f"⚙️  Excluding models: {', '.join(sorted(exclude_labels))}")
+
     logger.info(
         f"⚙️  Config: "
-        f"{len(cfg.scale_models)} models × "
+        f"{len(selected_models)} models × "
         f"{len(questions)} questions × "
         f"K={cfg.generator.k_samples} = "
-        f"{len(cfg.scale_models) * len(questions) * cfg.generator.k_samples} "
+        f"{len(selected_models) * len(questions) * cfg.generator.k_samples} "
         f"API calls"
     )
     logger.info(f"⚙️  Concurrency: {max_per_model} per model")
@@ -382,33 +719,51 @@ async def amain(cfg: DictConfig) -> None:
     signal.signal(signal.SIGINT, handle_signal)
     signal.signal(signal.SIGTERM, handle_signal)
 
-    # ---- Launch ALL models in parallel ----
-    model_tasks = []
-    for model_cfg in cfg.scale_models:
-        sem = asyncio.Semaphore(max_per_model)
-        task = asyncio.create_task(
-            run_model(
+    sequential_models = bool(cfg.concurrency.get("sequential_models", False))
+
+    # ---- Launch models ----
+    if sequential_models:
+        logger.info("⚙️  Model scheduling: sequential")
+        for model_cfg in selected_models:
+            sem = asyncio.Semaphore(max_per_model)
+            await run_model(
                 model_id=model_cfg.id,
                 model_label=model_cfg.label,
                 questions=questions,
                 gen_cfg=cfg.generator,
+                extract_cfg=extract_cfg,
                 checkpoint=checkpoint,
                 semaphore=sem,
             )
-        )
-        model_tasks.append(task)
+    else:
+        logger.info("⚙️  Model scheduling: parallel")
+        model_tasks = []
+        for model_cfg in selected_models:
+            sem = asyncio.Semaphore(max_per_model)
+            task = asyncio.create_task(
+                run_model(
+                    model_id=model_cfg.id,
+                    model_label=model_cfg.label,
+                    questions=questions,
+                    gen_cfg=cfg.generator,
+                    extract_cfg=extract_cfg,
+                    checkpoint=checkpoint,
+                    semaphore=sem,
+                )
+            )
+            model_tasks.append(task)
 
-    # Wait for all models or shutdown
-    try:
-        await asyncio.gather(*model_tasks)
-    except asyncio.CancelledError:
-        logger.warning("Tasks cancelled, checkpoints already saved.")
+        # Wait for all models or shutdown
+        try:
+            await asyncio.gather(*model_tasks)
+        except asyncio.CancelledError:
+            logger.warning("Tasks cancelled, checkpoints already saved.")
 
     # Final summary
     logger.info("\n" + "=" * 60)
     logger.info("📊 EXPERIMENT SUMMARY")
     logger.info("=" * 60)
-    for model_cfg in cfg.scale_models:
+    for model_cfg in selected_models:
         label = model_cfg.label
         counts = checkpoint.get_counts(label)
         total_done = checkpoint.get_total_done(label)

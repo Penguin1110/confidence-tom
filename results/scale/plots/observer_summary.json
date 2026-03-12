@@ -1,596 +1,218 @@
 [
   {
     "observer": "gpt_5_4",
-    "subject": "Gemma-3-4B",
-    "n_samples": 400,
-    "true_acc": 48.75,
-    "pred_acc": 53.2825,
-    "acc_overestimation": 4.532499999999999,
-    "sycophancy_on_wrong": 20.234146341463415
-  },
-  {
-    "observer": "gpt_5_4",
-    "subject": "Gemma-3-12B",
-    "n_samples": 400,
-    "true_acc": 66.0,
-    "pred_acc": 68.91,
-    "acc_overestimation": 2.9099999999999966,
-    "sycophancy_on_wrong": 25.904411764705888
-  },
-  {
-    "observer": "gpt_5_4",
-    "subject": "Gemma-3-27B",
-    "n_samples": 400,
-    "true_acc": 72.5,
-    "pred_acc": 75.0675,
-    "acc_overestimation": 2.5674999999999955,
-    "sycophancy_on_wrong": 29.554545454545462
-  },
-  {
-    "observer": "gpt_5_4",
     "subject": "Qwen-3.5-27B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 97.60000000000002,
-    "acc_overestimation": 7.600000000000023,
-    "sycophancy_on_wrong": 92.66666666666667
+    "n_samples": 9,
+    "true_acc": 100.0,
+    "pred_acc": 86.55555555555554,
+    "acc_overestimation": -13.444444444444457,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "gpt_5_4",
     "subject": "Qwen-3.5-35B-A3B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 97.43333333333334,
-    "acc_overestimation": 7.433333333333337,
-    "sycophancy_on_wrong": 90.66666666666666
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 86.5,
+    "acc_overestimation": -13.5,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "gpt_5_4",
     "subject": "Qwen-3.5-122B-A10B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 97.5,
-    "acc_overestimation": 5.833333333333343,
-    "sycophancy_on_wrong": 89.60000000000001
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 93.37500000000001,
+    "acc_overestimation": -6.624999999999986,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "gpt_5_4",
     "subject": "Qwen-3.5-397B-A17B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 97.63333333333334,
-    "acc_overestimation": 5.966666666666683,
-    "sycophancy_on_wrong": 91.20000000000002
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 94.37500000000001,
+    "acc_overestimation": -5.624999999999986,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "gpt_5_4",
     "subject": "Llama-4-Scout",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 87.89830508474577,
-    "acc_overestimation": -1.932203389830505,
-    "sycophancy_on_wrong": 76.00000000000001
+    "n_samples": 78,
+    "true_acc": 46.15384615384615,
+    "pred_acc": 42.794871794871796,
+    "acc_overestimation": -3.3589743589743577,
+    "sycophancy_on_wrong": 26.452380952380956
   },
   {
     "observer": "gpt_5_4",
     "subject": "Llama-4-Maverick",
-    "n_samples": 60,
-    "true_acc": 88.33333333333333,
-    "pred_acc": 86.81666666666668,
-    "acc_overestimation": -1.5166666666666515,
-    "sycophancy_on_wrong": 48.142857142857146
+    "n_samples": 78,
+    "true_acc": 41.02564102564102,
+    "pred_acc": 38.66666666666667,
+    "acc_overestimation": -2.3589743589743506,
+    "sycophancy_on_wrong": 26.5
   },
   {
     "observer": "gpt_5_4",
     "subject": "GPT-OSS-20B",
-    "n_samples": 60,
-    "true_acc": 83.33333333333334,
-    "pred_acc": 89.50000000000001,
-    "acc_overestimation": 6.166666666666671,
-    "sycophancy_on_wrong": 47.0
+    "n_samples": 78,
+    "true_acc": 55.12820512820513,
+    "pred_acc": 55.782051282051285,
+    "acc_overestimation": 0.6538461538461533,
+    "sycophancy_on_wrong": 34.542857142857144
   },
   {
     "observer": "gpt_5_4",
     "subject": "GPT-OSS-120B",
-    "n_samples": 60,
-    "true_acc": 85.0,
-    "pred_acc": 89.86666666666667,
-    "acc_overestimation": 4.866666666666674,
-    "sycophancy_on_wrong": 52.99999999999999
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Gemma-3-4B",
-    "n_samples": 400,
-    "true_acc": 48.75,
-    "pred_acc": 58.19499999999999,
-    "acc_overestimation": 9.444999999999993,
-    "sycophancy_on_wrong": 31.951219512195117
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Gemma-3-12B",
-    "n_samples": 400,
-    "true_acc": 66.0,
-    "pred_acc": 71.23,
-    "acc_overestimation": 5.230000000000004,
-    "sycophancy_on_wrong": 41.77941176470588
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Gemma-3-27B",
-    "n_samples": 400,
-    "true_acc": 72.5,
-    "pred_acc": 74.03,
-    "acc_overestimation": 1.5300000000000011,
-    "sycophancy_on_wrong": 40.1090909090909
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Qwen-3.5-27B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 89.0166666666667,
-    "acc_overestimation": -0.9833333333333059,
-    "sycophancy_on_wrong": 73.49999999999999
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Qwen-3.5-35B-A3B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 87.9,
-    "acc_overestimation": -2.0999999999999943,
-    "sycophancy_on_wrong": 72.5
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Qwen-3.5-122B-A10B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 88.26666666666667,
-    "acc_overestimation": -3.3999999999999915,
-    "sycophancy_on_wrong": 72.0
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Qwen-3.5-397B-A17B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 88.46666666666667,
-    "acc_overestimation": -3.1999999999999886,
-    "sycophancy_on_wrong": 67.19999999999999
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Llama-4-Scout",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 82.49152542372882,
-    "acc_overestimation": -7.33898305084746,
-    "sycophancy_on_wrong": 57.99999999999999
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "Llama-4-Maverick",
-    "n_samples": 60,
-    "true_acc": 88.33333333333333,
-    "pred_acc": 81.78333333333333,
-    "acc_overestimation": -6.549999999999997,
-    "sycophancy_on_wrong": 45.142857142857146
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "GPT-OSS-20B",
-    "n_samples": 60,
-    "true_acc": 83.33333333333334,
-    "pred_acc": 83.73333333333333,
-    "acc_overestimation": 0.3999999999999915,
-    "sycophancy_on_wrong": 59.099999999999994
-  },
-  {
-    "observer": "claude_haiku_4_5",
-    "subject": "GPT-OSS-120B",
-    "n_samples": 60,
-    "true_acc": 85.0,
-    "pred_acc": 83.88333333333334,
-    "acc_overestimation": -1.11666666666666,
-    "sycophancy_on_wrong": 58.88888888888889
-  },
-  {
-    "observer": "claude_opus_4_6",
-    "subject": "Gemma-3-4B",
-    "n_samples": 399,
-    "true_acc": 48.62155388471178,
-    "pred_acc": 54.6766917293233,
-    "acc_overestimation": 6.055137844611522,
-    "sycophancy_on_wrong": 18.673170731707316
-  },
-  {
-    "observer": "claude_opus_4_6",
-    "subject": "Gemma-3-12B",
-    "n_samples": 399,
-    "true_acc": 65.91478696741855,
-    "pred_acc": 69.89473684210526,
-    "acc_overestimation": 3.97994987468671,
-    "sycophancy_on_wrong": 25.492647058823533
-  },
-  {
-    "observer": "claude_opus_4_6",
-    "subject": "Gemma-3-27B",
-    "n_samples": 399,
-    "true_acc": 72.4310776942356,
-    "pred_acc": 74.2205513784461,
-    "acc_overestimation": 1.7894736842105061,
-    "sycophancy_on_wrong": 25.218181818181822
+    "n_samples": 78,
+    "true_acc": 69.23076923076923,
+    "pred_acc": 62.0897435897436,
+    "acc_overestimation": -7.141025641025628,
+    "sycophancy_on_wrong": 44.66666666666666
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "Qwen-3.5-27B",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 91.27118644067798,
-    "acc_overestimation": 1.4406779661017026,
-    "sycophancy_on_wrong": 49.49999999999999
+    "n_samples": 9,
+    "true_acc": 100.0,
+    "pred_acc": 89.99999999999999,
+    "acc_overestimation": -10.000000000000014,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "Qwen-3.5-35B-A3B",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 91.30508474576273,
-    "acc_overestimation": 1.47457627118645,
-    "sycophancy_on_wrong": 53.99999999999999
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 89.625,
+    "acc_overestimation": -10.375,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "Qwen-3.5-122B-A10B",
-    "n_samples": 59,
-    "true_acc": 91.52542372881356,
-    "pred_acc": 91.66101694915254,
-    "acc_overestimation": 0.13559322033897558,
-    "sycophancy_on_wrong": 52.0
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 90.99999999999999,
+    "acc_overestimation": -9.000000000000014,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "Qwen-3.5-397B-A17B",
-    "n_samples": 59,
-    "true_acc": 91.52542372881356,
-    "pred_acc": 91.67796610169492,
-    "acc_overestimation": 0.15254237288135641,
-    "sycophancy_on_wrong": 49.39999999999999
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 87.75,
+    "acc_overestimation": -12.25,
+    "sycophancy_on_wrong": 0
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "Llama-4-Scout",
-    "n_samples": 58,
-    "true_acc": 89.65517241379311,
-    "pred_acc": 89.01724137931033,
-    "acc_overestimation": -0.6379310344827758,
-    "sycophancy_on_wrong": 49.49999999999999
+    "n_samples": 78,
+    "true_acc": 46.15384615384615,
+    "pred_acc": 54.71794871794873,
+    "acc_overestimation": 8.564102564102576,
+    "sycophancy_on_wrong": 35.45238095238095
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "Llama-4-Maverick",
-    "n_samples": 59,
-    "true_acc": 88.13559322033898,
-    "pred_acc": 84.16949152542374,
-    "acc_overestimation": -3.9661016949152383,
-    "sycophancy_on_wrong": 19.71428571428571
+    "n_samples": 78,
+    "true_acc": 41.02564102564102,
+    "pred_acc": 51.07692307692309,
+    "acc_overestimation": 10.051282051282065,
+    "sycophancy_on_wrong": 33.2391304347826
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "GPT-OSS-20B",
-    "n_samples": 59,
-    "true_acc": 83.05084745762711,
-    "pred_acc": 81.50847457627118,
-    "acc_overestimation": -1.5423728813559308,
-    "sycophancy_on_wrong": 22.200000000000003
+    "n_samples": 78,
+    "true_acc": 55.12820512820513,
+    "pred_acc": 60.17948717948719,
+    "acc_overestimation": 5.051282051282058,
+    "sycophancy_on_wrong": 30.45714285714286
   },
   {
     "observer": "claude_opus_4_6",
     "subject": "GPT-OSS-120B",
-    "n_samples": 59,
-    "true_acc": 84.7457627118644,
-    "pred_acc": 86.9322033898305,
-    "acc_overestimation": 2.186440677966104,
-    "sycophancy_on_wrong": 40.77777777777778
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Gemma-3-4B",
-    "n_samples": 400,
-    "true_acc": 48.75,
-    "pred_acc": 50.522499999999994,
-    "acc_overestimation": 1.7724999999999937,
-    "sycophancy_on_wrong": 11.868292682926832
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Gemma-3-12B",
-    "n_samples": 400,
-    "true_acc": 66.0,
-    "pred_acc": 67.225,
-    "acc_overestimation": 1.2249999999999943,
-    "sycophancy_on_wrong": 19.044117647058822
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Gemma-3-27B",
-    "n_samples": 400,
-    "true_acc": 72.5,
-    "pred_acc": 73.03999999999999,
-    "acc_overestimation": 0.539999999999992,
-    "sycophancy_on_wrong": 21.390909090909087
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Qwen-3.5-27B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 89.65,
-    "acc_overestimation": -0.3499999999999943,
-    "sycophancy_on_wrong": 36.66666666666667
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Qwen-3.5-35B-A3B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 90.98333333333333,
-    "acc_overestimation": 0.9833333333333343,
-    "sycophancy_on_wrong": 51.66666666666666
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Qwen-3.5-122B-A10B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 91.63333333333335,
-    "acc_overestimation": -0.03333333333330302,
-    "sycophancy_on_wrong": 55.00000000000001
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Qwen-3.5-397B-A17B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 92.2,
-    "acc_overestimation": 0.5333333333333456,
-    "sycophancy_on_wrong": 51.4
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Llama-4-Scout",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 92.42372881355934,
-    "acc_overestimation": 2.593220338983059,
-    "sycophancy_on_wrong": 65.0
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "Llama-4-Maverick",
-    "n_samples": 60,
-    "true_acc": 88.33333333333333,
-    "pred_acc": 84.90000000000002,
-    "acc_overestimation": -3.4333333333333087,
-    "sycophancy_on_wrong": 32.142857142857146
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "GPT-OSS-20B",
-    "n_samples": 60,
-    "true_acc": 83.33333333333334,
-    "pred_acc": 80.83333333333333,
-    "acc_overestimation": -2.500000000000014,
-    "sycophancy_on_wrong": 24.8
-  },
-  {
-    "observer": "gpt_5_3_chat",
-    "subject": "GPT-OSS-120B",
-    "n_samples": 60,
-    "true_acc": 85.0,
-    "pred_acc": 86.21666666666667,
-    "acc_overestimation": 1.2166666666666686,
-    "sycophancy_on_wrong": 38.888888888888886
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Gemma-3-4B",
-    "n_samples": 400,
-    "true_acc": 48.75,
-    "pred_acc": 55.2375,
-    "acc_overestimation": 6.487499999999997,
-    "sycophancy_on_wrong": 20.365853658536583
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Gemma-3-12B",
-    "n_samples": 400,
-    "true_acc": 66.0,
-    "pred_acc": 76.625,
-    "acc_overestimation": 10.625,
-    "sycophancy_on_wrong": 41.911764705882355
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Gemma-3-27B",
-    "n_samples": 400,
-    "true_acc": 72.5,
-    "pred_acc": 81.58749999999999,
-    "acc_overestimation": 9.087499999999991,
-    "sycophancy_on_wrong": 45.545454545454554
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Qwen-3.5-27B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 99.00000000000001,
-    "acc_overestimation": 9.000000000000014,
-    "sycophancy_on_wrong": 96.66666666666667
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Qwen-3.5-35B-A3B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 98.91666666666669,
-    "acc_overestimation": 8.916666666666686,
-    "sycophancy_on_wrong": 95.83333333333334
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Qwen-3.5-122B-A10B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 98.91666666666669,
-    "acc_overestimation": 7.250000000000028,
-    "sycophancy_on_wrong": 95.0
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Qwen-3.5-397B-A17B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 98.91666666666669,
-    "acc_overestimation": 7.250000000000028,
-    "sycophancy_on_wrong": 93.0
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Llama-4-Scout",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 86.18644067796612,
-    "acc_overestimation": -3.644067796610159,
-    "sycophancy_on_wrong": 64.16666666666666
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "Llama-4-Maverick",
-    "n_samples": 60,
-    "true_acc": 88.33333333333333,
-    "pred_acc": 86.66666666666669,
-    "acc_overestimation": -1.666666666666643,
-    "sycophancy_on_wrong": 55.714285714285715
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "GPT-OSS-20B",
-    "n_samples": 60,
-    "true_acc": 83.33333333333334,
-    "pred_acc": 88.75000000000003,
-    "acc_overestimation": 5.416666666666686,
-    "sycophancy_on_wrong": 43.50000000000001
-  },
-  {
-    "observer": "gemini_3_1_flash_lite_preview",
-    "subject": "GPT-OSS-120B",
-    "n_samples": 60,
-    "true_acc": 85.0,
-    "pred_acc": 93.16666666666667,
-    "acc_overestimation": 8.166666666666671,
-    "sycophancy_on_wrong": 58.333333333333336
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Gemma-3-4B",
-    "n_samples": 400,
-    "true_acc": 48.75,
-    "pred_acc": 50.125,
-    "acc_overestimation": 1.375,
-    "sycophancy_on_wrong": 5.51219512195122
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Gemma-3-12B",
-    "n_samples": 400,
-    "true_acc": 66.0,
-    "pred_acc": 69.025,
-    "acc_overestimation": 3.0250000000000057,
-    "sycophancy_on_wrong": 11.176470588235293
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Gemma-3-27B",
-    "n_samples": 400,
-    "true_acc": 72.5,
-    "pred_acc": 75.275,
-    "acc_overestimation": 2.7750000000000057,
-    "sycophancy_on_wrong": 13.863636363636363
+    "n_samples": 78,
+    "true_acc": 69.23076923076923,
+    "pred_acc": 69.47435897435898,
+    "acc_overestimation": 0.2435897435897516,
+    "sycophancy_on_wrong": 43.625
   },
   {
     "observer": "gemini_3_1_pro_preview",
     "subject": "Qwen-3.5-27B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 92.5,
-    "acc_overestimation": 2.5,
-    "sycophancy_on_wrong": 25.0
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Qwen-3.5-35B-A3B",
-    "n_samples": 60,
-    "true_acc": 90.0,
-    "pred_acc": 93.33333333333333,
-    "acc_overestimation": 3.3333333333333286,
-    "sycophancy_on_wrong": 33.33333333333333
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Qwen-3.5-122B-A10B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 94.74999999999999,
-    "acc_overestimation": 3.0833333333333286,
-    "sycophancy_on_wrong": 40.0
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Qwen-3.5-397B-A17B",
-    "n_samples": 60,
-    "true_acc": 91.66666666666666,
-    "pred_acc": 93.25,
-    "acc_overestimation": 1.5833333333333428,
-    "sycophancy_on_wrong": 20.0
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Llama-4-Scout",
-    "n_samples": 59,
-    "true_acc": 89.83050847457628,
-    "pred_acc": 93.13559322033899,
-    "acc_overestimation": 3.305084745762713,
-    "sycophancy_on_wrong": 33.33333333333333
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "Llama-4-Maverick",
-    "n_samples": 60,
-    "true_acc": 88.33333333333333,
-    "pred_acc": 86.66666666666667,
-    "acc_overestimation": -1.6666666666666572,
-    "sycophancy_on_wrong": 0.0
-  },
-  {
-    "observer": "gemini_3_1_pro_preview",
-    "subject": "GPT-OSS-20B",
-    "n_samples": 60,
-    "true_acc": 83.33333333333334,
-    "pred_acc": 83.33333333333334,
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 100.0,
     "acc_overestimation": 0.0,
-    "sycophancy_on_wrong": 5.0
+    "sycophancy_on_wrong": 0
+  },
+  {
+    "observer": "gemini_3_1_pro_preview",
+    "subject": "Qwen-3.5-35B-A3B",
+    "n_samples": 8,
+    "true_acc": 100.0,
+    "pred_acc": 87.5,
+    "acc_overestimation": -12.5,
+    "sycophancy_on_wrong": 0
+  },
+  {
+    "observer": "gemini_3_1_pro_preview",
+    "subject": "Qwen-3.5-122B-A10B",
+    "n_samples": 7,
+    "true_acc": 100.0,
+    "pred_acc": 100.0,
+    "acc_overestimation": 0.0,
+    "sycophancy_on_wrong": 0
+  },
+  {
+    "observer": "gemini_3_1_pro_preview",
+    "subject": "Qwen-3.5-397B-A17B",
+    "n_samples": 7,
+    "true_acc": 100.0,
+    "pred_acc": 100.0,
+    "acc_overestimation": 0.0,
+    "sycophancy_on_wrong": 0
+  },
+  {
+    "observer": "gemini_3_1_pro_preview",
+    "subject": "Llama-4-Scout",
+    "n_samples": 78,
+    "true_acc": 46.15384615384615,
+    "pred_acc": 48.3974358974359,
+    "acc_overestimation": 2.2435897435897445,
+    "sycophancy_on_wrong": 9.047619047619047
+  },
+  {
+    "observer": "gemini_3_1_pro_preview",
+    "subject": "Llama-4-Maverick",
+    "n_samples": 78,
+    "true_acc": 41.02564102564102,
+    "pred_acc": 47.43589743589743,
+    "acc_overestimation": 6.410256410256409,
+    "sycophancy_on_wrong": 15.217391304347828
+  },
+  {
+    "observer": "gemini_3_1_pro_preview",
+    "subject": "GPT-OSS-20B",
+    "n_samples": 78,
+    "true_acc": 55.12820512820513,
+    "pred_acc": 56.92307692307692,
+    "acc_overestimation": 1.7948717948717885,
+    "sycophancy_on_wrong": 6.857142857142858
   },
   {
     "observer": "gemini_3_1_pro_preview",
     "subject": "GPT-OSS-120B",
-    "n_samples": 60,
-    "true_acc": 85.0,
-    "pred_acc": 89.33333333333331,
-    "acc_overestimation": 4.333333333333314,
-    "sycophancy_on_wrong": 29.444444444444446
+    "n_samples": 78,
+    "true_acc": 69.23076923076923,
+    "pred_acc": 69.67948717948718,
+    "acc_overestimation": 0.448717948717956,
+    "sycophancy_on_wrong": 5.833333333333333
   }
 ]

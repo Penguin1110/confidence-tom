@@ -1,0 +1,620 @@
+[
+  {
+    "question_id": "mmlu_pro_engineering_0007",
+    "question": "The cost of making the correct decisions for the given binary channel is zero, i.e., c(d_1/x_1) = c(d_2/x_2) = 0. The cost of making the incorrect decision d_1 is twice as much as that of making the incorrect decision d_2. That is to say, c(d_1/x_2) = 2c(d_2/x_1) which decision should be made, first, (a) When a y_1 is received, and (b) When a y_2 is received? GivenP(y_1/x_1) = 0.8, P(y_2/x_2) = 0.6, andP(x_1) = 0.8",
+    "choices": [
+      "A) (a) Decision made is d_1, (b) Decision d_1",
+      "B) (a) Decision made is d_2, (b) Decision d_2",
+      "C) (a) Decision made is random, (b) No decision is made",
+      "D) (a) Decision made is d_2, (b) Decision d_1",
+      "E) (a) Decision made is d_1, (b) No decision is made",
+      "F) (a) No decision is made, (b) Decision made is d_2",
+      "G) (a) No decision is made, (b) Decision made is d_1",
+      "H) (a) Decision made is d_1, (b) Decision d_2",
+      "I) (a) Decision made is random between d_1 and d_2, (b) Decision d_1",
+      "J) (a) Decision made is d_2, (b) Decision is random between d_1 and d_2"
+    ],
+    "correct_answer": "H",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "engineering",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "H",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\n\"answer\": \"H\",\n\"confidence\": 95,\n\"reasoning\": \"We use the Bayes decision rule to minimize the expected risk. Given costs c(d1|x1)=0, c(d2|x2)=0, c(d1|x2)=2C, and c(d2|x1)=C. The decision rule is to choose d1 if P(y|x1)P(x1) > 2 * P(y|x2)P(x2), which simplifies to the likelihood ratio P(y|x1)/P(y|x2) > 0.5. For y1: Likelihood ratio is 0.8/0.4 = 2 > 0.5, so decide d1. For y2: Likelihood ratio is 0.2/0.6 = 0.33 < 0.5, so decide d2. Thus (a) d1 and (b) d2.\"\n}",
+    "answer_distribution": {
+      "H": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "H",
+        "confidence": 0.95,
+        "raw_text": "{\n\"answer\": \"H\",\n\"confidence\": 95,\n\"reasoning\": \"We use the Bayes decision rule to minimize the expected risk. Given costs c(d1|x1)=0, c(d2|x2)=0, c(d1|x2)=2C, and c(d2|x1)=C. The decision rule is to choose d1 if P(y|x1)P(x1) > 2 * P(y|x2)P(x2), which simplifies to the likelihood ratio P(y|x1)/P(y|x2) > 0.5. For y1: Likelihood ratio is 0.8/0.4 = 2 > 0.5, so decide d1. For y2: Likelihood ratio is 0.2/0.6 = 0.33 < 0.5, so decide d2. Thus (a) d1 and (b) d2.\"\n}",
+        "reasoning": "{\n\"answer\": \"H\",\n\"confidence\": 95,\n\"reasoning\": \"We use the Bayes decision rule to minimize the expected risk. Given costs c(d1|x1)=0, c(d2|x2)=0, c(d1|x2)=2C, and c(d2|x1)=C. The decision rule is to choose d1 if P(y|x1)P(x1) > 2 * P(y|x2)P(x2), which simplifies to the likelihood ratio P(y|x1)/P(y|x2) > 0.5. For y1: Likelihood ratio is 0.8/0.4 = 2 > 0.5, so decide d1. For y2: Likelihood ratio is 0.2/0.6 = 0.33 < 0.5, so decide d2. Thus (a) d1 and (b) d2.\"\n}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_history_0003",
+    "question": "This question refers to the following information.\nAn Act to place certain restrictions on Immigration and to provide for the removal from the Commonwealth of Prohibited Immigrants.\n…\n3. The immigration into the Commonwealth of the persons described in any of the following paragraphs in this section (hereinafter called \"prohibited immigrants\") is prohibited, namely\n(a) Any person who when asked to do so by an officer fails to write out at dictation and sign in the presence of the officer a passage of fifty words in length in a European language directed by the officer;\n(b) Any person in the opinion of the Minister or of an officer to become a charge upon the public or upon any public or charitable organisation;\n…\n(g) Any persons under a contract or agreement to perform manual labour within the Commonwealth: Provided that this paragraph shall not apply to workmen exempted by the Minister for special skill required by Australia…\nImmigration Restriction Act of 1901 (Australia)\nWhereas in the opinion of the Government of the United States the coming of Chinese laborers to this country endangers the good order of certain localities within the territory thereof;\nTherefore,\nBe it enacted by the Senate and House of Representatives of the United States of America in Congress assembled, That from and after the expiration of ninety days next after the passage of this act, the coming of Chinese laborers to the United States be suspended; and during such suspension it shall not be lawful for any Chinese laborer to come, or having so come after the expiration of said ninety days to remain within the United States.\nSEC. 2. That the master of every vessel who shall knowingly bring within the United States on such vessel, and land or permit to be landed, any Chinese laborer, from any foreign port or place, shall be deemed guilty of a misdemeanor, and on conviction thereof shall be punished by a fine of not more than five hundred dollars for each and every such Chinese laborer so brought, and may be also imprisoned for a term not exceeding one year….\nChinese Exclusion Act of 1882 (United States)\nWhich of the following economic activities did the most to drive the rising levels of immigration that led to the enactment of the law described in the second passage?",
+    "choices": [
+      "A) Iron smelting",
+      "B) Fertilizer harvesting",
+      "C) Coal mining",
+      "D) Fur trading",
+      "E) Cotton farming",
+      "F) Tobacco cultivation",
+      "G) Silk production",
+      "H) Sugarcane production",
+      "I) Railroad construction",
+      "J) Gold mining"
+    ],
+    "correct_answer": "I",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "history",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "J",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.8,
+    "gap": -0.2,
+    "primary_reasoning": "{\"answer\": \"J\", \"confidence\": 80, \"reasoning\": \"The Chinese Exclusion Act of 1882 was a response to the significant increase in Chinese immigration to the United States during the mid-to-late 19th century. The primary economic activity that initially attracted and drove Chinese immigrants to the United States, particularly to California, was the California Gold Rush (beginning in 1848). The promise of wealth in the 'Gold Mountain' (Gam Saan) was the major pull factor that initiated the migration. While Chinese laborers were subsequently employed in massive numbers in railroad construction (specifically the Transcontinental Railroad in the 1860s), the Gold Rush is historically identified as the primary catalyst for the rising levels of immigration that established the Chinese population in the West, which later led to labor competition and the enactment of the exclusion law.\"}",
+    "answer_distribution": {
+      "J": 1
+    },
+    "sample_confidences": [
+      0.8
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "J",
+        "confidence": 0.8,
+        "raw_text": "{\"answer\": \"J\", \"confidence\": 80, \"reasoning\": \"The Chinese Exclusion Act of 1882 was a response to the significant increase in Chinese immigration to the United States during the mid-to-late 19th century. The primary economic activity that initially attracted and drove Chinese immigrants to the United States, particularly to California, was the California Gold Rush (beginning in 1848). The promise of wealth in the 'Gold Mountain' (Gam Saan) was the major pull factor that initiated the migration. While Chinese laborers were subsequently employed in massive numbers in railroad construction (specifically the Transcontinental Railroad in the 1860s), the Gold Rush is historically identified as the primary catalyst for the rising levels of immigration that established the Chinese population in the West, which later led to labor competition and the enactment of the exclusion law.\"}",
+        "reasoning": "{\"answer\": \"J\", \"confidence\": 80, \"reasoning\": \"The Chinese Exclusion Act of 1882 was a response to the significant increase in Chinese immigration to the United States during the mid-to-late 19th century. The primary economic activity that initially attracted and drove Chinese immigrants to the United States, particularly to California, was the California Gold Rush (beginning in 1848). The promise of wealth in the 'Gold Mountain' (Gam Saan) was the major pull factor that initiated the migration. While Chinese laborers were subsequently employed in massive numbers in railroad construction (specifically the Transcontinental Railroad in the 1860s), the Gold Rush is historically identified as the primary catalyst for the rising levels of immigration that established the Chinese population in the West, which later led to labor competition and the enactment of the exclusion law.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_math_0002",
+    "question": "For the two linear equations $2 * x + 3 * y = 10$ and $4 * x + 4 * y = 12$ iwth variables x and y. Use cramer's rule to solve these two variables.",
+    "choices": [
+      "A) [4, 1]",
+      "B) [-1, 4]",
+      "C) [2, 2]",
+      "D) [3, 2]",
+      "E) [1, 2]",
+      "F) [0, 3]",
+      "G) [-2, 6]",
+      "H) [1, 5]",
+      "I) [2, 3]",
+      "J) [5, -1]"
+    ],
+    "correct_answer": "B",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "math",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "B",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 1.0,
+    "gap": 0.0,
+    "primary_reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"The system is 2x + 3y = 10 and 4x + 4y = 12. Calculate D = (2*4) - (3*4) = -4. Calculate Dx = (10*4) - (3*12) = 4. Calculate Dy = (2*12) - (10*4) = -16. Solve x = Dx/D = -1 and y = Dy/D = 4. The solution [-1, 4] corresponds to option B.\"}",
+    "answer_distribution": {
+      "B": 1
+    },
+    "sample_confidences": [
+      1.0
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "B",
+        "confidence": 1.0,
+        "raw_text": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"The system is 2x + 3y = 10 and 4x + 4y = 12. Calculate D = (2*4) - (3*4) = -4. Calculate Dx = (10*4) - (3*12) = 4. Calculate Dy = (2*12) - (10*4) = -16. Solve x = Dx/D = -1 and y = Dy/D = 4. The solution [-1, 4] corresponds to option B.\"}",
+        "reasoning": "{\"answer\": \"B\", \"confidence\": 100, \"reasoning\": \"The system is 2x + 3y = 10 and 4x + 4y = 12. Calculate D = (2*4) - (3*4) = -4. Calculate Dx = (10*4) - (3*12) = 4. Calculate Dy = (2*12) - (10*4) = -16. Solve x = Dx/D = -1 and y = Dy/D = 4. The solution [-1, 4] corresponds to option B.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_business_0008",
+    "question": "Ringlet Wholesalers discounted its old line of dining-room sets at a chain discount of 30% and 10%. If the discount offered was $248.40, what was the list price and the net price of each set?",
+    "choices": [
+      "A) List price: $560.57, Net price: $392.40",
+      "B) List price: $992.00, Net price: $671.35",
+      "C) List price: $671.35, Net price: $248.40",
+      "D) List price: $248.40, Net price: $422.95",
+      "E) List price: $354.86, Net price: $248.40",
+      "F) List price: $671.35, Net price: $422.95",
+      "G) List price: $775.50, Net price: $542.85",
+      "H) List price: $422.95, Net price: $671.35",
+      "I) List price: $994.85, Net price: $696.39",
+      "J) List price: $865.20, Net price: $605.64"
+    ],
+    "correct_answer": "F",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "business",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "F",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"F\", \"confidence\": 95, \"reasoning\": \"First, calculate the net price equivalent rate by multiplying the complements of the discount rates: (1 - 0.30) * (1 - 0.10) = 0.70 * 0.90 = 0.63. This means the discount rate is 1 - 0.63 = 0.37 (or 37%). Next, divide the total discount amount ($248.40) by the discount rate (0.37) to find the List Price: $248.40 / 0.37 = $671.35. Finally, calculate the Net Price by subtracting the discount amount from the List Price: $671.35 - $248.40 = $422.95. This matches Option F.\"}",
+    "answer_distribution": {
+      "F": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "F",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"F\", \"confidence\": 95, \"reasoning\": \"First, calculate the net price equivalent rate by multiplying the complements of the discount rates: (1 - 0.30) * (1 - 0.10) = 0.70 * 0.90 = 0.63. This means the discount rate is 1 - 0.63 = 0.37 (or 37%). Next, divide the total discount amount ($248.40) by the discount rate (0.37) to find the List Price: $248.40 / 0.37 = $671.35. Finally, calculate the Net Price by subtracting the discount amount from the List Price: $671.35 - $248.40 = $422.95. This matches Option F.\"}",
+        "reasoning": "{\"answer\": \"F\", \"confidence\": 95, \"reasoning\": \"First, calculate the net price equivalent rate by multiplying the complements of the discount rates: (1 - 0.30) * (1 - 0.10) = 0.70 * 0.90 = 0.63. This means the discount rate is 1 - 0.63 = 0.37 (or 37%). Next, divide the total discount amount ($248.40) by the discount rate (0.37) to find the List Price: $248.40 / 0.37 = $671.35. Finally, calculate the Net Price by subtracting the discount amount from the List Price: $671.35 - $248.40 = $422.95. This matches Option F.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_math_0005",
+    "question": "suppose $-\\pi<x<\\pi$. what is the value of $(\\sum_{n=1}^{\\infty}(-1)^{n-1} \\frac{cos(nx)}{n})/log(2cos(x/2))$? Rounding it to the hundredths place and return the value.",
+    "choices": [
+      "A) -1.0",
+      "B) 2.5",
+      "C) 1.5",
+      "D) 2.0",
+      "E) 0.25",
+      "F) 3.0",
+      "G) -0.5",
+      "H) 1.0",
+      "I) 0.5",
+      "J) 0.75"
+    ],
+    "correct_answer": "H",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "math",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "H",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.9,
+    "gap": -0.1,
+    "primary_reasoning": "{\"answer\": \"H\", \"confidence\": 90, \"reasoning\": \"The numerator series sum_{n=1}^inf (-1)^(n-1) cos(nx)/n is the Fourier series expansion of ln(2cos(x/2)) for -pi < x < pi. The denominator is log(2cos(x/2)), where log denotes the natural logarithm in this mathematical context. The ratio of the numerator to the denominator is therefore ln(2cos(x/2)) / ln(2cos(x/2)) = 1. Rounding 1 to the hundredths place gives 1.00, which corresponds to option H (1.0).\"}",
+    "answer_distribution": {
+      "H": 1
+    },
+    "sample_confidences": [
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "H",
+        "confidence": 0.9,
+        "raw_text": "{\"answer\": \"H\", \"confidence\": 90, \"reasoning\": \"The numerator series sum_{n=1}^inf (-1)^(n-1) cos(nx)/n is the Fourier series expansion of ln(2cos(x/2)) for -pi < x < pi. The denominator is log(2cos(x/2)), where log denotes the natural logarithm in this mathematical context. The ratio of the numerator to the denominator is therefore ln(2cos(x/2)) / ln(2cos(x/2)) = 1. Rounding 1 to the hundredths place gives 1.00, which corresponds to option H (1.0).\"}",
+        "reasoning": "{\"answer\": \"H\", \"confidence\": 90, \"reasoning\": \"The numerator series sum_{n=1}^inf (-1)^(n-1) cos(nx)/n is the Fourier series expansion of ln(2cos(x/2)) for -pi < x < pi. The denominator is log(2cos(x/2)), where log denotes the natural logarithm in this mathematical context. The ratio of the numerator to the denominator is therefore ln(2cos(x/2)) / ln(2cos(x/2)) = 1. Rounding 1 to the hundredths place gives 1.00, which corresponds to option H (1.0).\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_engineering_0006",
+    "question": "A marine research facility uses a towing basin to test models of proposed ship hull configurations. A new hull shape utilizing a bulbous underwater bow is proposed for a nuclear- powered aircraft carrier that is to be 300 m long. A 3-m model has been tested in the towing tank and found to have a maximum practical hull speed of 1.4 m/s. What is the anticipated hull speed for the prototype?",
+    "choices": [
+      "A) 18 m/s",
+      "B) 20 m/s",
+      "C) 12 m/s",
+      "D) 14 m/s",
+      "E) 10 m/s",
+      "F) 25 m/s",
+      "G) 30 m/s",
+      "H) 1.4 m/s",
+      "I) 7 m/s",
+      "J) 8.5 m/s"
+    ],
+    "correct_answer": "D",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "engineering",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "D",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"D\", \"confidence\": 95, \"reasoning\": \"For ship hull model testing where wave resistance is significant, dynamic similarity is achieved by matching the Froude number (Fr = V / sqrt(gL)). Setting Fr_model = Fr_prototype implies V_p = V_m * sqrt(L_p / L_m). Given L_p = 300 m, L_m = 3 m, and V_m = 1.4 m/s, the scale ratio is 100. Thus, V_p = 1.4 * sqrt(100) = 1.4 * 10 = 14 m/s.\"}",
+    "answer_distribution": {
+      "D": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "D",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"D\", \"confidence\": 95, \"reasoning\": \"For ship hull model testing where wave resistance is significant, dynamic similarity is achieved by matching the Froude number (Fr = V / sqrt(gL)). Setting Fr_model = Fr_prototype implies V_p = V_m * sqrt(L_p / L_m). Given L_p = 300 m, L_m = 3 m, and V_m = 1.4 m/s, the scale ratio is 100. Thus, V_p = 1.4 * sqrt(100) = 1.4 * 10 = 14 m/s.\"}",
+        "reasoning": "{\"answer\": \"D\", \"confidence\": 95, \"reasoning\": \"For ship hull model testing where wave resistance is significant, dynamic similarity is achieved by matching the Froude number (Fr = V / sqrt(gL)). Setting Fr_model = Fr_prototype implies V_p = V_m * sqrt(L_p / L_m). Given L_p = 300 m, L_m = 3 m, and V_m = 1.4 m/s, the scale ratio is 100. Thus, V_p = 1.4 * sqrt(100) = 1.4 * 10 = 14 m/s.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_economics_0009",
+    "question": "Under which of the following situations would bootstrapping be preferred to pure simulation?\n\ni) If it is desired that the distributional properties of the data in the experiment\n\nare the same as those of some actual data\n\n\nii) If it is desired that the distributional properties of the data in the experiment\n\nare known exactly\n\n\niii) If the distributional properties of the actual data are unknown\n\n\niv) If the sample of actual data available is very small",
+    "choices": [
+      "A) (i) and (ii) only",
+      "B) (ii) and (iii) only",
+      "C) (i) and (iii) only",
+      "D) (i) and (iv) only",
+      "E) (ii) and (iv) only",
+      "F) (iii) and (iv) only",
+      "G) (i), (ii), (iii), and (iv)",
+      "H) (i), (iii), and (iv) only",
+      "I) (ii), (iii), and (iv) only",
+      "J) (i), (ii), and (iv) only"
+    ],
+    "correct_answer": "C",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "economics",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "C",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.9,
+    "gap": -0.1,
+    "primary_reasoning": "{\"answer\": \"C\", \"confidence\": 90, \"reasoning\": \"Bootstrapping is a non-parametric resampling technique that relies on the empirical distribution of the observed data. It is preferred in situation (i) because resampling from actual data preserves the distributional properties (skewness, kurtosis, etc.) of that specific dataset, whereas pure simulation (Monte Carlo) uses a theoretical distribution that may not match. It is also preferred in situation (iii) because it does not require the underlying distribution to be known or specified, unlike pure simulation which requires a parametric model. Statement (ii) describes an advantage of pure simulation (exact control over properties). Statement (iv) is generally a disadvantage for bootstrapping, as it relies on the sample being a good representation of the population, which is less reliable with very small samples.\"}",
+    "answer_distribution": {
+      "C": 1
+    },
+    "sample_confidences": [
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "C",
+        "confidence": 0.9,
+        "raw_text": "{\"answer\": \"C\", \"confidence\": 90, \"reasoning\": \"Bootstrapping is a non-parametric resampling technique that relies on the empirical distribution of the observed data. It is preferred in situation (i) because resampling from actual data preserves the distributional properties (skewness, kurtosis, etc.) of that specific dataset, whereas pure simulation (Monte Carlo) uses a theoretical distribution that may not match. It is also preferred in situation (iii) because it does not require the underlying distribution to be known or specified, unlike pure simulation which requires a parametric model. Statement (ii) describes an advantage of pure simulation (exact control over properties). Statement (iv) is generally a disadvantage for bootstrapping, as it relies on the sample being a good representation of the population, which is less reliable with very small samples.\"}",
+        "reasoning": "{\"answer\": \"C\", \"confidence\": 90, \"reasoning\": \"Bootstrapping is a non-parametric resampling technique that relies on the empirical distribution of the observed data. It is preferred in situation (i) because resampling from actual data preserves the distributional properties (skewness, kurtosis, etc.) of that specific dataset, whereas pure simulation (Monte Carlo) uses a theoretical distribution that may not match. It is also preferred in situation (iii) because it does not require the underlying distribution to be known or specified, unlike pure simulation which requires a parametric model. Statement (ii) describes an advantage of pure simulation (exact control over properties). Statement (iv) is generally a disadvantage for bootstrapping, as it relies on the sample being a good representation of the population, which is less reliable with very small samples.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_economics_0004",
+    "question": "Which of the following is a consequence of removal of a protective tariff on imported steel?",
+    "choices": [
+      "A) The quality of imported steel decreases.",
+      "B) Domestic steel producers lose their job.",
+      "C) Income is transferred from domestic steel consumers to foreign steel producers.",
+      "D) Income is transferred from steel consumers to domestic steel producers.",
+      "E) Allocative efficiency is improved.",
+      "F) Imports fall.",
+      "G) The price of imported steel increases.",
+      "H) Income is transferred from foreign steel producers to domestic steel producers.",
+      "I) The supply of domestic steel decreases.",
+      "J) The demand for domestic steel increases."
+    ],
+    "correct_answer": "E",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "economics",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "E",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.9,
+    "gap": -0.1,
+    "primary_reasoning": "{\"answer\": \"E\", \"confidence\": 90, \"reasoning\": \"Removing a protective tariff lowers the domestic price of steel to the world price level. Tariffs create deadweight losses by distorting market incentives, leading to inefficient overproduction by high-cost domestic firms and underconsumption by buyers. Eliminating the tariff removes these distortions, allowing resources to be allocated more efficiently according to comparative advantage, which improves allocative efficiency. While domestic producers may face lower output and potential job losses (Option B), the fundamental economic result of trade liberalization is the gain in total welfare and efficiency. Options F and G describe the opposite effect (imports rise, prices fall), and Option D describes the effect of imposing, not removing, a tariff.\"}",
+    "answer_distribution": {
+      "E": 1
+    },
+    "sample_confidences": [
+      0.9
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "E",
+        "confidence": 0.9,
+        "raw_text": "{\"answer\": \"E\", \"confidence\": 90, \"reasoning\": \"Removing a protective tariff lowers the domestic price of steel to the world price level. Tariffs create deadweight losses by distorting market incentives, leading to inefficient overproduction by high-cost domestic firms and underconsumption by buyers. Eliminating the tariff removes these distortions, allowing resources to be allocated more efficiently according to comparative advantage, which improves allocative efficiency. While domestic producers may face lower output and potential job losses (Option B), the fundamental economic result of trade liberalization is the gain in total welfare and efficiency. Options F and G describe the opposite effect (imports rise, prices fall), and Option D describes the effect of imposing, not removing, a tariff.\"}",
+        "reasoning": "{\"answer\": \"E\", \"confidence\": 90, \"reasoning\": \"Removing a protective tariff lowers the domestic price of steel to the world price level. Tariffs create deadweight losses by distorting market incentives, leading to inefficient overproduction by high-cost domestic firms and underconsumption by buyers. Eliminating the tariff removes these distortions, allowing resources to be allocated more efficiently according to comparative advantage, which improves allocative efficiency. While domestic producers may face lower output and potential job losses (Option B), the fundamental economic result of trade liberalization is the gain in total welfare and efficiency. Options F and G describe the opposite effect (imports rise, prices fall), and Option D describes the effect of imposing, not removing, a tariff.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_physics_0000",
+    "question": "Which of the following was not cited as evidence for life in the martian meteorite ALH84001?",
+    "choices": [
+      "A) Amino acids with a preferred orientation or \"chirality\"",
+      "B) Magnetite grains similar to those formed by bacteria on Earth",
+      "C) Methane traces within the meteorite",
+      "D) High levels of sulfur, indicating a possible volcanic origin",
+      "E) Detection of radio signals from the meteorite",
+      "F) Carbonate minerals indicating a thicker warmer Martian atmosphere",
+      "G) Presence of water-ice in the meteorite",
+      "H) Presence of olivine, a common mineral in Martian meteorites",
+      "I) Fossilized microbial life forms within the meteorite",
+      "J) Complex organic molecules specifically PAHs"
+    ],
+    "correct_answer": "A",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "physics",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "E",
+    "is_correct": false,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\n\"answer\": \"E\",\n\"confidence\": 95,\n\"reasoning\": \"The 1996 NASA announcement regarding the Martian meteorite ALH84001 cited four main lines of evidence: carbonate globules (F), polycyclic aromatic hydrocarbons (J), magnetite crystals similar to bacterial biominerals (B), and microscopic structures resembling fossilized microbes (I). Detection of radio signals (E) is a method used in SETI (Search for Extraterrestrial Intelligence) via telescopes and is physically impossible for a meteorite to emit; thus, it was never cited as evidence for life in the rock.\"\n}",
+    "answer_distribution": {
+      "E": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "E",
+        "confidence": 0.95,
+        "raw_text": "{\n\"answer\": \"E\",\n\"confidence\": 95,\n\"reasoning\": \"The 1996 NASA announcement regarding the Martian meteorite ALH84001 cited four main lines of evidence: carbonate globules (F), polycyclic aromatic hydrocarbons (J), magnetite crystals similar to bacterial biominerals (B), and microscopic structures resembling fossilized microbes (I). Detection of radio signals (E) is a method used in SETI (Search for Extraterrestrial Intelligence) via telescopes and is physically impossible for a meteorite to emit; thus, it was never cited as evidence for life in the rock.\"\n}",
+        "reasoning": "{\n\"answer\": \"E\",\n\"confidence\": 95,\n\"reasoning\": \"The 1996 NASA announcement regarding the Martian meteorite ALH84001 cited four main lines of evidence: carbonate globules (F), polycyclic aromatic hydrocarbons (J), magnetite crystals similar to bacterial biominerals (B), and microscopic structures resembling fossilized microbes (I). Detection of radio signals (E) is a method used in SETI (Search for Extraterrestrial Intelligence) via telescopes and is physically impossible for a meteorite to emit; thus, it was never cited as evidence for life in the rock.\"\n}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "question_id": "mmlu_pro_health_0001",
+    "question": "Which one of following statements about nitrogen balance is correct?\n",
+    "choices": [
+      "A) Positive nitrogen balance means that there is a net loss of protein from the body",
+      "B) Positive nitrogen balance means that the body is in a state of nitrogen deficiency.",
+      "C) In negative nitrogen balance the excretion of nitrogenous metabolites is less than the dietary intake of nitrogenous compounds",
+      "D) Negative nitrogen balance indicates a net gain of protein in the body.",
+      "E) In positive nitrogen balance the excretion of nitrogenous metabolites is less than the dietary intake of nitrogenous compounds.",
+      "F) Positive nitrogen balance means that the body excretes more nitrogenous compounds than it consumes.",
+      "G) In nitrogen equilibrium the excretion of nitrogenous metabolites is greater than the dietary intake of nitrogenous compounds.",
+      "H) In positive nitrogen balance the excretion of nitrogenous metabolites is equal to the dietary intake of nitrogenous compounds."
+    ],
+    "correct_answer": "E",
+    "category": "knowledge_pro",
+    "source": "mmlu_pro",
+    "external_difficulty": "health",
+    "model_name": "qwen/qwen3.5-122b-a10b",
+    "k_samples": 1,
+    "k_target": 1,
+    "majority_answer": "E",
+    "is_correct": true,
+    "c_beh": 1.0,
+    "c_rep": 0.95,
+    "gap": -0.05,
+    "primary_reasoning": "{\"answer\": \"E\", \"confidence\": 95, \"reasoning\": \"Nitrogen balance is defined as the difference between nitrogen intake (dietary protein) and nitrogen excretion (urine, feces, etc.). Positive nitrogen balance occurs when nitrogen intake exceeds nitrogen excretion (Intake > Excretion), indicating that the body is retaining nitrogen for tissue growth and repair (net protein gain). Therefore, statement E is correct because it describes a state where excretion is less than intake. Conversely, negative balance implies excretion exceeds intake (net protein loss), and equilibrium implies they are equal. Options A, B, D, and F describe the opposite conditions, while G and H incorrectly describe equilibrium.\"}",
+    "answer_distribution": {
+      "E": 1
+    },
+    "sample_confidences": [
+      0.95
+    ],
+    "parse_structured": 0,
+    "parse_fallback": 0,
+    "parse_llm_extract": 0,
+    "parse_unresolved": 0,
+    "extract_attempts": 0,
+    "extract_success": 0,
+    "all_samples_failed": false,
+    "sample_traces": [
+      {
+        "sample_index": 0,
+        "parse_method": "text",
+        "answer": "E",
+        "confidence": 0.95,
+        "raw_text": "{\"answer\": \"E\", \"confidence\": 95, \"reasoning\": \"Nitrogen balance is defined as the difference between nitrogen intake (dietary protein) and nitrogen excretion (urine, feces, etc.). Positive nitrogen balance occurs when nitrogen intake exceeds nitrogen excretion (Intake > Excretion), indicating that the body is retaining nitrogen for tissue growth and repair (net protein gain). Therefore, statement E is correct because it describes a state where excretion is less than intake. Conversely, negative balance implies excretion exceeds intake (net protein loss), and equilibrium implies they are equal. Options A, B, D, and F describe the opposite conditions, while G and H incorrectly describe equilibrium.\"}",
+        "reasoning": "{\"answer\": \"E\", \"confidence\": 95, \"reasoning\": \"Nitrogen balance is defined as the difference between nitrogen intake (dietary protein) and nitrogen excretion (urine, feces, etc.). Positive nitrogen balance occurs when nitrogen intake exceeds nitrogen excretion (Intake > Excretion), indicating that the body is retaining nitrogen for tissue growth and repair (net protein gain). Therefore, statement E is correct because it describes a state where excretion is less than intake. Conversely, negative balance implies excretion exceeds intake (net protein loss), and equilibrium implies they are equal. Options A, B, D, and F describe the opposite conditions, while G and H incorrectly describe equilibrium.\"}",
+        "extract_attempted": false,
+        "extract_model": "google/gemini-3.1-flash-lite-preview",
+        "extract_raw": "",
+        "extract_answer": null,
+        "extract_confidence": null,
+        "original_has_explicit_answer": true,
+        "original_has_confidence": true,
+        "missing_answer_in_original": false,
+        "missing_confidence_in_original": false,
+        "note": ""
+      }
+    ]
+  }
+]
