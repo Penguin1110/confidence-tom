@@ -22,6 +22,16 @@ class MCResponse(BaseModel):
 
     answer: str = Field(description="Answer letter: A to J")
     confidence: float = Field(description="Confidence in 0-1 scale (normalized from 0-100)")
+    strategy: str = Field(description="High-level solution plan", default="")
+    reasoning: str = Field(description="Step-by-step reasoning", default="")
+
+
+class StaticResponse(BaseModel):
+    """Parsed response from a static benchmark prompt."""
+
+    answer: str = Field(description="Final answer string")
+    confidence: float = Field(description="Confidence in 0-1 scale")
+    strategy: str = Field(description="High-level solution plan", default="")
     reasoning: str = Field(description="Step-by-step reasoning", default="")
 
 
@@ -124,6 +134,54 @@ def parse_mc_response(
     return None
 
 
+def parse_static_response(
+    raw_text: str,
+    model_name: str = "unknown",
+) -> Optional[StaticResponse]:
+    """Parse a free-form static-task answer from JSON or light regex."""
+    json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw_text, re.DOTALL)
+    text = json_match.group(1) if json_match else raw_text
+    if not json_match:
+        start_idx = raw_text.find("{")
+        end_idx = raw_text.rfind("}")
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            text = raw_text[start_idx : end_idx + 1]
+
+    try:
+        data = json.loads(text)
+        answer = str(data.get("answer", "")).strip()
+        confidence = normalize_confidence(float(data.get("confidence", 50)))
+        if not answer:
+            return None
+        return StaticResponse(
+            answer=answer,
+            confidence=confidence,
+            strategy=str(data.get("strategy", "")),
+            reasoning=str(data.get("reasoning", "")),
+        )
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+
+    answer_match = re.search(r'["\']?[Aa]nswer["\']?\s*[:=]\s*["\']?(.*?)["\']?(?:,|$)', raw_text, re.DOTALL)
+    conf_match = re.search(
+        r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
+        raw_text,
+        re.IGNORECASE,
+    )
+    if answer_match:
+        answer = answer_match.group(1).strip()
+        confidence = normalize_confidence(float(conf_match.group(1))) if conf_match else 0.5
+        return StaticResponse(
+            answer=answer,
+            confidence=confidence,
+            strategy="",
+            reasoning=raw_text.strip(),
+        )
+
+    _track_parse(model_name, False)
+    return None
+
+
 def _try_json_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
     """Attempt to parse as JSON, handling markdown code blocks."""
     # Extract JSON from markdown code blocks if present
@@ -142,6 +200,7 @@ def _try_json_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
         data = json.loads(text)
         answer = str(data.get("answer", "")).strip().upper()
         confidence_raw = data.get("confidence", 50)
+        strategy = str(data.get("strategy", ""))
         reasoning = str(data.get("reasoning", ""))
 
         # Validate answer
@@ -151,7 +210,12 @@ def _try_json_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
             return None
 
         confidence = normalize_confidence(float(confidence_raw))
-        return MCResponse(answer=answer, confidence=confidence, reasoning=reasoning)
+        return MCResponse(
+            answer=answer,
+            confidence=confidence,
+            strategy=strategy,
+            reasoning=reasoning,
+        )
     except (json.JSONDecodeError, ValueError, TypeError, KeyError):
         return None
 

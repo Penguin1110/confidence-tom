@@ -33,14 +33,17 @@ import hydra
 from omegaconf import DictConfig
 
 from confidence_tom.client import LLMClient
-from confidence_tom.dataset_models import MCQuestion
+from confidence_tom.dataset_models import StaticTask
 from confidence_tom.parsing import (
     get_parse_stats,
     normalize_confidence,
     parse_mc_response,
+    parse_static_response,
     reset_parse_stats,
 )
 from confidence_tom.scale_dataset import load_scale_experiment_dataset
+from confidence_tom.static_evaluators import build_static_evaluator
+from confidence_tom.task_models import ApiTrace, StaticTrace
 
 logging.basicConfig(
     level=logging.INFO,
@@ -147,6 +150,59 @@ def _has_explicit_confidence(raw_text: str) -> bool:
     return any(p in lower for p in qualitative)
 
 
+def _extract_strategy(raw_text: str, reasoning_text: str) -> str:
+    """Best-effort extraction of a short high-level plan from static reasoning."""
+    strategy_match = re.search(
+        r'["\']?[Ss]trategy["\']?\s*[:=]\s*["\']?(.*?)(?:["\']?\s*,\s*["\']?[Rr]easoning["\']?|$)',
+        raw_text,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if strategy_match:
+        return strategy_match.group(1).strip().strip('"').strip("'")
+
+    for line in reasoning_text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        return stripped[:240]
+    return ""
+
+
+def _build_static_prompt(task: StaticTask) -> tuple[str, str]:
+    """Create the worker prompt based on answer format."""
+    if task.answer_format == "multiple_choice":
+        choices_str = "\n".join(task.choices)
+        system_prompt = (
+            "You are answering a multiple-choice question.\n"
+            "Read the question carefully, think step by step, "
+            "and choose the best answer.\n\n"
+            "You MUST respond in this EXACT JSON format:\n"
+            '{"strategy": "...", "reasoning": "...", "answer": "B", "confidence": 45}\n\n'
+            "Output policy (STRICT):\n"
+            "- Output ONLY a single valid JSON object.\n"
+            "- answer MUST be exactly one choice letter.\n"
+            "- confidence must be an integer 0-100.\n"
+            "- strategy: 1-2 sentences describing your high-level plan.\n"
+            "- reasoning: brief step-by-step reasoning.\n"
+        )
+        user_prompt = f"Question: {task.question}\n\n{choices_str}"
+        return system_prompt, user_prompt
+
+    system_prompt = (
+        "You are answering a single-turn reasoning question.\n"
+        "Think step by step, then provide your final answer succinctly.\n\n"
+        "You MUST respond in this EXACT JSON format:\n"
+        '{"strategy": "...", "reasoning": "...", "answer": "...", "confidence": 45}\n\n'
+        "Output policy (STRICT):\n"
+        "- Output ONLY a single valid JSON object.\n"
+        "- answer should be your final answer string only, concise and direct.\n"
+        "- confidence must be an integer 0-100.\n"
+        "- strategy: 1-2 sentences describing your high-level plan.\n"
+        "- reasoning: brief step-by-step reasoning.\n"
+    )
+    return system_prompt, f"Question: {task.question}"
+
+
 # ---- Pydantic models for structured output ----
 
 
@@ -241,45 +297,18 @@ class CheckpointManager:
 async def solve_question_k_times(
     client: LLMClient,
     model_id: str,
-    question: MCQuestion,
+    question: StaticTask,
     k: int = 10,
     extract_client: LLMClient | None = None,
     store_raw_samples: bool = False,
     raw_truncate_chars: int = 800,
 ) -> dict[str, Any] | None:
-    """Run a model on a single MC question K times.
+    """Run a model on a single static task K times.
 
     Returns a result dict with behavioral confidence, reported confidence,
     majority answer, etc. — all in the unified format.
     """
-    choices_str = "\n".join(question.choices)
-
-    system_prompt = (
-        "You are answering a multiple-choice question.\n"
-        "Read the question carefully, think step by step, "
-        "and choose the best answer.\n\n"
-        "You MUST respond in this EXACT JSON format:\n"
-        '{"answer": "B", "confidence": 45, "reasoning": "..."}\n\n'
-        "Output policy (STRICT):\n"
-        "- Output ONLY a single valid JSON object.\n"
-        "- Do NOT output markdown, code fences, headings, bullet points, or any text before/after JSON.\n"
-        "- If your output is not valid JSON with the required keys, it will be treated as INVALID.\n\n"
-        "Rules:\n"
-        "- answer: MUST be exactly one letter: A, B, C, D, E, F, G, H, I, or J\n"
-        "- confidence: integer from 0 to 100. Your confidence should reflect the probability "
-        "that your answer is correct. For example, confidence 70 means you expect to be "
-        "correct about 70% of the time on similar questions.\n"
-        "  Use this scale:\n"
-        "  0-20: almost pure guess\n"
-        "  21-40: weakly supported, likely wrong\n"
-        "  41-60: uncertain / mixed evidence\n"
-        "  61-80: probably correct but not fully sure\n"
-        "  81-100: very likely correct with strong evidence\n"
-        "  Do NOT default to 95. Use the full range when appropriate.\n"
-        "- reasoning: brief step-by-step reasoning"
-    )
-
-    user_prompt = f"Question: {question.question}\n\n{choices_str}"
+    system_prompt, user_prompt = _build_static_prompt(question)
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -293,19 +322,23 @@ async def solve_question_k_times(
     n_extract_attempts = 0
 
     def _extractor_messages(raw_text: str, valid_labels: str) -> list[dict[str, str]]:
+        answer_rule = (
+            f"- answer must be one of: {valid_labels}\n"
+            if question.answer_format == "multiple_choice"
+            else "- answer must be a concise final answer string.\n"
+        )
         return [
             {
                 "role": "system",
                 "content": (
                     "You are a strict information extractor.\n"
                     "From the model output below, extract ONLY:\n"
-                    "1) final answer letter\n"
+                    "1) final answer\n"
                     "2) confidence (0-100)\n\n"
                     "Return ONLY valid JSON:\n"
-                    '{"answer":"A","confidence":50}\n\n'
-                    f"Rules:\n- answer must be one of: {valid_labels}\n"
+                    '{"answer":"...", "confidence":50}\n\n'
+                    f"Rules:\n{answer_rule}"
                     "- confidence must be numeric in [0,100]\n"
-                    "- Do not infer from alternative options unless explicitly selected.\n"
                     "- If unresolved, still output best extraction."
                 ),
             },
@@ -334,36 +367,49 @@ async def solve_question_k_times(
             "extract_raw": "",
             "extract_answer": None,
             "extract_confidence": None,
+            "strategy": "",
             "original_has_explicit_answer": False,
             "original_has_confidence": False,
             "missing_answer_in_original": True,
             "missing_confidence_in_original": True,
             "note": "",
+            "api_trace": ApiTrace().model_dump(),
+            "extract_api_trace": ApiTrace().model_dump(),
         }
         try:
-            raw_text = await asyncio.to_thread(client.generate_text, messages)
+            raw_text, trace = await client.agenerate_text_with_trace(messages)
+            result["api_trace"] = trace.model_dump()
             if not raw_text:
                 result["parse_method"] = "empty"
                 result["note"] = "empty_raw_response"
                 return result
 
             result["raw_text"] = raw_text[:raw_truncate_chars] if store_raw_samples else ""
-            explicit_answer = _extract_answer_explicit(raw_text)
+            explicit_answer = (
+                _extract_answer_explicit(raw_text)
+                if question.answer_format == "multiple_choice"
+                else None
+            )
             has_conf = _has_explicit_confidence(raw_text)
             result["original_has_explicit_answer"] = explicit_answer is not None
             result["original_has_confidence"] = has_conf
             result["missing_answer_in_original"] = explicit_answer is None
             result["missing_confidence_in_original"] = not has_conf
 
-            mc_resp = parse_mc_response(raw_text, model_name=model_id)
-            if mc_resp:
+            parsed_resp = (
+                parse_mc_response(raw_text, model_name=model_id)
+                if question.answer_format == "multiple_choice"
+                else parse_static_response(raw_text, model_name=model_id)
+            )
+            if parsed_resp:
                 result["original_has_explicit_answer"] = True
                 result["missing_answer_in_original"] = False
                 result.update(
                     {
-                        "answer": mc_resp.answer,
-                        "confidence": mc_resp.confidence,
-                        "reasoning": raw_text,
+                        "answer": parsed_resp.answer,
+                        "confidence": parsed_resp.confidence,
+                        "strategy": parsed_resp.strategy or _extract_strategy(raw_text, parsed_resp.reasoning),
+                        "reasoning": parsed_resp.reasoning or raw_text,
                         "parse_method": "text",
                     }
                 )
@@ -374,6 +420,7 @@ async def solve_question_k_times(
                     {
                         "answer": explicit_answer,
                         "confidence": _extract_confidence_loose(raw_text),
+                        "strategy": _extract_strategy(raw_text, raw_text),
                         "reasoning": raw_text,
                         "parse_method": "fallback",
                     }
@@ -384,27 +431,33 @@ async def solve_question_k_times(
                 valid_labels = ", ".join(
                     sorted({c.split(")")[0].strip() for c in question.choices if ")" in c})
                 )
-                extract_raw = await asyncio.to_thread(
-                    extract_client.generate_text,
-                    _extractor_messages(raw_text, valid_labels or "A, B, C, D"),
+                extract_raw, extract_trace = await extract_client.agenerate_text_with_trace(
+                    _extractor_messages(raw_text, valid_labels or "A, B, C, D")
                 )
                 result["extract_attempted"] = True
+                result["extract_api_trace"] = extract_trace.model_dump()
                 result["extract_raw"] = (
                     extract_raw[:raw_truncate_chars] if (store_raw_samples and extract_raw) else ""
                 )
-                extracted = (
-                    parse_mc_response(
-                        extract_raw,
-                        model_name=f"{model_id}::extractor",
+                extracted = None
+                if extract_raw:
+                    extracted = (
+                        parse_mc_response(
+                            extract_raw,
+                            model_name=f"{model_id}::extractor",
+                        )
+                        if question.answer_format == "multiple_choice"
+                        else parse_static_response(
+                            extract_raw,
+                            model_name=f"{model_id}::extractor",
+                        )
                     )
-                    if extract_raw
-                    else None
-                )
                 if extracted:
                     result.update(
                         {
                             "answer": extracted.answer,
                             "confidence": extracted.confidence,
+                            "strategy": _extract_strategy(raw_text, extracted.reasoning or raw_text),
                             "reasoning": raw_text,
                             "parse_method": "llm_extract",
                             "extract_answer": extracted.answer,
@@ -456,6 +509,7 @@ async def solve_question_k_times(
                     if isinstance(r.get("confidence"), (int, float))
                     else None
                 ),
+                "strategy": str(r.get("strategy", "")),
                 "raw_text": r.get("raw_text", "") if store_raw_samples else "",
                 "reasoning": str(r.get("reasoning", "")),
                 "extract_attempted": bool(r.get("extract_attempted", False)),
@@ -474,6 +528,8 @@ async def solve_question_k_times(
                     r.get("missing_confidence_in_original", True)
                 ),
                 "note": str(r.get("note", "")),
+                "api_trace": r.get("api_trace", {}),
+                "extract_api_trace": r.get("extract_api_trace", {}),
             }
         )
 
@@ -483,8 +539,14 @@ async def solve_question_k_times(
             "question": question.question,
             "choices": question.choices,
             "correct_answer": question.correct_answer,
+            "reference_answer": question.reference_answer,
             "category": question.category,
             "source": question.source,
+            "answer_format": question.answer_format,
+            "evaluator_name": question.evaluator_name,
+            "task_type": question.task_type,
+            "environment_context": question.environment_context,
+            "metadata": question.metadata,
             "external_difficulty": question.external_difficulty,
             "model_name": model_id,
             "k_samples": 0,
@@ -494,6 +556,10 @@ async def solve_question_k_times(
             "c_beh": 0.0,
             "c_rep": 0.0,
             "gap": 0.0,
+            "strategy": "",
+            "answer": "",
+            "confidence": 0,
+            "static_trace": StaticTrace().model_dump(),
             "primary_reasoning": "",
             "answer_distribution": {},
             "sample_confidences": [],
@@ -504,11 +570,12 @@ async def solve_question_k_times(
             "extract_attempts": n_extract_attempts,
             "extract_success": n_extract_success,
             "all_samples_failed": True,
+            "evaluation": {"score": 0.0, "evaluator_name": question.evaluator_name, "metadata": {}},
             "sample_traces": sample_traces,
         }
 
     # Compute behavioral confidence
-    answers = [s["answer"] for s in samples]
+    answers = [str(s["answer"]).strip() for s in samples]
     counter = collections.Counter(answers)
     majority_answer, majority_count = counter.most_common(1)[0]
     c_beh = majority_count / len(samples)
@@ -516,13 +583,23 @@ async def solve_question_k_times(
     # Average reported confidence (0-1)
     c_rep = sum(s["confidence"] for s in samples) / len(samples)
 
-    # Is majority answer correct?
-    is_correct = majority_answer == question.correct_answer
+    eval_result = build_static_evaluator(question)(majority_answer, question)
+    is_correct = eval_result.is_correct
 
     # Primary reasoning from majority-answer sample
     primary_reasoning = next(
         (s["reasoning"] for s in samples if s["answer"] == majority_answer),
         "",
+    )
+    primary_strategy = next(
+        (str(s.get("strategy", "")) for s in samples if s["answer"] == majority_answer),
+        "",
+    )
+    primary_trace = StaticTrace(
+        strategy=primary_strategy,
+        reasoning=primary_reasoning,
+        answer=majority_answer,
+        confidence=int(round(c_rep * 100)),
     )
 
     n_structured = sum(1 for s in samples if s.get("parse_method") == "structured")
@@ -534,8 +611,14 @@ async def solve_question_k_times(
         "question": question.question,
         "choices": question.choices,
         "correct_answer": question.correct_answer,
+        "reference_answer": question.reference_answer,
         "category": question.category,
         "source": question.source,
+        "answer_format": question.answer_format,
+        "evaluator_name": question.evaluator_name,
+        "task_type": question.task_type,
+        "environment_context": question.environment_context,
+        "metadata": question.metadata,
         "external_difficulty": question.external_difficulty,
         "model_name": model_id,
         "k_samples": len(samples),
@@ -545,7 +628,16 @@ async def solve_question_k_times(
         "c_beh": round(c_beh, 4),
         "c_rep": round(c_rep, 4),
         "gap": round(c_rep - c_beh, 4),
+        "strategy": primary_strategy,
+        "answer": majority_answer,
+        "confidence": int(round(c_rep * 100)),
+        "static_trace": primary_trace.model_dump(),
         "primary_reasoning": primary_reasoning,
+        "evaluation": {
+            "score": eval_result.score,
+            "evaluator_name": eval_result.evaluator_name,
+            "metadata": eval_result.metadata,
+        },
         "answer_distribution": dict(counter),
         "sample_confidences": [round(s["confidence"], 4) for s in samples],
         "parse_structured": n_structured,
@@ -565,7 +657,7 @@ async def solve_question_k_times(
 async def run_model(
     model_id: str,
     model_label: str,
-    questions: list[MCQuestion],
+    questions: list[StaticTask],
     gen_cfg: Any,
     extract_cfg: Any,
     checkpoint: CheckpointManager,
@@ -596,7 +688,7 @@ async def run_model(
     total = len(questions)
     start_time = time.time()
 
-    async def process_one(q: MCQuestion) -> None:
+    async def process_one(q: StaticTask) -> None:
         if checkpoint.is_processed(model_label, q.id):
             return
 
@@ -677,6 +769,9 @@ async def amain(cfg: DictConfig) -> None:
             "simplebench": int(cfg.dataset.counts.get("simplebench", 0)),
             "truthfulqa_mc": int(cfg.dataset.counts.get("truthfulqa_mc", 0)),
             "harp_mcq": int(cfg.dataset.counts.get("harp_mcq", 0)),
+            "musr": int(cfg.dataset.counts.get("musr", 0)),
+            "olympiadbench": int(cfg.dataset.counts.get("olympiadbench", 0)),
+            "livebench": int(cfg.dataset.counts.get("livebench", 0)),
         }
 
     questions = load_scale_experiment_dataset(

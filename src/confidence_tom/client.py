@@ -40,6 +40,11 @@ def _extract_trace(response: object) -> ApiTrace:
 
     # reasoning content is exposed by some models (DeepSeek-R1, etc.)
     reasoning_content = getattr(msg, "reasoning", None) or ""
+    raw_content = getattr(msg, "content", None) or ""
+    if isinstance(raw_content, list):
+        raw_content = _json.dumps(raw_content, ensure_ascii=False)
+    else:
+        raw_content = str(raw_content)
 
     # cache_read: OpenRouter puts it in prompt_tokens_details.cached_tokens
     # cache_write: prompt_tokens_details.cache_write_tokens
@@ -59,6 +64,7 @@ def _extract_trace(response: object) -> ApiTrace:
         request_id=getattr(response, "id", ""),
         reasoning_tokens=getattr(completion_details, "reasoning_tokens", 0) or 0,
         reasoning_content=reasoning_content,
+        response_content=raw_content,
         prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
         completion_tokens=getattr(usage, "completion_tokens", 0) or 0,
         total_tokens=getattr(usage, "total_tokens", 0) or 0,
@@ -561,3 +567,23 @@ class LLMClient:
         except Exception as e:
             print(f"Error in agenerate_text for {self.model}: {e}")
             return ""
+
+    async def agenerate_text_with_trace(
+        self,
+        messages: list[dict[str, Any]],
+        max_tokens: Optional[int] = None,
+        temperature: Optional[float] = None,
+    ) -> tuple[str, ApiTrace]:
+        """Async plain-text generation that also returns raw API metadata."""
+        try:
+            response = await self.aclient.chat.completions.create(
+                model=self.model,
+                messages=messages,
+                temperature=temperature if temperature is not None else self.temperature,
+                max_tokens=max_tokens if max_tokens is not None else self.max_tokens,
+            )
+            content = response.choices[0].message.content or ""
+            return content, _extract_trace(response)
+        except Exception as e:
+            print(f"Error in agenerate_text_with_trace for {self.model}: {e}")
+            return "", ApiTrace()

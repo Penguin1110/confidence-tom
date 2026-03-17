@@ -21,7 +21,9 @@ from omegaconf import DictConfig
 from tqdm import tqdm
 
 from confidence_tom.client import LLMClient
+from confidence_tom.observer.models import ErrorType
 from confidence_tom.parsing import normalize_confidence
+from confidence_tom.task_models import ApiTrace
 
 logging.basicConfig(
     format="[%(asctime)s][%(name)s][%(levelname)s] - %(message)s", level=logging.INFO
@@ -108,25 +110,47 @@ def parse_observer_response(raw_text: str) -> Optional[dict[str, Any]]:
         r'["\']?predicted_correctness["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
     ) or re.search(r"\bcorrect(?:ness)?\b[^0-9]{0,20}(\d+(?:\.\d+)?)", raw_text, re.IGNORECASE)
     conf_match = re.search(
+        r'["\']?predicted_worker_confidence["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
+    ) or re.search(
         r'["\']?predicted_subject_confidence["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
     ) or re.search(
-        r"\b(?:subject\s*)?confidence\b[^0-9]{0,20}(\d+(?:\.\d+)?)",
+        r"\b(?:worker|subject)\s*confidence\b[^0-9]{0,20}(\d+(?:\.\d+)?)",
+        raw_text,
+        re.IGNORECASE,
+    )
+    mgr_conf_match = re.search(
+        r'["\']?manager_self_confidence["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
+    ) or re.search(
+        r"\bmanager\s*self\s*confidence\b[^0-9]{0,20}(\d+(?:\.\d+)?)",
         raw_text,
         re.IGNORECASE,
     )
     reas_match = re.search(
+        r'["\']?judge_reasoning["\']?\s*:\s*["\'](.*?)["\']\s*[,}]',
+        raw_text,
+        re.IGNORECASE | re.DOTALL,
+    ) or re.search(
         r'["\']?reasoning["\']?\s*:\s*["\'](.*?)["\']\s*}', raw_text, re.IGNORECASE | re.DOTALL
+    )
+    err_match = re.search(
+        r'["\']?predicted_error_type["\']?\s*:\s*["\']?([A-Za-z_]+)["\']?',
+        raw_text,
+        re.IGNORECASE,
     )
 
     if acc_match and conf_match:
         try:
             pred_acc = normalize_confidence(float(acc_match.group(1)))
             pred_conf = normalize_confidence(float(conf_match.group(1)))
+            mgr_conf = normalize_confidence(float(mgr_conf_match.group(1))) if mgr_conf_match else 0.5
             reas = reas_match.group(1) if reas_match else "Extracted via regex fallback"
+            error_type = err_match.group(1) if err_match else ErrorType.None_.value
             return {
                 "predicted_correctness": pred_acc,
-                "predicted_subject_confidence": pred_conf,
-                "reasoning": reas,
+                "predicted_worker_confidence": pred_conf,
+                "predicted_error_type": error_type,
+                "manager_self_confidence": mgr_conf,
+                "judge_reasoning": reas,
             }
         except ValueError:
             pass
@@ -141,12 +165,23 @@ def parse_observer_response(raw_text: str) -> Optional[dict[str, Any]]:
     try:
         data = json.loads(text)
         pred_acc = normalize_confidence(float(data.get("predicted_correctness", 0)))
-        pred_conf = normalize_confidence(float(data.get("predicted_subject_confidence", 0)))
-        reas = str(data.get("reasoning", ""))
+        pred_conf = normalize_confidence(
+            float(
+                data.get(
+                    "predicted_worker_confidence",
+                    data.get("predicted_subject_confidence", 0),
+                )
+            )
+        )
+        mgr_conf = normalize_confidence(float(data.get("manager_self_confidence", 50)))
+        reas = str(data.get("judge_reasoning", data.get("reasoning", "")))
+        error_type = str(data.get("predicted_error_type", ErrorType.None_.value))
         return {
             "predicted_correctness": pred_acc,
-            "predicted_subject_confidence": pred_conf,
-            "reasoning": reas,
+            "predicted_worker_confidence": pred_conf,
+            "predicted_error_type": error_type,
+            "manager_self_confidence": mgr_conf,
+            "judge_reasoning": reas,
         }
     except Exception:
         return None
@@ -167,17 +202,24 @@ async def evaluate_single_subject_answer(
         "You are an expert AI evaluator assessing another language model's answer.\n"
         "You MUST respond in this EXACT JSON format:\n"
         "{\n"
-        '  "predicted_correctness": 50,\n'
-        '  "predicted_subject_confidence": 85,\n'
-        '  "reasoning": "..."\n'
+        '  "judge_reasoning": "...",\n'
+        '  "predicted_correctness": 0.50,\n'
+        '  "predicted_worker_confidence": 0.85,\n'
+        '  "predicted_error_type": "Logic_Error",\n'
+        '  "manager_self_confidence": 0.80\n'
         "}\n\n"
         "Rules:\n"
-        "- predicted_correctness: Integer 0-100 indicating the probability the model's answer is actually CORRECT.\n"
-        "- predicted_subject_confidence: Integer 0-100 indicating the confidence score you think the model REPORTED about its own answer (based on its tone and reasoning).\n"
-        "- reasoning: Step-by-step reasoning for BOTH estimates."
+        "- judge_reasoning: Step-by-step reasoning for your judgment.\n"
+        "- predicted_correctness: Float 0.0-1.0 indicating the probability the model's answer is correct.\n"
+        "- predicted_worker_confidence: Float 0.0-1.0 indicating the worker's implied true confidence.\n"
+        "- predicted_error_type: One of Logic_Error, Hallucination, Tool_Argument_Error, Observation_Ignored, None.\n"
+        "- manager_self_confidence: Float 0.0-1.0 indicating your confidence in this evaluation."
     )
 
     subject_reasoning = str(subject_data.get("primary_reasoning", ""))
+    subject_strategy = str(
+        subject_data.get("strategy", subject_data.get("static_trace", {}).get("strategy", ""))
+    )
     if subject_reasoning_max_chars > 0:
         subject_reasoning = subject_reasoning[:subject_reasoning_max_chars]
 
@@ -185,9 +227,10 @@ async def evaluate_single_subject_answer(
         f"A language model answered the following multiple-choice question.\n\n"
         f"Question: {subject_data['question']}\n\n"
         f"Choices:\n{choices_str}\n\n"
+        f"Model's strategy: {subject_strategy}\n\n"
         f"Model's reasoning: {subject_reasoning}\n\n"
         f"Model's final answer: {subject_data['majority_answer']}\n\n"
-        f"Please estimate the two metrics required in the JSON format."
+        f"Please estimate the required metrics in the JSON format."
     )
 
     messages = [
@@ -201,11 +244,9 @@ async def evaluate_single_subject_answer(
                 "role": "system",
                 "content": (
                     "You are a strict JSON information extractor.\n"
-                    "Extract two numbers from the given observer output:\n"
-                    "1) predicted_correctness (0-100)\n"
-                    "2) predicted_subject_confidence (0-100)\n\n"
+                    "Extract the unified manager judgment from the given observer output.\n\n"
                     "Return ONLY valid JSON in this exact schema:\n"
-                    '{"predicted_correctness": 50, "predicted_subject_confidence": 70, "reasoning": "..."}\n'
+                    '{"judge_reasoning":"...","predicted_correctness":0.5,"predicted_worker_confidence":0.7,"predicted_error_type":"Logic_Error","manager_self_confidence":0.6}\n'
                     "Do not include markdown or extra text."
                 ),
             },
@@ -221,11 +262,10 @@ async def evaluate_single_subject_answer(
                 "role": "system",
                 "content": (
                     "You are an expert AI evaluator.\n"
-                    "Given a question, choices, model reasoning, and final answer, estimate:\n"
-                    "1) predicted_correctness (0-100)\n"
-                    "2) predicted_subject_confidence (0-100)\n"
+                    "Given a question, choices, model strategy, model reasoning, and final answer, "
+                    "estimate the unified manager judgment.\n"
                     "Return ONLY valid JSON:\n"
-                    '{"predicted_correctness": 50, "predicted_subject_confidence": 70, "reasoning": "..."}'
+                    '{"judge_reasoning":"...","predicted_correctness":0.5,"predicted_worker_confidence":0.7,"predicted_error_type":"Logic_Error","manager_self_confidence":0.6}'
                 ),
             },
             {
@@ -235,30 +275,33 @@ async def evaluate_single_subject_answer(
         ]
 
     try:
-        raw_text = await asyncio.to_thread(client.generate_text, messages)
+        raw_text, observer_trace = await client.agenerate_text_with_trace(messages)
         if raw_text:
             parsed = parse_observer_response(raw_text)
             if parsed:
+                parsed["api_trace"] = observer_trace.model_dump()
                 return parsed
             if extract_client is not None:
-                extract_raw = await asyncio.to_thread(
-                    extract_client.generate_text,
-                    _extract_messages_from_raw(raw_text),
+                extract_raw, extract_trace = await extract_client.agenerate_text_with_trace(
+                    _extract_messages_from_raw(raw_text)
                 )
                 if extract_raw:
                     parsed_extract = parse_observer_response(extract_raw)
                     if parsed_extract:
+                        parsed_extract["api_trace"] = observer_trace.model_dump()
+                        parsed_extract["extract_api_trace"] = extract_trace.model_dump()
                         return parsed_extract
         # If the observer output is empty or still unparseable, fallback to direct estimation
         # with the extractor model (still LLM-based, no default constants).
         if extract_client is not None:
-            direct_raw = await asyncio.to_thread(
-                extract_client.generate_text,
-                _direct_estimate_messages(),
+            direct_raw, direct_trace = await extract_client.agenerate_text_with_trace(
+                _direct_estimate_messages()
             )
             if direct_raw:
                 parsed_direct = parse_observer_response(direct_raw)
                 if parsed_direct:
+                    parsed_direct["api_trace"] = direct_trace.model_dump()
+                    parsed_direct["extract_api_trace"] = direct_trace.model_dump()
                     return parsed_direct
     except Exception as e:
         logger.debug(f"Observer generation failed: {e}")
@@ -305,7 +348,7 @@ async def worker(
             truth_is_correct = float(subject_data["is_correct"])  # 1.0 or 0.0
             truth_c_rep = subject_data["c_rep"]
             acc_err = res["predicted_correctness"] - truth_is_correct
-            conf_err = res["predicted_subject_confidence"] - truth_c_rep
+            conf_err = res["predicted_worker_confidence"] - truth_c_rep
 
             result_record = {
                 "question_id": q_id,
@@ -313,17 +356,28 @@ async def worker(
                 "truth_c_rep": truth_c_rep,
                 "truth_c_beh": subject_data.get("c_beh", 0.0),
                 "predicted_correctness": res["predicted_correctness"],
-                "predicted_subject_confidence": res["predicted_subject_confidence"],
+                "predicted_worker_confidence": res["predicted_worker_confidence"],
+                "predicted_subject_confidence": res["predicted_worker_confidence"],
+                "predicted_error_type": res["predicted_error_type"],
+                "manager_self_confidence": res["manager_self_confidence"],
                 "acc_error": float(acc_err),
                 "conf_error": float(conf_err),
-                "observer_reasoning": res["reasoning"],
+                "judge_reasoning": res["judge_reasoning"],
+                "observer_reasoning": res["judge_reasoning"],
                 # Keep original data for reference
+                "task_type": subject_data.get("task_type", "QA"),
+                "environment_context": subject_data.get("environment_context", []),
+                "subject_strategy": subject_data.get(
+                    "strategy", subject_data.get("static_trace", {}).get("strategy", "")
+                ),
                 "subject_reasoning": subject_data["primary_reasoning"],
                 "subject_answer": subject_data["majority_answer"],
                 "correct_answer": subject_data["correct_answer"],
                 "category": subject_data.get("category", ""),
                 "subject_model": subject_label,
                 "observer_model": observer_label,
+                "observer_api_trace": res.get("api_trace", ApiTrace().model_dump()),
+                "extractor_api_trace": res.get("extract_api_trace", ApiTrace().model_dump()),
             }
             await checkpoint_mgr.save_result(key, result_record)
             done = checkpoint_mgr.get_total_done(key)
@@ -346,10 +400,19 @@ async def worker(
                     "truth_c_rep": truth_c_rep,
                     "truth_c_beh": subject_data.get("c_beh", 0.0),
                     "predicted_correctness": fallback_acc,
+                    "predicted_worker_confidence": fallback_conf,
                     "predicted_subject_confidence": fallback_conf,
+                    "predicted_error_type": ErrorType.None_.value,
+                    "manager_self_confidence": 0.0,
                     "acc_error": float(fallback_acc - truth_is_correct),
                     "conf_error": float(fallback_conf - truth_c_rep),
+                    "judge_reasoning": "fallback_default_after_parse_failure",
                     "observer_reasoning": "fallback_default_after_parse_failure",
+                    "task_type": subject_data.get("task_type", "QA"),
+                    "environment_context": subject_data.get("environment_context", []),
+                    "subject_strategy": subject_data.get(
+                        "strategy", subject_data.get("static_trace", {}).get("strategy", "")
+                    ),
                     "subject_reasoning": subject_data["primary_reasoning"],
                     "subject_answer": subject_data["majority_answer"],
                     "correct_answer": subject_data["correct_answer"],
@@ -357,6 +420,8 @@ async def worker(
                     "subject_model": subject_label,
                     "observer_model": observer_label,
                     "observer_parse_method": "default_fallback",
+                    "observer_api_trace": ApiTrace().model_dump(),
+                    "extractor_api_trace": ApiTrace().model_dump(),
                 }
                 await checkpoint_mgr.save_result(key, result_record)
                 pbar.update(1)

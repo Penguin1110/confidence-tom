@@ -17,11 +17,35 @@ class ApiTrace(BaseModel):
     request_id: str = Field(default="", description="OpenRouter/API request ID for cost lookup")
     reasoning_tokens: int = Field(default=0, description="Tokens used for internal reasoning (thinking)")
     reasoning_content: str = Field(default="", description="Reasoning text if exposed by model (e.g. DeepSeek-R1)")
+    response_content: str = Field(
+        default="",
+        description="Raw assistant message content returned by the API",
+    )
     prompt_tokens: int = Field(default=0)
     completion_tokens: int = Field(default=0)
     total_tokens: int = Field(default=0)
     cache_read_tokens: int = Field(default=0, description="Cache-hit tokens (cost savings)")
     cache_write_tokens: int = Field(default=0, description="Tokens written to cache this request")
+
+
+class StaticTrace(BaseModel):
+    """Structured trace for single-shot static reasoning tasks."""
+
+    strategy: str = Field(
+        default="",
+        description="Initial high-level plan for solving the task",
+    )
+    reasoning: str = Field(
+        default="",
+        description="Core reasoning process that led to the final answer",
+    )
+    answer: str = Field(default="", description="Final selected answer")
+    confidence: int = Field(
+        default=0,
+        ge=0,
+        le=100,
+        description="Self-reported confidence in the final answer",
+    )
 
 
 class TrajectoryStep(BaseModel):
@@ -64,9 +88,14 @@ class DynamicTask(BaseModel):
 
     task_id: str = Field(description="Unique identifier, e.g. 'tau_retail_042'")
     benchmark: str = Field(description="Source benchmark: 'tau-bench', 'bird-sql', 'plancraft', 'intercode'")
+    task_type: str = Field(default="agent", description="High-level task type, e.g. QA or agent")
     instruction: str = Field(description="Natural-language task description shown to the agent")
     ground_truth: Any = Field(description="Benchmark-specific correct answer or success criteria")
     metadata: dict = Field(default_factory=dict, description="Benchmark-specific extra data")
+    environment_context: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Tool or environment descriptions exposed to the worker",
+    )
 
 
 class AgentRun(BaseModel):

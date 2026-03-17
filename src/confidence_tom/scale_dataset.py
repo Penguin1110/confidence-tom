@@ -8,6 +8,9 @@ Supported benchmarks:
 - ARC-Challenge: science reasoning (4-choice MC)
 - TruthfulQA: truthfulness / misconceptions (MC version)
 - GSM8K: math reasoning (converted to MC with distractors)
+- MuSR: official multiple-choice reasoning benchmark
+- OlympiadBench: open-ended olympiad math benchmark
+- LiveBench reasoning: open-ended reasoning tasks with task-specific scorers
 """
 
 import io
@@ -15,6 +18,7 @@ import json
 import logging
 import random
 import re
+import ast
 import zipfile
 from typing import Optional, cast
 
@@ -716,6 +720,153 @@ def load_harp_mcq(
     return questions
 
 
+def load_musr(
+    num_samples: int = 30,
+    splits: Optional[list[str]] = None,
+) -> list[MCQuestion]:
+    """Load MuSR multiple-choice tasks across its three official splits."""
+    logger.info(f"Loading MuSR ({num_samples} questions)...")
+
+    ds = load_dataset("TAUR-Lab/MuSR")
+    selected_splits = splits or ["murder_mysteries", "object_placements", "team_allocation"]
+    choice_labels = ["A", "B", "C", "D", "E", "F"]
+    rows: list[tuple[str, dict]] = []
+    for split in selected_splits:
+        if split not in ds:
+            continue
+        for row in ds[split]:
+            rows.append((split, row))
+    random.Random(_SEED).shuffle(rows)
+
+    questions: list[MCQuestion] = []
+    for i, (split, item) in enumerate(rows):
+        if len(questions) >= num_samples:
+            break
+        try:
+            options = ast.literal_eval(str(item["choices"]))
+        except Exception:
+            continue
+        if not isinstance(options, list) or len(options) < 2:
+            continue
+        labels = choice_labels[: len(options)]
+        formatted = [f"{labels[j]}) {str(options[j]).strip()}" for j in range(len(options))]
+        answer_idx = int(item["answer_index"])
+        if answer_idx < 0 or answer_idx >= len(options):
+            continue
+        questions.append(
+            MCQuestion(
+                id=f"musr_{split}_{i:04d}",
+                question=f"{str(item['narrative']).strip()}\n\n{str(item['question']).strip()}",
+                choices=formatted,
+                correct_answer=labels[answer_idx],
+                reference_answer=str(item.get("answer_choice", "")),
+                category="reasoning",
+                source="musr",
+                answer_format="multiple_choice",
+                evaluator_name="musr",
+                external_difficulty=split,
+                metadata={"split": split},
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} MuSR questions")
+    return questions
+
+
+def load_olympiadbench(
+    num_samples: int = 30,
+    config_name: str = "OE_TO_maths_en_COMP",
+    split: str = "train",
+) -> list[MCQuestion]:
+    """Load OlympiadBench text-only open-ended math questions."""
+    logger.info(f"Loading OlympiadBench ({num_samples} questions, config={config_name})...")
+
+    dataset = load_dataset("Hothan/OlympiadBench", config_name, split=split).shuffle(seed=_SEED)
+    questions: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+        if str(item.get("modality", "")).lower() != "text-only":
+            continue
+        if str(item.get("question_type", "")).lower() != "open-ended":
+            continue
+        final_answers = item.get("final_answer", [])
+        if not final_answers:
+            continue
+        reference_answer = str(final_answers[0]).strip()
+        prompt = str(item["question"]).strip()
+        context = item.get("context")
+        if context:
+            prompt = f"{prompt}\n\nContext:\n{str(context).strip()}"
+        questions.append(
+            MCQuestion(
+                id=f"olympiadbench_{item['id']}_{i:04d}",
+                question=prompt,
+                choices=[],
+                correct_answer="",
+                reference_answer=reference_answer,
+                category="math_hard",
+                source="olympiadbench",
+                answer_format="open_ended",
+                evaluator_name="olympiadbench",
+                external_difficulty=str(item.get("difficulty", "unknown")),
+                metadata={
+                    "answer_type": item.get("answer_type"),
+                    "is_multiple_answer": item.get("is_multiple_answer"),
+                    "unit": item.get("unit"),
+                    "subject": item.get("subject"),
+                    "subfield": item.get("subfield"),
+                    "language": item.get("language"),
+                },
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} OlympiadBench questions")
+    return questions
+
+
+def load_livebench_reasoning(
+    num_samples: int = 30,
+    split: str = "test",
+) -> list[MCQuestion]:
+    """Load LiveBench reasoning tasks as open-ended static questions."""
+    logger.info(f"Loading LiveBench reasoning ({num_samples} questions)...")
+
+    dataset = load_dataset("livebench/reasoning", split=split).shuffle(seed=_SEED)
+    questions: list[MCQuestion] = []
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+        turns = cast(list[str], item.get("turns", []))
+        if not turns:
+            continue
+        questions.append(
+            MCQuestion(
+                id=f"livebench_reasoning_{item['question_id']}_{i:04d}",
+                question=str(turns[0]).strip(),
+                choices=[],
+                correct_answer="",
+                reference_answer=str(item.get("ground_truth", "")).strip(),
+                category="reasoning",
+                source="livebench_reasoning",
+                answer_format="open_ended",
+                evaluator_name="livebench_reasoning",
+                external_difficulty=str(item.get("level", "unknown")),
+                metadata={
+                    "task": item.get("task"),
+                    "turns": turns,
+                    "question_id": item.get("question_id"),
+                    "category": item.get("category"),
+                    "livebench_release_date": str(item.get("livebench_release_date", ""))[:10],
+                },
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} LiveBench reasoning questions")
+    return questions
+
+
 def load_scale_experiment_dataset(
     num_per_source: int = 100,
     counts: Optional[dict[str, int]] = None,
@@ -742,6 +893,9 @@ def load_scale_experiment_dataset(
         "simplebench": 0,
         "truthfulqa_mc": 0,
         "harp_mcq": 0,
+        "musr": 0,
+        "olympiadbench": 0,
+        "livebench": 0,
     }
     if counts:
         target.update({k: max(0, int(v)) for k, v in counts.items() if k in target})
@@ -753,19 +907,35 @@ def load_scale_experiment_dataset(
         or target["simplebench"] > 0
         or target["truthfulqa_mc"] > 0
         or target["harp_mcq"] > 0
+        or target["musr"] > 0
+        or target["olympiadbench"] > 0
+        or target["livebench"] > 0
     ):
         hle_qs = load_hle_mc_text_only(num_samples=target["hle_mc"])
         super_qs = load_supergpqa_mc(num_samples=target["supergpqa"])
         simple_qs = load_simplebench_mc(num_samples=target["simplebench"])
         truthful_qs = load_truthfulqa_mc(num_samples=target["truthfulqa_mc"])
         harp_qs = load_harp_mcq(num_samples=target["harp_mcq"])
-        combined = hle_qs + super_qs + simple_qs + truthful_qs + harp_qs
+        musr_qs = load_musr(num_samples=target["musr"])
+        olympiad_qs = load_olympiadbench(num_samples=target["olympiadbench"])
+        livebench_qs = load_livebench_reasoning(num_samples=target["livebench"])
+        combined = (
+            hle_qs
+            + super_qs
+            + simple_qs
+            + truthful_qs
+            + harp_qs
+            + musr_qs
+            + olympiad_qs
+            + livebench_qs
+        )
         random.Random(_SEED).shuffle(combined)
         logger.info(
             f"Frontier text-MC dataset ready: {len(combined)} total questions "
             f"(HLE-MC={len(hle_qs)}, SuperGPQA={len(super_qs)}, "
             f"SimpleBench={len(simple_qs)}, TruthfulQA-MC={len(truthful_qs)}, "
-            f"HARP-MCQ={len(harp_qs)})"
+            f"HARP-MCQ={len(harp_qs)}, MuSR={len(musr_qs)}, "
+            f"OlympiadBench={len(olympiad_qs)}, LiveBench={len(livebench_qs)})"
         )
         return combined
 
