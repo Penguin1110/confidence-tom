@@ -1,1 +1,1 @@
-"""Observer module - 第二階段：大模型預測信心."""
+"""Observer module — second-order confidence judgment on agent task runs."""

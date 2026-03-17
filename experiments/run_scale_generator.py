@@ -1,46 +1,38 @@
-"""Phase 2: Run the scale generator experiment.
+"""Native dynamic benchmark dispatcher.
 
-For each model in the scale sequence (Gemma 4B/12B/27B), answer all questions
-K=10 times and compute behavioral confidence.
-
-Features:
-  - All models run in parallel (async concurrency)
-  - Thread-safe real-time checkpoint saving (asyncio.Lock per file)
-  - Full resume from checkpoint (skip already-processed questions)
-  - tqdm progress bar per model
-  - Graceful Ctrl+C handling (saves current state)
-
-Usage:
-    uv run python experiments/run_scale_generator.py
-
-    # Override config values:
-    uv run python experiments/run_scale_generator.py generator.k_samples=5
-    uv run python experiments/run_scale_generator.py concurrency.max_per_model=10
+This entrypoint keeps the existing scale-experiment UX and checkpointing, but
+dispatches each benchmark to its own native execution loop:
+  - tau_bench: official environment + agent/tool loop
+  - bird_sql: SQL generation + execution-match evaluation
+  - plancraft: native PlancraftGymWrapper interaction loop
 """
 
+from __future__ import annotations
+
 import asyncio
-import collections
 import json
 import logging
-import re
+import os
 import signal
 import sys
 import time
+import traceback
 from pathlib import Path
-from typing import Any
+
+# Force UTF-8 on stdout/stderr so emoji from model outputs don't crash on
+# Windows consoles using narrow encodings like cp950.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+from typing import Any, Awaitable, Callable, Optional
 
 import hydra
 from omegaconf import DictConfig
 
 from confidence_tom.client import LLMClient
-from confidence_tom.dataset_models import MCQuestion
-from confidence_tom.parsing import (
-    get_parse_stats,
-    normalize_confidence,
-    parse_mc_response,
-    reset_parse_stats,
-)
-from confidence_tom.scale_dataset import load_scale_experiment_dataset
+from confidence_tom.evaluators import extract_sql
+from confidence_tom.task_models import DynamicTask, NativeRun, NativeTaskResult, RunSummary
 
 logging.basicConfig(
     level=logging.INFO,
@@ -51,734 +43,1046 @@ logger = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("openai").setLevel(logging.WARNING)
 
+ROOT = Path(__file__).resolve().parents[1]
+TAU_ROOT = ROOT / "external" / "tau-bench"
 
-def _extract_answer_explicit(raw_text: str) -> str | None:
-    """Recover answer only from explicit final-answer style statements.
+PLANCRAFT_SYSTEM_PROMPT = """You are solving a Plancraft crafting task.
+Each turn you receive an observation showing inventory slots (e.g. `oak_log [I1] quantity 3`)
+and crafting grid slots (A1-A3, B1-B3, C1-C3) and output slot [0].
 
-    Important: We intentionally DO NOT infer from option text mentions,
-    because models often discuss multiple options during reasoning.
-    """
-    patterns = [
-        r"\bfinal answer\b\s*[:\-]?\s*\(?([A-Ja-j])\)?",
-        r"\bmy answer\b\s*[:\-]?\s*\(?([A-Ja-j])\)?",
-        r"\banswer is\b\s*[:\-]?\s*\(?([A-Ja-j])\)?",
-        r"\bi (?:choose|select)\b\s*\(?([A-Ja-j])\)?",
-        r"\btherefore\b.*?\b(?:answer|option|choice)\b\s*(?:is|:)?\s*\(?([A-Ja-j])\)?",
+Valid actions (output exactly one per turn):
+- move: from [SlotID] to [SlotID] with quantity N
+- smelt: from [SlotID] to [SlotID] with quantity N
+- impossible: <reason>
+
+Slot IDs:
+- Inventory: [I1] to [I36]
+- Crafting grid: [A1][A2][A3] / [B1][B2][B3] / [C1][C2][C3]
+- Crafting output: [0]
+
+Rules:
+- Use `move` to place items into the crafting grid, then `move` [0] to inventory to collect the output.
+- Reference slots by their ID shown in the observation (e.g. `oak_log [I3]` → use `[I3]`).
+- Do not invent items or slots not shown in the observation."""
+
+TAU_CONFIDENCE_ADDON = """
+## Reflection requirement
+After this conversation ends you will be asked to produce a structured self-reflection. Prepare by mentally tracking:
+- plan: your initial strategy at the start of the task.
+- trajectory: for each action you took, record thought (reasoning before the action), action (the exact tool call or message), observation (what the tool returned or the user said), and step_confidence (0-100: how confident you were that this specific step was correct at the time).
+- summary: a final synthesis of all observations once the task is complete.
+- final_answer: the final result or outcome you achieved.
+- final_confidence: if you attempted this exact task 10 times independently from scratch, what percentage would succeed? (0-100)"""
+
+
+def _round_or_none(value: Optional[float], digits: int = 4) -> Optional[float]:
+    return None if value is None else round(float(value), digits)
+
+
+def _json_safe(value: Any) -> Any:
+    try:
+        json.dumps(value)
+        return value
+    except TypeError:
+        return json.loads(json.dumps(value, default=str))
+
+
+def _serialize_native(result: NativeTaskResult) -> dict[str, Any]:
+    data = result.model_dump()
+    data["c_beh"] = _round_or_none(data["c_beh"])
+    data["c_rep"] = _round_or_none(data["c_rep"])
+    data["gap"] = _round_or_none(data["gap"])
+    # Backward-compatible aliases for downstream observer/analysis code.
+    data["primary_trajectory"] = data.get("primary_trace", "")
+    for run in data["runs"]:
+        run["reward"] = _round_or_none(run.get("reward"))
+        run["reported_confidence"] = _round_or_none(run.get("reported_confidence"))
+        run["final_answer"] = run.get("final_output", "")
+    return data
+
+
+def _aggregate_native_task(
+    task_id: str,
+    benchmark: str,
+    instruction: str,
+    benchmark_metadata: dict[str, Any],
+    runs: list[NativeRun],
+) -> NativeTaskResult:
+    if not runs:
+        raise ValueError(f"No native runs collected for {task_id}")
+
+    successes = sum(1 for run in runs if run.is_correct)
+    c_beh = successes / len(runs)
+    reported = [run.reported_confidence for run in runs if run.reported_confidence is not None]
+    c_rep = (sum(reported) / len(reported)) if reported else None
+    gap = (c_rep - c_beh) if c_rep is not None else None
+    primary = next((run for run in runs if run.is_correct), runs[0])
+
+    return NativeTaskResult(
+        task_id=task_id,
+        benchmark=benchmark,
+        instruction=instruction,
+        benchmark_metadata=_json_safe(benchmark_metadata),
+        majority_correct=c_beh >= 0.5,
+        c_beh=c_beh,
+        c_rep=c_rep,
+        gap=gap,
+        k_samples=len(runs),
+        primary_trace=primary.trace_text,
+        summary={
+            "num_successes": successes,
+            "num_failures": len(runs) - successes,
+            "has_reported_confidence": bool(reported),
+        },
+        runs=runs,
+    )
+
+
+def _ensure_tau_imports() -> None:
+    if str(TAU_ROOT) not in sys.path:
+        sys.path.insert(0, str(TAU_ROOT))
+
+
+def _load_tau_tasks(env_name: str, split: str) -> list[Any]:
+    _ensure_tau_imports()
+    if env_name == "retail":
+        if split == "test":
+            from tau_bench.envs.retail.tasks_test import TASKS_TEST as tasks  # type: ignore
+        elif split == "train":
+            from tau_bench.envs.retail.tasks_train import TASKS_TRAIN as tasks  # type: ignore
+        elif split == "dev":
+            from tau_bench.envs.retail.tasks_dev import TASKS_DEV as tasks  # type: ignore
+        else:
+            raise ValueError(f"Unsupported tau_bench retail split: {split}")
+        return list(tasks)
+
+    if env_name == "airline":
+        if split == "test":
+            from tau_bench.envs.airline.tasks_test import TASKS as tasks  # type: ignore
+        else:
+            raise ValueError(f"Unsupported tau_bench airline split: {split}")
+        return list(tasks)
+
+    raise ValueError(f"Unsupported tau_bench env: {env_name}")
+
+
+def _format_tau_trace(messages: list[dict[str, Any]]) -> str:
+    lines: list[str] = []
+    for idx, msg in enumerate(messages, start=1):
+        role = str(msg.get("role", "unknown"))
+        if role == "assistant" and msg.get("tool_calls"):
+            tool_call = msg["tool_calls"][0]
+            name = tool_call.get("function", {}).get("name", "")
+            args = tool_call.get("function", {}).get("arguments", "")
+            lines.append(f"{idx}. assistant tool_call {name}({args})")
+            continue
+        if role == "tool":
+            lines.append(f"{idx}. tool {msg.get('name', '')}: {msg.get('content', '')}")
+            continue
+        content = msg.get("content")
+        if isinstance(content, list):
+            content = json.dumps(content, ensure_ascii=False)
+        lines.append(f"{idx}. {role}: {content or ''}")
+    return "\n".join(lines)
+
+
+def _extract_tau_final_output(messages: list[dict[str, Any]]) -> str:
+    for msg in reversed(messages):
+        if msg.get("role") == "assistant":
+            content = msg.get("content")
+            if isinstance(content, str) and content.strip():
+                return content.strip()
+            if msg.get("tool_calls"):
+                tool_call = msg["tool_calls"][0]
+                name = tool_call.get("function", {}).get("name", "")
+                args = tool_call.get("function", {}).get("arguments", "")
+                return f"{name}({args})"
+    return ""
+
+
+
+def _shorten_log_text(text: Any, limit: int = 180) -> str:
+    content = str(text or "").replace("\n", " ").strip()
+    if len(content) <= limit:
+        return content
+    return content[: limit - 3] + "..."
+
+
+class _TauBenchUserSimulator:
+    """LLM-backed tau-bench user simulator using the project's OpenRouter client."""
+
+    def __init__(self, client: LLMClient) -> None:
+        self.client = client
+        self.messages: list[dict[str, str]] = []
+
+    def _build_system_prompt(self, instruction: Optional[str]) -> str:
+        instruction_display = f"\n\nInstruction: {instruction}\n" if instruction else ""
+        return (
+            f"You are a user interacting with an agent.{instruction_display}"
+            "Rules:\n"
+            "- Just generate one line at a time to simulate the user's message.\n"
+            "- Do not give away all the instruction at once. Only provide the information that is necessary for the current step.\n"
+            "- Do not hallucinate information that is not provided in the instruction.\n"
+            "- If the instruction goal is satisfied, generate '###STOP###' as a standalone message without anything else.\n"
+            "- Do not repeat the exact instruction in the conversation. Use your own words.\n"
+            "- Keep the conversation natural and consistent with the personality in the instruction."
+        )
+
+    def _generate_next_message(self) -> str:
+        text = self.client.generate_text(self.messages)
+        return text.strip() or "###STOP###"
+
+    def reset(self, instruction: Optional[str] = None) -> str:
+        self.messages = [
+            {"role": "system", "content": self._build_system_prompt(instruction)},
+            {"role": "user", "content": "Hi! How can I help you today?"},
+        ]
+        reply = self._generate_next_message()
+        self.messages.append({"role": "assistant", "content": reply})
+        return reply
+
+    def step(self, content: str) -> str:
+        self.messages.append({"role": "user", "content": content})
+        reply = self._generate_next_message()
+        self.messages.append({"role": "assistant", "content": reply})
+        return reply
+
+    def get_total_cost(self) -> float:
+        return 0.0
+
+
+def _message_to_tau_action(message: dict[str, Any]) -> tuple[str, dict[str, Any], str]:
+    tool_calls = message.get("tool_calls") or []
+    if tool_calls:
+        tool_call = tool_calls[0]
+        function = tool_call.get("function", {})
+        name = str(function.get("name", "")).strip()
+        raw_args = function.get("arguments", "") or "{}"
+        try:
+            kwargs = json.loads(raw_args)
+        except Exception:
+            kwargs = {}
+        return name, kwargs, f"{name}({raw_args})"
+
+    content = str(message.get("content") or "").strip()
+    return "respond", {"content": content}, content
+
+
+async def _run_tau_native_task(
+    task_spec: dict[str, Any],
+    get_env: Callable[..., Any],
+    action_factory: Callable[..., Any],
+    tau_cfg: Any,
+    agent_client: LLMClient,
+    user_client: LLMClient,
+    k_samples: int,
+    log_prefix: str,
+    use_tool_calling: bool = True,
+    on_run: Optional[Callable[["NativeRun"], None]] = None,
+    preloaded_runs: Optional[list["NativeRun"]] = None,
+) -> NativeTaskResult:
+    task_index = int(task_spec["task_index"])
+    tau_tasks = _load_tau_tasks(str(tau_cfg.env), str(tau_cfg.split))
+    task = tau_tasks[task_index]
+    runs: list[NativeRun] = []
+    tau_wiki: str = ""  # captured from first env instance
+
+    for trial in range(k_samples):
+        if preloaded_runs and trial < len(preloaded_runs):
+            runs.append(preloaded_runs[trial])
+            logger.info(f"{log_prefix} sample {trial + 1}/{k_samples} SKIP (preloaded)")
+            continue
+        try:
+            logger.info(f"{log_prefix} sample {trial + 1}/{k_samples} start")
+            isolated_env = get_env(
+                tau_cfg.env,
+                user_strategy="human",
+                user_model="unused",
+                user_provider=None,
+                task_split=str(tau_cfg.split),
+                task_index=task_index,
+            )
+            isolated_env.user = _TauBenchUserSimulator(user_client)
+            reset_res = await asyncio.to_thread(isolated_env.reset, task_index)
+            if not tau_wiki:
+                tau_wiki = getattr(isolated_env, "wiki", "")
+            reward = 0.0
+            done = False
+            tau_system = isolated_env.wiki + TAU_CONFIDENCE_ADDON
+            messages: list[dict[str, Any]] = [
+                {"role": "system", "content": tau_system},
+                {"role": "user", "content": reset_res.observation},
+            ]
+            trace: list[dict[str, Any]] = list(messages)
+            info = reset_res.info.model_dump()
+            total_prompt_tokens = 0
+            total_completion_tokens = 0
+            total_reasoning_tokens = 0
+
+            max_steps = int(tau_cfg.get("max_steps", 30))
+            logger.info(
+                f"{log_prefix} sample {trial + 1}/{k_samples} user_init="
+                f"{_shorten_log_text(reset_res.observation)}"
+            )
+
+            for step_idx in range(max_steps):
+                if use_tool_calling:
+                    assistant_message, trace_meta = await agent_client.agenerate_tool_message(
+                        messages=messages,
+                        tools=isolated_env.tools_info,
+                    )
+                else:
+                    assistant_message, trace_meta = await agent_client.agenerate_react_message(
+                        messages=messages,
+                        tools=isolated_env.tools_info,
+                    )
+                if assistant_message is None:
+                    logger.warning(f"{log_prefix} sample {trial + 1}/{k_samples} step {step_idx + 1}/{max_steps} -> no model output")
+                    break
+
+                total_prompt_tokens += trace_meta.prompt_tokens
+                total_completion_tokens += trace_meta.completion_tokens
+                total_reasoning_tokens += trace_meta.reasoning_tokens
+
+                action_name, action_kwargs, action_text = _message_to_tau_action(assistant_message)
+                logger.info(
+                    f"{log_prefix} sample {trial + 1}/{k_samples} step {step_idx + 1}/{max_steps} -> "
+                    f"{_shorten_log_text(action_text)}"
+                )
+                env_response = await asyncio.to_thread(
+                    isolated_env.step,
+                    action_factory(name=action_name, kwargs=action_kwargs),
+                )
+                reward = float(env_response.reward)
+                info = {**info, **env_response.info.model_dump()}
+                done = bool(env_response.done)
+                logger.info(
+                    f"{log_prefix} sample {trial + 1}/{k_samples} step {step_idx + 1}/{max_steps} obs <- "
+                    f"{_shorten_log_text(env_response.observation)}"
+                )
+
+                trace.append(assistant_message)
+                messages.append(assistant_message)
+                if action_name != "respond":
+                    tool_call = (assistant_message.get("tool_calls") or [None])[0]
+                    tool_message = {
+                        "role": "tool",
+                        "tool_call_id": tool_call.get("id", "") if tool_call else "",
+                        "name": action_name,
+                        "content": env_response.observation,
+                    }
+                    messages.append(tool_message)
+                    trace.append(tool_message)
+                else:
+                    user_message = {"role": "user", "content": env_response.observation}
+                    messages.append(user_message)
+                    trace.append(user_message)
+
+                if done:
+                    logger.info(
+                        f"{log_prefix} sample {trial + 1}/{k_samples} finished at step {step_idx + 1}/{max_steps} "
+                        f"reward={reward:.2f}"
+                    )
+                    break
+
+            final_output = _extract_tau_final_output(trace)
+            trace_text = _format_tau_trace(trace)
+            run_summary = await agent_client.aelicit_run_summary(messages, trace_text=trace_text)
+            reported_confidence = (
+                round(run_summary.final_confidence / 100.0, 4) if run_summary else None
+            )
+            runs.append(
+                NativeRun(
+                    trial=trial,
+                    is_correct=reward >= (1.0 - 1e-6),
+                    reward=reward,
+                    reported_confidence=reported_confidence,
+                    final_output=run_summary.final_answer if run_summary else final_output,
+                    trace_text=trace_text,
+                    trace=trace,
+                    benchmark_payload={
+                        "info": _json_safe(info),
+                        "token_usage": {
+                            "prompt_tokens": total_prompt_tokens,
+                            "completion_tokens": total_completion_tokens,
+                            "reasoning_tokens": total_reasoning_tokens,
+                        },
+                    },
+                    run_summary=run_summary,
+                )
+            )
+            if on_run:
+                on_run(runs[-1])
+            if not done:
+                logger.info(f"{log_prefix} sample {trial + 1}/{k_samples} reached step limit reward={reward:.2f}")
+        except Exception as exc:
+            logger.warning(f"{log_prefix} sample {trial + 1}/{k_samples} error: {exc}")
+            runs.append(
+                NativeRun(
+                    trial=trial,
+                    is_correct=False,
+                    reward=0.0,
+                    final_output="",
+                    trace_text=f"ERROR: {exc}",
+                    trace=[],
+                    benchmark_payload={
+                        "error": str(exc),
+                        "traceback": traceback.format_exc(),
+                    },
+                )
+            )
+            if on_run:
+                on_run(runs[-1])
+
+    return _aggregate_native_task(
+        task_id=str(task_spec["task_id"]),
+        benchmark="tau_bench",
+        instruction=task.instruction,
+        benchmark_metadata={
+            "env": str(tau_cfg.env),
+            "split": str(tau_cfg.split),
+            "task_index": task_index,
+            "user_id": task.user_id,
+            "expected_actions": [action.model_dump() for action in task.actions],
+            "expected_outputs": list(task.outputs),
+            "env_context": tau_wiki,
+        },
+        runs=runs,
+    )
+
+
+def _load_plancraft_examples(split: str, limit: int) -> list[dict[str, Any]]:
+    from plancraft.simple import get_plancraft_examples
+
+    feasible = [ex for ex in get_plancraft_examples(split=split) if not ex.impossible][:limit]
+    specs: list[dict[str, Any]] = []
+    for i, example in enumerate(feasible):
+        inventory_desc = ", ".join(f"{item} x{qty}" for item, qty in example.inventory.items()) or "empty"
+        instruction = (
+            f"You are playing Minecraft. Craft the following item: {example.target}.\n"
+            f"Your current inventory: {inventory_desc}."
+        )
+        specs.append(
+            {
+                "task_id": f"plancraft_{split}_{example.id}",
+                "instruction": instruction,
+                "example": example,
+                "metadata": {
+                    "split": split,
+                    "target_item": example.target,
+                    "initial_inventory": dict(example.inventory),
+                    "example_index": i,
+                    "example_id": example.id,
+                },
+            }
+        )
+    return specs
+
+
+async def _run_plancraft_native_task(
+    task_spec: dict[str, Any],
+    client: LLMClient,
+    k_samples: int,
+    max_steps: int = 30,
+    on_run: Optional[Callable[["NativeRun"], None]] = None,
+    preloaded_runs: Optional[list["NativeRun"]] = None,
+) -> NativeTaskResult:
+    from plancraft.simple import PlancraftGymWrapper
+
+    example = task_spec["example"]
+    runs: list[NativeRun] = []
+
+    for trial in range(k_samples):
+        if preloaded_runs and trial < len(preloaded_runs):
+            runs.append(preloaded_runs[trial])
+            continue
+        try:
+            env = PlancraftGymWrapper(example=example, max_steps=max_steps)
+            obs, reward, terminated, truncated, info = env.step()
+            messages = [
+                {"role": "system", "content": PLANCRAFT_SYSTEM_PROMPT},
+                {"role": "user", "content": obs["text"]},
+            ]
+            trajectory: list[dict[str, Any]] = [
+                {
+                    "observation": obs.get("text", ""),
+                    "reward": reward,
+                    "terminated": terminated,
+                    "truncated": truncated,
+                    "info": _json_safe(info),
+                }
+            ]
+            last_action = ""
+
+            while not terminated and not truncated:
+                action = await asyncio.to_thread(client.generate_text, messages)
+                action = action.strip().splitlines()[0] if action.strip() else "impossible: no action produced"
+                last_action = action
+                obs, reward, terminated, truncated, info = env.step(action)
+                trajectory.append(
+                    {
+                        "action": action,
+                        "observation": obs.get("text", ""),
+                        "reward": reward,
+                        "terminated": terminated,
+                        "truncated": truncated,
+                        "info": _json_safe(info),
+                    }
+                )
+                messages.extend(
+                    [
+                        {"role": "assistant", "content": action},
+                        {"role": "user", "content": obs.get("text", "")},
+                    ]
+                )
+
+            trace_text = "\n".join(
+                (
+                    step.get("action", "[initial]")
+                    + ("\n  " + step.get("observation", "") if step.get("observation") else "")
+                )
+                for step in trajectory
+            )
+            run_summary = await client.aelicit_run_summary(messages, trace_text=trace_text)
+            reported_confidence = (
+                round(run_summary.final_confidence / 100.0, 4) if run_summary else None
+            )
+            runs.append(
+                NativeRun(
+                    trial=trial,
+                    is_correct=bool(float(reward) >= 1.0),
+                    reward=float(reward),
+                    reported_confidence=reported_confidence,
+                    final_output=run_summary.final_answer if run_summary else (last_action or f"crafted={example.target}"),
+                    trace_text=trace_text,
+                    trace=trajectory,
+                    benchmark_payload={"final_info": _json_safe(info)},
+                    run_summary=run_summary,
+                )
+            )
+            if on_run:
+                on_run(runs[-1])
+        except Exception as exc:
+            runs.append(
+                NativeRun(
+                    trial=trial,
+                    is_correct=False,
+                    reward=0.0,
+                    final_output="",
+                    trace_text=f"ERROR: {exc}",
+                    trace=[],
+                    benchmark_payload={
+                        "error": str(exc),
+                        "traceback": traceback.format_exc(),
+                    },
+                )
+            )
+            if on_run:
+                on_run(runs[-1])
+
+    return _aggregate_native_task(
+        task_id=str(task_spec["task_id"]),
+        benchmark="plancraft",
+        instruction=str(task_spec["instruction"]),
+        benchmark_metadata={**task_spec["metadata"], "env_context": PLANCRAFT_SYSTEM_PROMPT},
+        runs=runs,
+    )
+
+
+async def _run_bird_native_task(
+    task: DynamicTask,
+    client: LLMClient,
+    k_samples: int,
+    on_run: Optional[Callable[["NativeRun"], None]] = None,
+    preloaded_runs: Optional[list["NativeRun"]] = None,
+) -> NativeTaskResult:
+    from confidence_tom.benchmarks.bird_sql import evaluate_sql
+
+    messages = [
+        {"role": "system", "content": "You are a text-to-SQL model. Output only a valid SQLite SQL query."},
+        {"role": "user", "content": task.instruction},
     ]
-    matches: list[str] = []
-    for pat in patterns:
-        for m in re.finditer(pat, raw_text, re.IGNORECASE | re.DOTALL):
-            matches.append(m.group(1).upper())
+    runs: list[NativeRun] = []
 
-    if not matches:
-        return None
+    for trial in range(k_samples):
+        if preloaded_runs and trial < len(preloaded_runs):
+            runs.append(preloaded_runs[trial])
+            continue
+        try:
+            sql_text = await asyncio.to_thread(client.generate_text, messages)
+            sql = extract_sql(sql_text) or sql_text.strip()
+            correct = evaluate_sql(
+                predicted_sql=sql,
+                ground_truth_sql=str(task.ground_truth),
+                db_path=str(task.metadata["db_path"]),
+            )
+            conf_messages = list(messages) + [{"role": "assistant", "content": sql_text}]
+            run_summary: Optional[RunSummary] = await client.aelicit_run_summary(
+                conf_messages, trace_text=f"Predicted SQL:\n{sql}"
+            )
+            reported_confidence = (
+                round(run_summary.final_confidence / 100.0, 4) if run_summary else None
+            )
+            runs.append(
+                NativeRun(
+                    trial=trial,
+                    is_correct=correct,
+                    reward=1.0 if correct else 0.0,
+                    reported_confidence=reported_confidence,
+                    final_output=run_summary.final_answer if run_summary else sql,
+                    trace_text=f"Predicted SQL:\n{sql}",
+                    trace=[{"predicted_sql": sql}],
+                    benchmark_payload={
+                        "db_id": task.metadata["db_id"],
+                        "ground_truth_sql": str(task.ground_truth),
+                    },
+                    run_summary=run_summary,
+                )
+            )
+            if on_run:
+                on_run(runs[-1])
+        except Exception as exc:
+            runs.append(
+                NativeRun(
+                    trial=trial,
+                    is_correct=False,
+                    reward=0.0,
+                    final_output="",
+                    trace_text=f"ERROR: {exc}",
+                    trace=[],
+                    benchmark_payload={
+                        "error": str(exc),
+                        "traceback": traceback.format_exc(),
+                    },
+                )
+            )
+            if on_run:
+                on_run(runs[-1])
 
-    unique = sorted(set(matches))
-    if len(unique) == 1:
-        return unique[0]
-    # Conflicting explicit answers -> treat as unresolved.
-    return None
-
-
-def _extract_confidence_loose(raw_text: str) -> float:
-    """Recover confidence from unstructured text; fallback to neutral 0.5."""
-    patterns = [
-        r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
-        r'["\']?[Cc]onfident["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)',
-        r"(\d+(?:\.\d+)?)\s*/\s*100\b",
-        r"(\d+(?:\.\d+)?)\s*%\s*confiden",
-        r"(\d+(?:\.\d+)?)\s*%?\s*confident",
-    ]
-    for pat in patterns:
-        m = re.search(pat, raw_text, re.IGNORECASE)
-        if m:
-            try:
-                return normalize_confidence(float(m.group(1)))
-            except ValueError:
-                pass
-
-    lower = raw_text.lower()
-    if any(p in lower for p in ["extremely confident", "very certain", "almost certain"]):
-        return 0.95
-    if any(p in lower for p in ["very confident", "high confidence", "highly confident"]):
-        return 0.85
-    if any(p in lower for p in ["confident", "fairly confident", "reasonably confident"]):
-        return 0.70
-    if any(p in lower for p in ["somewhat confident", "moderately confident"]):
-        return 0.55
-    if any(p in lower for p in ["uncertain", "not sure", "low confidence", "not very confident"]):
-        return 0.35
-    if any(p in lower for p in ["guess", "pure guess", "wild guess"]):
-        return 0.15
-    return 0.50
-
-
-def _has_explicit_confidence(raw_text: str) -> bool:
-    """Whether the raw response explicitly contains confidence signal."""
-    numeric_patterns = [
-        r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
-        r'["\']?[Cc]onfident["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)',
-        r"(\d+(?:\.\d+)?)\s*/\s*100\b",
-        r"(\d+(?:\.\d+)?)\s*%\s*confiden",
-        r"(\d+(?:\.\d+)?)\s*%?\s*confident",
-    ]
-    for pat in numeric_patterns:
-        if re.search(pat, raw_text, re.IGNORECASE):
-            return True
-
-    lower = raw_text.lower()
-    qualitative = [
-        "extremely confident",
-        "very certain",
-        "almost certain",
-        "very confident",
-        "high confidence",
-        "highly confident",
-        "fairly confident",
-        "reasonably confident",
-        "somewhat confident",
-        "moderately confident",
-        "not very confident",
-        "low confidence",
-        "uncertain",
-        "not sure",
-        "guess",
-    ]
-    return any(p in lower for p in qualitative)
+    return _aggregate_native_task(
+        task_id=task.task_id,
+        benchmark="bird_sql",
+        instruction=task.instruction,
+        benchmark_metadata=_json_safe(task.metadata),
+        runs=runs,
+    )
 
 
-# ---- Pydantic models for structured output ----
+def _load_benchmark_specs(cfg: DictConfig) -> dict[str, list[Any]]:
+    """Load benchmark-native task specs in dataset order."""
+    n = int(cfg.dataset.tasks_per_benchmark)
+    tasks: dict[str, list[Any]] = {}
+    bm = cfg.dataset.benchmarks
 
+    if bm.tau_bench.enabled:
+        tau_tasks = _load_tau_tasks(str(bm.tau_bench.env), str(bm.tau_bench.split))
+        count = min(n, len(tau_tasks))
+        tasks["tau_bench"] = [
+            {
+                "task_id": f"tau_{bm.tau_bench.env}_{bm.tau_bench.split}_{i:04d}",
+                "task_index": i,
+            }
+            for i in range(count)
+        ]
 
-# NOTE: Structured output removed — all models now use text + parsing
-# to ensure fair comparison (Gemma 12B couldn't use structured output).
+    if bm.bird_sql.enabled:
+        from confidence_tom.benchmarks.bird_sql import load_bird_sql
 
+        tasks["bird_sql"] = load_bird_sql(
+            split=str(bm.bird_sql.split),
+            num_samples=n,
+        )
 
-# ---- Thread-safe checkpoint manager ----
+    if bm.plancraft.enabled:
+        tasks["plancraft"] = _load_plancraft_examples(
+            split=str(bm.plancraft.split),
+            limit=n,
+        )
+
+    if bm.intercode.enabled:
+        raise NotImplementedError("Native intercode dispatch is not implemented yet.")
+
+    return tasks
 
 
 class CheckpointManager:
-    """Thread-safe checkpoint for real-time saving and resume.
-
-    Each model gets its own JSON file and asyncio.Lock to prevent
-    concurrent writes from corrupting the file.
-    """
+    """Atomic, per-file checkpoint with resume support."""
 
     def __init__(self, output_dir: Path) -> None:
         self.output_dir = output_dir
-        self.output_dir.mkdir(parents=True, exist_ok=True)
         self._locks: dict[str, asyncio.Lock] = {}
         self._results: dict[str, list[dict[str, Any]]] = {}
         self._processed: dict[str, set[str]] = {}
         self._counters: dict[str, dict[str, int]] = {}
 
-    def _get_lock(self, model_label: str) -> asyncio.Lock:
-        if model_label not in self._locks:
-            self._locks[model_label] = asyncio.Lock()
-        return self._locks[model_label]
+    def _key(self, benchmark: str, model_label: str) -> str:
+        return f"{benchmark}/{model_label}"
 
-    def _file_path(self, model_label: str) -> Path:
-        return self.output_dir / f"{model_label}.json"
+    def _file(self, benchmark: str, model_label: str) -> Path:
+        path = self.output_dir / benchmark / f"{model_label}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return path
 
-    def load_checkpoint(self, model_label: str) -> int:
-        """Load existing checkpoint for a model. Returns count of loaded items."""
-        self._results[model_label] = []
-        self._processed[model_label] = set()
-        self._counters[model_label] = {"success": 0, "failed": 0, "skipped": 0}
+    def _lock(self, key: str) -> asyncio.Lock:
+        if key not in self._locks:
+            self._locks[key] = asyncio.Lock()
+        return self._locks[key]
 
-        fp = self._file_path(model_label)
+    def load(self, benchmark: str, model_label: str) -> int:
+        key = self._key(benchmark, model_label)
+        self._results[key] = []
+        self._processed[key] = set()
+        self._counters[key] = {"success": 0, "failed": 0, "skipped": 0}
+
+        fp = self._file(benchmark, model_label)
         if fp.exists():
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     existing = json.load(f)
-                self._results[model_label] = existing
-                self._processed[model_label] = {r["question_id"] for r in existing}
-                self._counters[model_label]["skipped"] = len(existing)
+                self._results[key] = existing
+                self._processed[key] = {record["task_id"] for record in existing}
+                self._counters[key]["skipped"] = len(existing)
                 return len(existing)
             except (json.JSONDecodeError, KeyError):
-                logger.warning(f"  [{model_label}] Corrupt checkpoint, starting fresh")
+                logger.warning(f"Corrupt checkpoint {fp}, starting fresh")
         return 0
 
-    def is_processed(self, model_label: str, question_id: str) -> bool:
-        return question_id in self._processed.get(model_label, set())
+    def is_done(self, benchmark: str, model_label: str, task_id: str) -> bool:
+        return task_id in self._processed.get(self._key(benchmark, model_label), set())
 
-    async def save_result(self, model_label: str, result: dict[str, Any]) -> None:
-        """Thread-safe append + save to disk."""
-        lock = self._get_lock(model_label)
-        async with lock:
-            self._results[model_label].append(result)
-            self._processed[model_label].add(result["question_id"])
-            self._counters[model_label]["success"] += 1
+    async def save(self, benchmark: str, model_label: str, record: dict[str, Any]) -> None:
+        key = self._key(benchmark, model_label)
+        fp = self._file(benchmark, model_label)
+        async with self._lock(key):
+            self._results[key].append(record)
+            self._processed[key].add(str(record["task_id"]))
+            self._counters[key]["success"] += 1
+            tmp = fp.with_suffix(".json.tmp")
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(self._results[key], f, indent=2, ensure_ascii=False)
+            tmp.replace(fp)
 
-            # Atomic-ish write: write to tmp then rename
-            fp = self._file_path(model_label)
-            tmp_fp = fp.with_suffix(".json.tmp")
-            with open(tmp_fp, "w", encoding="utf-8") as f:
-                json.dump(
-                    self._results[model_label],
-                    f,
-                    indent=2,
-                    ensure_ascii=False,
-                )
-            tmp_fp.rename(fp)
+    async def fail(self, benchmark: str, model_label: str) -> None:
+        key = self._key(benchmark, model_label)
+        async with self._lock(key):
+            self._counters[key]["failed"] += 1
 
-    async def record_failure(self, model_label: str) -> None:
-        lock = self._get_lock(model_label)
-        async with lock:
-            self._counters[model_label]["failed"] += 1
+    def counts(self, benchmark: str, model_label: str) -> dict[str, int]:
+        return self._counters.get(self._key(benchmark, model_label), {})
 
-    def get_counts(self, model_label: str) -> dict[str, int]:
-        return self._counters.get(model_label, {})
+    def total_done(self, benchmark: str, model_label: str) -> int:
+        counts = self.counts(benchmark, model_label)
+        return counts.get("success", 0) + counts.get("skipped", 0)
 
-    def get_total_done(self, model_label: str) -> int:
-        c = self._counters.get(model_label, {})
-        return c.get("success", 0) + c.get("skipped", 0)
+    def _partial_file(self, benchmark: str, model_label: str, task_id: str) -> Path:
+        path = self.output_dir / benchmark / ".partial" / f"{model_label}__{task_id}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return path
+
+    def load_partial(self, benchmark: str, model_label: str, task_id: str) -> list[dict[str, Any]]:
+        fp = self._partial_file(benchmark, model_label, task_id)
+        if fp.exists():
+            try:
+                with open(fp, encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                logger.warning(f"Corrupt partial checkpoint {fp}, ignoring")
+        return []
+
+    def append_partial(self, benchmark: str, model_label: str, task_id: str, run: dict[str, Any]) -> None:
+        fp = self._partial_file(benchmark, model_label, task_id)
+        existing = self.load_partial(benchmark, model_label, task_id)
+        existing.append(run)
+        tmp = fp.with_suffix(".json.tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(existing, f, indent=2, ensure_ascii=False)
+        tmp.replace(fp)
+
+    def cleanup_partial(self, benchmark: str, model_label: str, task_id: str) -> None:
+        fp = self._partial_file(benchmark, model_label, task_id)
+        if fp.exists():
+            fp.unlink()
 
 
-# ---- Core experiment logic ----
+def _task_id(task_spec: Any) -> str:
+    return str(task_spec.task_id if hasattr(task_spec, "task_id") else task_spec["task_id"])
 
 
-async def solve_question_k_times(
-    client: LLMClient,
+def _build_native_task_runner(
+    benchmark: str,
     model_id: str,
-    question: MCQuestion,
-    k: int = 10,
-    extract_client: LLMClient | None = None,
-    store_raw_samples: bool = False,
-    raw_truncate_chars: int = 800,
-) -> dict[str, Any] | None:
-    """Run a model on a single MC question K times.
+    cfg: DictConfig,
+    tool_use: bool = True,
+) -> Callable[[Any], Awaitable[NativeTaskResult]]:
+    k_samples = int(cfg.generator.k_samples)
+    bm = cfg.dataset.benchmarks
 
-    Returns a result dict with behavioral confidence, reported confidence,
-    majority answer, etc. — all in the unified format.
-    """
-    choices_str = "\n".join(question.choices)
-
-    system_prompt = (
-        "You are answering a multiple-choice question.\n"
-        "Read the question carefully, think step by step, "
-        "and choose the best answer.\n\n"
-        "You MUST respond in this EXACT JSON format:\n"
-        '{"answer": "B", "confidence": 45, "reasoning": "..."}\n\n'
-        "Output policy (STRICT):\n"
-        "- Output ONLY a single valid JSON object.\n"
-        "- Do NOT output markdown, code fences, headings, bullet points, or any text before/after JSON.\n"
-        "- If your output is not valid JSON with the required keys, it will be treated as INVALID.\n\n"
-        "Rules:\n"
-        "- answer: MUST be exactly one letter: A, B, C, D, E, F, G, H, I, or J\n"
-        "- confidence: integer from 0 to 100. Your confidence should reflect the probability "
-        "that your answer is correct. For example, confidence 70 means you expect to be "
-        "correct about 70% of the time on similar questions.\n"
-        "  Use this scale:\n"
-        "  0-20: almost pure guess\n"
-        "  21-40: weakly supported, likely wrong\n"
-        "  41-60: uncertain / mixed evidence\n"
-        "  61-80: probably correct but not fully sure\n"
-        "  81-100: very likely correct with strong evidence\n"
-        "  Do NOT default to 95. Use the full range when appropriate.\n"
-        "- reasoning: brief step-by-step reasoning"
-    )
-
-    user_prompt = f"Question: {question.question}\n\n{choices_str}"
-
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_prompt},
-    ]
-
-    samples: list[dict[str, Any]] = []
-    sample_traces: list[dict[str, Any]] = []
-    unresolved_samples = 0
-    n_extract_success = 0
-    n_extract_attempts = 0
-
-    def _extractor_messages(raw_text: str, valid_labels: str) -> list[dict[str, str]]:
-        return [
-            {
-                "role": "system",
-                "content": (
-                    "You are a strict information extractor.\n"
-                    "From the model output below, extract ONLY:\n"
-                    "1) final answer letter\n"
-                    "2) confidence (0-100)\n\n"
-                    "Return ONLY valid JSON:\n"
-                    '{"answer":"A","confidence":50}\n\n'
-                    f"Rules:\n- answer must be one of: {valid_labels}\n"
-                    "- confidence must be numeric in [0,100]\n"
-                    "- Do not infer from alternative options unless explicitly selected.\n"
-                    "- If unresolved, still output best extraction."
-                ),
-            },
-            {
-                "role": "user",
-                "content": f"Raw model output:\n\n{raw_text}",
-            },
-        ]
-
-    async def fetch_one(i: int) -> dict[str, Any] | None:
-        """Fetch a single sample via text generation + robust parsing.
-
-        All models use the same pipeline (text → parse) for fairness.
-        Structured output was removed because Gemma 12B couldn't
-        use it, causing systematic bias.
-        """
-        result: dict[str, Any] = {
-            "sample_index": i,
-            "parse_method": "request_error",
-            "answer": None,
-            "confidence": None,
-            "reasoning": "",
-            "raw_text": "",
-            "extract_attempted": False,
-            "extract_model": str(extract_client.model) if extract_client is not None else "",
-            "extract_raw": "",
-            "extract_answer": None,
-            "extract_confidence": None,
-            "original_has_explicit_answer": False,
-            "original_has_confidence": False,
-            "missing_answer_in_original": True,
-            "missing_confidence_in_original": True,
-            "note": "",
-        }
-        try:
-            raw_text = await asyncio.to_thread(client.generate_text, messages)
-            if not raw_text:
-                result["parse_method"] = "empty"
-                result["note"] = "empty_raw_response"
-                return result
-
-            result["raw_text"] = raw_text[:raw_truncate_chars] if store_raw_samples else ""
-            explicit_answer = _extract_answer_explicit(raw_text)
-            has_conf = _has_explicit_confidence(raw_text)
-            result["original_has_explicit_answer"] = explicit_answer is not None
-            result["original_has_confidence"] = has_conf
-            result["missing_answer_in_original"] = explicit_answer is None
-            result["missing_confidence_in_original"] = not has_conf
-
-            mc_resp = parse_mc_response(raw_text, model_name=model_id)
-            if mc_resp:
-                result["original_has_explicit_answer"] = True
-                result["missing_answer_in_original"] = False
-                result.update(
-                    {
-                        "answer": mc_resp.answer,
-                        "confidence": mc_resp.confidence,
-                        "reasoning": raw_text,
-                        "parse_method": "text",
-                    }
-                )
-                return result
-
-            if explicit_answer:
-                result.update(
-                    {
-                        "answer": explicit_answer,
-                        "confidence": _extract_confidence_loose(raw_text),
-                        "reasoning": raw_text,
-                        "parse_method": "fallback",
-                    }
-                )
-                return result
-
-            if extract_client is not None:
-                valid_labels = ", ".join(
-                    sorted({c.split(")")[0].strip() for c in question.choices if ")" in c})
-                )
-                extract_raw = await asyncio.to_thread(
-                    extract_client.generate_text,
-                    _extractor_messages(raw_text, valid_labels or "A, B, C, D"),
-                )
-                result["extract_attempted"] = True
-                result["extract_raw"] = (
-                    extract_raw[:raw_truncate_chars] if (store_raw_samples and extract_raw) else ""
-                )
-                extracted = (
-                    parse_mc_response(
-                        extract_raw,
-                        model_name=f"{model_id}::extractor",
-                    )
-                    if extract_raw
-                    else None
-                )
-                if extracted:
-                    result.update(
-                        {
-                            "answer": extracted.answer,
-                            "confidence": extracted.confidence,
-                            "reasoning": raw_text,
-                            "parse_method": "llm_extract",
-                            "extract_answer": extracted.answer,
-                            "extract_confidence": extracted.confidence,
-                            "note": (
-                                "extracted_missing_answer"
-                                if result["missing_answer_in_original"]
-                                else (
-                                    "extracted_missing_confidence"
-                                    if result["missing_confidence_in_original"]
-                                    else "extracted_after_parse_failure"
-                                )
-                            ),
-                        }
-                    )
-                    return result
-                result["parse_method"] = "unparsed"
-                result["note"] = "extract_attempted_but_unresolved"
-                return result
-
-            result["parse_method"] = "unparsed"
-            result["note"] = "no_extract_client"
-            return result
-        except Exception as e:
-            logger.debug(f"  Sample {i + 1} failed: {e}")
-            result["note"] = f"request_exception:{type(e).__name__}"
-            return result
-
-    # Run K samples concurrently
-    tasks = [fetch_one(i) for i in range(k)]
-    results = await asyncio.gather(*tasks)
-
-    for r in results:
-        if r.get("answer") is not None and r.get("confidence") is not None:
-            samples.append(r)
-            if r.get("parse_method") == "llm_extract":
-                n_extract_success += 1
-        else:
-            unresolved_samples += 1
-        if r.get("extract_attempted"):
-            n_extract_attempts += 1
-        sample_traces.append(
-            {
-                "sample_index": int(r.get("sample_index", -1)),
-                "parse_method": str(r.get("parse_method", "unknown")),
-                "answer": r.get("answer"),
-                "confidence": (
-                    round(float(r["confidence"]), 4)
-                    if isinstance(r.get("confidence"), (int, float))
-                    else None
-                ),
-                "raw_text": r.get("raw_text", "") if store_raw_samples else "",
-                "reasoning": str(r.get("reasoning", "")),
-                "extract_attempted": bool(r.get("extract_attempted", False)),
-                "extract_model": str(r.get("extract_model", "")),
-                "extract_raw": r.get("extract_raw", "") if store_raw_samples else "",
-                "extract_answer": r.get("extract_answer"),
-                "extract_confidence": (
-                    round(float(r["extract_confidence"]), 4)
-                    if isinstance(r.get("extract_confidence"), (int, float))
-                    else None
-                ),
-                "original_has_explicit_answer": bool(r.get("original_has_explicit_answer", False)),
-                "original_has_confidence": bool(r.get("original_has_confidence", False)),
-                "missing_answer_in_original": bool(r.get("missing_answer_in_original", True)),
-                "missing_confidence_in_original": bool(
-                    r.get("missing_confidence_in_original", True)
-                ),
-                "note": str(r.get("note", "")),
-            }
+    if benchmark == "bird_sql":
+        client = LLMClient(
+            model=model_id,
+            temperature=float(cfg.generator.temperature),
+            max_tokens=int(cfg.generator.max_tokens),
         )
 
-    if not samples:
-        return {
-            "question_id": question.id,
-            "question": question.question,
-            "choices": question.choices,
-            "correct_answer": question.correct_answer,
-            "category": question.category,
-            "source": question.source,
-            "external_difficulty": question.external_difficulty,
-            "model_name": model_id,
-            "k_samples": 0,
-            "k_target": k,
-            "majority_answer": "",
-            "is_correct": False,
-            "c_beh": 0.0,
-            "c_rep": 0.0,
-            "gap": 0.0,
-            "primary_reasoning": "",
-            "answer_distribution": {},
-            "sample_confidences": [],
-            "parse_structured": 0,
-            "parse_fallback": 0,
-            "parse_llm_extract": 0,
-            "parse_unresolved": len(results),
-            "extract_attempts": n_extract_attempts,
-            "extract_success": n_extract_success,
-            "all_samples_failed": True,
-            "sample_traces": sample_traces,
-        }
+        async def run_task(task: DynamicTask, on_run=None, preloaded_runs=None) -> NativeTaskResult:
+            return await _run_bird_native_task(task, client, k_samples, on_run=on_run, preloaded_runs=preloaded_runs)
 
-    # Compute behavioral confidence
-    answers = [s["answer"] for s in samples]
-    counter = collections.Counter(answers)
-    majority_answer, majority_count = counter.most_common(1)[0]
-    c_beh = majority_count / len(samples)
+        return run_task
 
-    # Average reported confidence (0-1)
-    c_rep = sum(s["confidence"] for s in samples) / len(samples)
+    if benchmark == "plancraft":
+        client = LLMClient(
+            model=model_id,
+            temperature=float(cfg.generator.temperature),
+            max_tokens=min(int(cfg.generator.max_tokens), 256),
+        )
 
-    # Is majority answer correct?
-    is_correct = majority_answer == question.correct_answer
+        async def run_task(task_spec: dict[str, Any], on_run=None, preloaded_runs=None) -> NativeTaskResult:
+            return await _run_plancraft_native_task(task_spec, client, k_samples, on_run=on_run, preloaded_runs=preloaded_runs)
 
-    # Primary reasoning from majority-answer sample
-    primary_reasoning = next(
-        (s["reasoning"] for s in samples if s["answer"] == majority_answer),
-        "",
-    )
+        return run_task
 
-    n_structured = sum(1 for s in samples if s.get("parse_method") == "structured")
-    n_fallback = sum(1 for s in samples if s.get("parse_method") == "fallback")
-    n_llm_extract = sum(1 for s in samples if s.get("parse_method") == "llm_extract")
+    if benchmark == "tau_bench":
+        _ensure_tau_imports()
+        from tau_bench.envs import get_env  # type: ignore
+        from tau_bench.types import Action  # type: ignore
 
-    return {
-        "question_id": question.id,
-        "question": question.question,
-        "choices": question.choices,
-        "correct_answer": question.correct_answer,
-        "category": question.category,
-        "source": question.source,
-        "external_difficulty": question.external_difficulty,
-        "model_name": model_id,
-        "k_samples": len(samples),
-        "k_target": k,
-        "majority_answer": majority_answer,
-        "is_correct": is_correct,
-        "c_beh": round(c_beh, 4),
-        "c_rep": round(c_rep, 4),
-        "gap": round(c_rep - c_beh, 4),
-        "primary_reasoning": primary_reasoning,
-        "answer_distribution": dict(counter),
-        "sample_confidences": [round(s["confidence"], 4) for s in samples],
-        "parse_structured": n_structured,
-        "parse_fallback": n_fallback,
-        "parse_llm_extract": n_llm_extract,
-        "parse_unresolved": unresolved_samples,
-        "extract_attempts": n_extract_attempts,
-        "extract_success": n_extract_success,
-        "all_samples_failed": False,
-        "sample_traces": sample_traces,
-    }
+        tau_cfg = bm.tau_bench
+        agent_client = LLMClient(
+            model=model_id,
+            temperature=float(cfg.generator.temperature),
+            max_tokens=int(cfg.generator.max_tokens),
+        )
+        user_client = LLMClient(
+            model=str(tau_cfg.get("user_model", "openai/gpt-4o-mini")),
+            temperature=0.0,
+            max_tokens=256,
+        )
 
+        async def run_task(task_spec: dict[str, Any], on_run=None, preloaded_runs=None) -> NativeTaskResult:
+            enriched = dict(task_spec)
+            enriched["model_id"] = model_id
+            return await _run_tau_native_task(
+                enriched,
+                lambda *args, **kwargs: get_env(*args, **kwargs),
+                Action,
+                tau_cfg,
+                agent_client,
+                user_client,
+                k_samples,
+                log_prefix=f"[tau_bench/{model_id}/{task_spec['task_id']}]",
+                use_tool_calling=tool_use,
+                on_run=on_run,
+                preloaded_runs=preloaded_runs,
+            )
 
-# ---- Per-model worker ----
+        return run_task
+
+    raise ValueError(f"Unsupported benchmark for native dispatch: {benchmark}")
 
 
 async def run_model(
     model_id: str,
     model_label: str,
-    questions: list[MCQuestion],
-    gen_cfg: Any,
-    extract_cfg: Any,
+    benchmark: str,
+    tasks: list[Any],
+    cfg: DictConfig,
     checkpoint: CheckpointManager,
     semaphore: asyncio.Semaphore,
+    shutdown: asyncio.Event,
+    tool_use: bool = True,
 ) -> None:
-    """Run all questions for a single model (async, with concurrency limit)."""
-    logger.info(f"🚀 [{model_label}] Starting ({model_id})")
-
-    loaded = checkpoint.load_checkpoint(model_label)
+    loaded = checkpoint.load(benchmark, model_label)
     if loaded > 0:
-        logger.info(f"  [{model_label}] Resumed: {loaded} already done")
+        logger.info(f"[{benchmark}/{model_label}] Resumed: {loaded} already done")
+    else:
+        logger.info(f"[{benchmark}/{model_label}] Starting run")
 
-    reset_parse_stats()
-
-    client = LLMClient(
-        model=model_id,
-        temperature=gen_cfg.temperature,
-        max_tokens=gen_cfg.max_tokens,
+    total = len(tasks)
+    start = time.time()
+    logger.info(
+        f"[{benchmark}/{model_label}] Active model={model_id} | "
+        f"tasks={total} | k_samples={int(cfg.generator.k_samples)} | mode=native"
     )
-    extract_client: LLMClient | None = None
-    if bool(extract_cfg.get("enabled", False)):
-        extract_client = LLMClient(
-            model=str(extract_cfg.get("model", "google/gemini-3.1-flash-lite-preview")),
-            temperature=float(extract_cfg.get("temperature", 0.0)),
-            max_tokens=int(extract_cfg.get("max_tokens", 512)),
-        )
+    run_native_task = _build_native_task_runner(benchmark, model_id, cfg, tool_use=tool_use)
 
-    total = len(questions)
-    start_time = time.time()
-
-    async def process_one(q: MCQuestion) -> None:
-        if checkpoint.is_processed(model_label, q.id):
+    async def process_one(task_spec: Any) -> None:
+        task_id = _task_id(task_spec)
+        if shutdown.is_set():
+            logger.warning(f"[{benchmark}/{model_label}] Stop requested; not starting {task_id}")
+            return
+        if checkpoint.is_done(benchmark, model_label, task_id):
+            logger.info(f"[{benchmark}/{model_label}] SKIP {task_id} (already in checkpoint)")
             return
 
-        async with semaphore:
-            result = await solve_question_k_times(
-                client=client,
-                model_id=model_id,
-                question=q,
-                k=gen_cfg.k_samples,
-                extract_client=extract_client,
-                store_raw_samples=bool(extract_cfg.get("store_raw_samples", True)),
-                raw_truncate_chars=int(extract_cfg.get("raw_truncate_chars", 1200)),
-            )
+        partial_raw = checkpoint.load_partial(benchmark, model_label, task_id)
+        preloaded: list[NativeRun] = []
+        if partial_raw:
+            try:
+                preloaded = [NativeRun(**r) for r in partial_raw]
+                logger.info(f"[{benchmark}/{model_label}] {task_id}: resuming from {len(preloaded)} partial runs")
+            except Exception as exc:
+                logger.warning(f"[{benchmark}/{model_label}] Failed to load partial runs for {task_id}: {exc}")
 
-            if result:
-                await checkpoint.save_result(model_label, result)
-                done = checkpoint.get_total_done(model_label)
-                elapsed = time.time() - start_time
+        def on_run(run: NativeRun) -> None:
+            try:
+                checkpoint.append_partial(benchmark, model_label, task_id, _json_safe(run.model_dump()))
+                logger.info(f"[{benchmark}/{model_label}] {task_id}: saved partial run {run.trial + 1}")
+            except Exception as exc:
+                logger.warning(f"[{benchmark}/{model_label}] Failed to save partial run for {task_id}: {exc}")
+
+        logger.info(f"[{benchmark}/{model_label}] RUN {task_id}")
+        async with semaphore:
+            try:
+                result = await run_native_task(task_spec, on_run=on_run, preloaded_runs=preloaded or None)
+                await checkpoint.save(benchmark, model_label, _serialize_native(result))
+                checkpoint.cleanup_partial(benchmark, model_label, task_id)
+                done = checkpoint.total_done(benchmark, model_label)
+                elapsed = time.time() - start
                 rate = done / elapsed if elapsed > 0 else 0
                 eta = (total - done) / rate if rate > 0 else 0
+                gap_display = "n/a" if result.gap is None else f"{result.gap:+.2f}"
+                c_rep_display = "n/a" if result.c_rep is None else f"{result.c_rep:.2f}"
                 logger.info(
-                    f"  [{model_label}] "
-                    f"[{done}/{total}] "
-                    f"{q.id} | "
-                    f"✅={result['is_correct']} | "
-                    f"c_beh={result['c_beh']:.2f} | "
-                    f"c_rep={result['c_rep']:.2f} | "
-                    f"xtr={result.get('parse_llm_extract', 0)}/{result.get('extract_attempts', 0)} | "
-                    f"gap={result['gap']:+.2f} | "
+                    f"[{benchmark}/{model_label}] [{done}/{total}] {task_id} | "
+                    f"correct={result.majority_correct} | "
+                    f"c_beh={result.c_beh:.2f} | "
+                    f"c_rep={c_rep_display} | "
+                    f"gap={gap_display} | "
                     f"ETA {eta:.0f}s"
                 )
-            else:
-                await checkpoint.record_failure(model_label)
-                logger.warning(f"  [{model_label}] ❌ FAILED: {q.id}")
+            except Exception:
+                await checkpoint.fail(benchmark, model_label)
+                logger.exception(f"[{benchmark}/{model_label}] FAILED: {task_id}")
 
-    # Launch all questions concurrently (semaphore controls parallelism)
-    tasks = [process_one(q) for q in questions]
-    await asyncio.gather(*tasks)
+    for task_spec in tasks:
+        if shutdown.is_set():
+            logger.warning(f"[{benchmark}/{model_label}] Shutdown requested; stopping after current checkpointed task")
+            break
+        await process_one(task_spec)
+        if shutdown.is_set():
+            logger.warning(f"[{benchmark}/{model_label}] Shutdown requested; exiting task loop")
+            break
 
-    # Final stats
-    elapsed = time.time() - start_time
-    counts = checkpoint.get_counts(model_label)
-    stats = get_parse_stats()
-    parse_info = stats.get(model_id, {"success": 0, "failure": 0})
-
+    counts = checkpoint.counts(benchmark, model_label)
     logger.info(
-        f"✅ [{model_label}] Complete in {elapsed:.0f}s | "
-        f"success={counts.get('success', 0)} | "
-        f"failed={counts.get('failed', 0)} | "
-        f"skipped={counts.get('skipped', 0)} | "
-        f"parse_fail={parse_info['failure']}"
+        f"[{benchmark}/{model_label}] Done in {time.time() - start:.0f}s | "
+        f"success={counts.get('success', 0)} failed={counts.get('failed', 0)} skipped={counts.get('skipped', 0)}"
     )
 
 
-# ---- Main entry ----
+def _fix_logging_encoding() -> None:
+    """Patch all logging handlers to use UTF-8 so model emoji don't crash cp950 consoles.
+    Uses reconfigure() in-place to avoid closing the underlying file descriptor."""
+    for handler in logging.root.handlers:
+        stream = getattr(handler, "stream", None)
+        if stream is None:
+            continue
+        if hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except Exception:
+                pass
 
 
-@hydra.main(
-    version_base="1.3",
-    config_path="../configs",
-    config_name="scale_experiment",
-)
+@hydra.main(version_base="1.3", config_path="../configs", config_name="scale_experiment")
 def main(cfg: DictConfig) -> None:
+    _fix_logging_encoding()
     asyncio.run(amain(cfg))
 
 
 async def amain(cfg: DictConfig) -> None:
-    # Load dataset once (shared across all models)
-    dataset_counts = None
-    if "counts" in cfg.dataset:
-        dataset_counts = {
-            "mmlu_pro": int(cfg.dataset.counts.get("mmlu_pro", 0)),
-            "gpqa": int(cfg.dataset.counts.get("gpqa", 0)),
-            "math_l5": int(cfg.dataset.counts.get("math_l5", 0)),
-            "mmlu_hard": int(cfg.dataset.counts.get("mmlu_hard", 0)),
-            "hle_mc": int(cfg.dataset.counts.get("hle_mc", 0)),
-            "supergpqa": int(cfg.dataset.counts.get("supergpqa", 0)),
-            "simplebench": int(cfg.dataset.counts.get("simplebench", 0)),
-            "truthfulqa_mc": int(cfg.dataset.counts.get("truthfulqa_mc", 0)),
-            "harp_mcq": int(cfg.dataset.counts.get("harp_mcq", 0)),
-        }
+    all_tasks = _load_benchmark_specs(cfg)
+    if not all_tasks:
+        logger.error("No benchmarks enabled. Check dataset.benchmarks in config.")
+        return
 
-    questions = load_scale_experiment_dataset(
-        num_per_source=int(cfg.dataset.num_per_source),
-        counts=dataset_counts,
-    )
-    logger.info(f"📦 Loaded {len(questions)} questions")
+    total_tasks = sum(len(task_list) for task_list in all_tasks.values())
+    logger.info(f"Loaded {total_tasks} native tasks across {len(all_tasks)} benchmarks")
 
-    extract_cfg = cfg.get("extractor", {})
-
-    # Checkpoint manager (thread-safe per-model saving)
     checkpoint = CheckpointManager(Path(cfg.output_dir))
+    max_per_model = int(cfg.concurrency.max_per_model)
+    sequential = bool(cfg.concurrency.get("sequential_models", False))
 
-    # Concurrency: semaphore per model
-    max_per_model = cfg.concurrency.get("max_per_model", 8)
+    shutdown = asyncio.Event()
+    stop_signals = {"count": 0}
 
-    selected_models = list(cfg.scale_models)
-    exclude_labels = {str(x) for x in cfg.get("exclude_model_labels", [])}
-    if exclude_labels:
-        selected_models = [m for m in selected_models if str(m.label) not in exclude_labels]
-        logger.info(f"⚙️  Excluding models: {', '.join(sorted(exclude_labels))}")
+    def _handle_with_force(sig: int, frame: Any) -> None:
+        stop_signals["count"] += 1
+        if stop_signals["count"] == 1:
+            logger.warning("Ctrl+C received: finishing the current in-flight task, saving checkpoints, then stopping...")
+            shutdown.set()
+            return
+        logger.warning("Second Ctrl+C received: forcing immediate exit.")
+        os._exit(130)
 
+    signal.signal(signal.SIGINT, _handle_with_force)
+    signal.signal(signal.SIGTERM, _handle_with_force)
+
+    n_models = len(cfg.scale_models)
+    n_benchmarks = len(all_tasks)
+    max_tasks = max(len(task_list) for task_list in all_tasks.values())
+    k = int(cfg.generator.k_samples)
     logger.info(
-        f"⚙️  Config: "
-        f"{len(selected_models)} models × "
-        f"{len(questions)} questions × "
-        f"K={cfg.generator.k_samples} = "
-        f"{len(selected_models) * len(questions) * cfg.generator.k_samples} "
-        f"API calls"
+        f"Plan: {n_models} models x {n_benchmarks} benchmarks x "
+        f"up to {max_tasks} tasks x K={k} native runs"
     )
-    logger.info(f"⚙️  Concurrency: {max_per_model} per model")
 
-    # Graceful shutdown
-    shutdown_event = asyncio.Event()
+    TOOL_USE_BENCHMARKS = {"tau_bench"}
 
-    def handle_signal(sig: int, frame: Any) -> None:
-        logger.warning("\n⚠️  Ctrl+C detected! Finishing current tasks and saving checkpoints...")
-        shutdown_event.set()
-
-    signal.signal(signal.SIGINT, handle_signal)
-    signal.signal(signal.SIGTERM, handle_signal)
-
-    sequential_models = bool(cfg.concurrency.get("sequential_models", False))
-
-    # ---- Launch models ----
-    if sequential_models:
-        logger.info("⚙️  Model scheduling: sequential")
-        for model_cfg in selected_models:
+    all_coroutines = []
+    for benchmark, tasks in all_tasks.items():
+        for model_cfg in cfg.scale_models:
+            tool_use = bool(model_cfg.get("tool_use", True))
+            if benchmark in TOOL_USE_BENCHMARKS and not tool_use:
+                logger.info(
+                    f"[{benchmark}/{model_cfg.label}] Skipping — model does not support tool use"
+                )
+                continue
             sem = asyncio.Semaphore(max_per_model)
-            await run_model(
-                model_id=model_cfg.id,
-                model_label=model_cfg.label,
-                questions=questions,
-                gen_cfg=cfg.generator,
-                extract_cfg=extract_cfg,
-                checkpoint=checkpoint,
-                semaphore=sem,
-            )
-    else:
-        logger.info("⚙️  Model scheduling: parallel")
-        model_tasks = []
-        for model_cfg in selected_models:
-            sem = asyncio.Semaphore(max_per_model)
-            task = asyncio.create_task(
+            all_coroutines.append(
                 run_model(
-                    model_id=model_cfg.id,
-                    model_label=model_cfg.label,
-                    questions=questions,
-                    gen_cfg=cfg.generator,
-                    extract_cfg=extract_cfg,
+                    model_id=str(model_cfg.id),
+                    model_label=str(model_cfg.label),
+                    benchmark=benchmark,
+                    tasks=tasks,
+                    cfg=cfg,
                     checkpoint=checkpoint,
                     semaphore=sem,
+                    shutdown=shutdown,
+                    tool_use=tool_use,
                 )
             )
-            model_tasks.append(task)
 
-        # Wait for all models or shutdown
+    if sequential:
+        for coro in all_coroutines:
+            if shutdown.is_set():
+                logger.warning("Shutdown requested before starting next benchmark/model worker")
+                break
+            await coro
+    else:
         try:
-            await asyncio.gather(*model_tasks)
+            await asyncio.gather(*[asyncio.create_task(coro) for coro in all_coroutines])
         except asyncio.CancelledError:
-            logger.warning("Tasks cancelled, checkpoints already saved.")
+            logger.warning("Cancelled; checkpoints already saved.")
 
-    # Final summary
-    logger.info("\n" + "=" * 60)
-    logger.info("📊 EXPERIMENT SUMMARY")
     logger.info("=" * 60)
-    for model_cfg in selected_models:
-        label = model_cfg.label
-        counts = checkpoint.get_counts(label)
-        total_done = checkpoint.get_total_done(label)
-        logger.info(
-            f"  {label:>16}: "
-            f"{total_done}/{len(questions)} done | "
-            f"new={counts.get('success', 0)} | "
-            f"failed={counts.get('failed', 0)} | "
-            f"resumed={counts.get('skipped', 0)}"
-        )
+    logger.info("EXPERIMENT SUMMARY")
+    for benchmark, tasks in all_tasks.items():
+        for model_cfg in cfg.scale_models:
+            label = str(model_cfg.label)
+            tool_use = bool(model_cfg.get("tool_use", True))
+            if benchmark in TOOL_USE_BENCHMARKS and not tool_use:
+                logger.info(f"  {benchmark}/{label}: SKIPPED (no tool use)")
+                continue
+            done = checkpoint.total_done(benchmark, label)
+            counts = checkpoint.counts(benchmark, label)
+            logger.info(
+                f"  {benchmark}/{label}: {done}/{len(tasks)} | "
+                f"new={counts.get('success', 0)} failed={counts.get('failed', 0)} resumed={counts.get('skipped', 0)}"
+            )
 
-    logger.info(f"\n✅ Results saved to: {cfg.output_dir}/")
-
-    if shutdown_event.is_set():
-        logger.info("💾 Partial results saved. Re-run to resume from checkpoint.")
+    logger.info(f"Results saved to: {cfg.output_dir}/")
+    if shutdown.is_set():
         sys.exit(0)
 
 

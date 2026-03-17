@@ -1,6 +1,6 @@
 [project]
 name = "confidence-tom"
-version = "0.1.0"
+version = "0.2.0"
 description = "Theory of Mind 信心預測實驗 - 大模型能否讀懂小模型的內在信心狀態"
 readme = "README.md"
 requires-python = ">=3.10"

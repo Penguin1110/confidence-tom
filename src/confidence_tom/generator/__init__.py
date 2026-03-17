@@ -1,1 +1,1 @@
-"""Generator module - 第一階段：小模型產生數據."""
+"""Generator module — runs agent on dynamic benchmark tasks and elicits confidence."""

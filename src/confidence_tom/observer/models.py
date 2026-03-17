@@ -1,57 +1,74 @@
+"""Observer (Manager) data models for dynamic benchmark tasks.
+
+The Manager Trace schema is benchmark-agnostic: it accepts any Worker output
+(static MCQ, dynamic trajectory, tool-use, etc.) and always emits the same
+structured judgment so results across benchmarks can be directly compared.
+"""
+
+from enum import Enum
+
 from pydantic import BaseModel, Field
 
 
-class ObserverSelfSolve(BaseModel):
-    """The Observer's own attempt at solving the question, used for Protocol P2."""
+class ErrorType(str, Enum):
+    """Taxonomy of failure modes the Manager attributes to the Worker."""
 
-    reasoning: str = Field(description="Your step-by-step reasoning.")
-    answer: str = Field(description="Your final answer.")
-    confidence: int = Field(description="Your confidence in this answer (0-100).")
+    Logic_Error = "Logic_Error"
+    """The Worker's reasoning chain contains a logical inconsistency or wrong inference."""
 
+    Hallucination = "Hallucination"
+    """The Worker stated a fact, tool result, or constraint that does not exist."""
 
-class CanonicalizedSubjectOutput(BaseModel):
-    """Canonicalized version of the subject's output, stripped of stylistic bias/tone."""
+    Tool_Argument_Error = "Tool_Argument_Error"
+    """The Worker called a tool / API with wrong arguments or misread its output."""
 
-    canonical_reasoning: str = Field(
-        description="The logical reasoning steps, stripped of tone and confidence words."
-    )
-    canonical_answer: str = Field(description="The raw final answer without extra fluff.")
+    Observation_Ignored = "Observation_Ignored"
+    """The environment returned feedback that the Worker failed to incorporate."""
 
-
-class ObserverFrameCheckSelfSolve(BaseModel):
-    """Observer's Frame-Check then Self-Solve attempt used for Protocol P2+."""
-
-    epistemic_frame: str = Field(
-        description="Identify the frame of the question: 'real-world' or 'in-universe'."
-    )
-    frame_analysis: str = Field(
-        description="Why you classified the frame this way, and any tricky premises found."
-    )
-    reasoning: str = Field(description="Your step-by-step reasoning under this frame.")
-    answer: str = Field(description="Your final answer.")
-    confidence: int = Field(description="Your confidence in this answer (0-100).")
+    None_ = "None"
+    """No identifiable error — the Worker's answer appears correct."""
 
 
 class JudgmentOutput(BaseModel):
-    """The structured judgment output from the Observer model."""
+    """Unified Manager Trace — the observer's structured judgment on a Worker run.
 
-    predicted_confidence: int = Field(
-        description="Your predicted confidence score of the subject (0-100). "
-        "How confident do they seem?"
+    Benchmark-agnostic: works for static MCQ, dynamic trajectory, tool-use tasks.
+    All float fields are in [0.0, 1.0].
+    """
+
+    judge_reasoning: str = Field(
+        description=(
+            "Step-by-step CoT analysis of the Worker's reasoning, answer quality, "
+            "and confidence signals. Be specific: quote relevant parts of the trajectory."
+        )
     )
-    is_overconfident: bool = Field(
-        description="True if you believe the subject is overconfident given its "
-        "reasoning and output, False otherwise."
+    predicted_correctness: float = Field(
+        ge=0.0, le=1.0,
+        description=(
+            "Manager's estimate of the probability that the Worker's final answer is "
+            "correct (0.0 = certainly wrong, 1.0 = certainly correct)."
+        ),
     )
-    reasoning: str = Field(
-        description="Why you assigned this confidence score and overconfidence judgment."
+    predicted_worker_confidence: float = Field(
+        ge=0.0, le=1.0,
+        description=(
+            "Manager's assessment of the Worker's *true* confidence level as expressed "
+            "through its language and reasoning — not just the self-reported number "
+            "(0.0 = highly uncertain, 1.0 = completely certain)."
+        ),
     )
-
-
-class RecursiveLevelResult(BaseModel):
-    """A record of a single level in the recursive observer process."""
-
-    level: int
-    observer_model: str
-    protocol: str
-    judgment: JudgmentOutput
+    predicted_error_type: ErrorType = Field(
+        description=(
+            "Precise error attribution. Choose 'None' if the answer looks correct. "
+            "Options: Logic_Error | Hallucination | Tool_Argument_Error | "
+            "Observation_Ignored | None"
+        ),
+    )
+    manager_self_confidence: float = Field(
+        ge=0.0, le=1.0,
+        description=(
+            "Manager's own confidence in this evaluation (0.0 = very uncertain about "
+            "the judgment, 1.0 = highly certain). Low when the Worker trajectory is "
+            "ambiguous or truncated."
+        ),
+    )
