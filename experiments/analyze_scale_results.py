@@ -92,32 +92,45 @@ CATEGORY_COLORS = {
 def load_all_results(results_dir: Path) -> pd.DataFrame:
     """Load results from all scale model JSON files into a single DataFrame."""
     all_rows = []
-    for json_file in sorted(results_dir.glob("*.json")):
+    json_files = sorted(results_dir.glob("*.json"))
+    if not json_files:
+        json_files = sorted(results_dir.glob("*/*.json"))
+
+    for json_file in json_files:
         if json_file.name.endswith(".tmp.json"):
             continue
         if json_file.name == "calibration_summary.json":
             continue
-        logger.info(f"Loading {json_file.name}...")
+        logger.info(f"Loading {json_file.relative_to(results_dir)}...")
         with open(json_file, "r", encoding="utf-8") as f:
             data = json.load(f)
 
+        benchmark = json_file.parent.name if json_file.parent != results_dir else "unknown"
         for item in data:
+            question_id = item.get("question_id", item.get("task_id"))
+            question = item.get("question", item.get("instruction", ""))
+            correct_answer = item.get("correct_answer", item.get("benchmark_metadata", {}))
+            source = item.get("source", benchmark)
+            is_correct = item.get("is_correct", item.get("majority_correct"))
+            c_rep = item.get("c_rep")
+            gap = item.get("gap")
             all_rows.append(
                 {
-                    "question_id": item["question_id"],
-                    "question": item["question"],
-                    "correct_answer": item["correct_answer"],
-                    "category": item["category"],
-                    "source": item["source"],
+                    "question_id": question_id,
+                    "question": question,
+                    "correct_answer": correct_answer,
+                    "category": item.get("category", benchmark),
+                    "source": source,
                     "external_difficulty": item.get("external_difficulty"),
-                    "model_name": item["model_name"],
+                    "model_name": item.get("model_name", json_file.stem),
                     "model_label": json_file.stem,
-                    "majority_answer": item["majority_answer"],
-                    "is_correct": item["is_correct"],
+                    "majority_answer": item.get("majority_answer", item.get("majority_correct")),
+                    "is_correct": is_correct,
                     "c_beh": item["c_beh"],
-                    "c_rep": item["c_rep"],
-                    "gap": item["gap"],
+                    "c_rep": np.nan if c_rep is None else c_rep,
+                    "gap": np.nan if gap is None else gap,
                     "k_samples": item["k_samples"],
+                    "benchmark": benchmark,
                 }
             )
 
@@ -134,11 +147,16 @@ def compute_reports(df: pd.DataFrame) -> dict[str, CalibrationReport]:
         if model_df.empty:
             continue
 
+        valid_rep = model_df.dropna(subset=["c_rep"])
+        if valid_rep.empty:
+            logger.warning(f"Skipping calibration report for {label}: no reported confidence in native results")
+            continue
+
         report = compute_calibration_report(
             model_name=label,
-            c_reps=model_df["c_rep"].to_numpy(dtype=float),
-            c_behs=model_df["c_beh"].to_numpy(dtype=float),
-            is_correct=model_df["is_correct"].astype(float).to_numpy(),
+            c_reps=valid_rep["c_rep"].to_numpy(dtype=float),
+            c_behs=valid_rep["c_beh"].to_numpy(dtype=float),
+            is_correct=valid_rep["is_correct"].astype(float).to_numpy(),
         )
         reports[label] = report
         logger.info("\n" + report.display_str())
@@ -235,7 +253,10 @@ def plot_scale_vs_confidence(df: pd.DataFrame, output_dir: Path) -> None:
     x = np.arange(len(model_labels))
     width = 0.25
 
-    c_reps = [df[df["model_label"] == m]["c_rep"].mean() * 100 for m in model_labels]
+    c_reps = []
+    for m in model_labels:
+        values = df[df["model_label"] == m]["c_rep"].dropna()
+        c_reps.append((values.mean() * 100) if not values.empty else np.nan)
     c_behs = [df[df["model_label"] == m]["c_beh"].mean() * 100 for m in model_labels]
     accs = [df[df["model_label"] == m]["is_correct"].mean() * 100 for m in model_labels]
 
@@ -285,12 +306,17 @@ def plot_scale_vs_confidence(df: pd.DataFrame, output_dir: Path) -> None:
 
 def plot_scale_vs_gap(df: pd.DataFrame, output_dir: Path) -> None:
     """Main figure: box plot of per-question Gap by scale model."""
+    gap_df = df.dropna(subset=["gap"])
+    if gap_df.empty:
+        logger.warning("  Skipping fig3: no gap values available in these results")
+        return
+
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    model_labels = [m for m in SCALE_ORDER if m in df["model_label"].unique()]
+    model_labels = [m for m in SCALE_ORDER if m in gap_df["model_label"].unique()]
 
     # Box plot of gaps
-    plot_data = [df[df["model_label"] == m]["gap"].values * 100 for m in model_labels]
+    plot_data = [gap_df[gap_df["model_label"] == m]["gap"].values * 100 for m in model_labels]
 
     bp = ax.boxplot(
         plot_data,
@@ -310,7 +336,7 @@ def plot_scale_vs_gap(df: pd.DataFrame, output_dir: Path) -> None:
 
     # Add mean markers
     for i, label in enumerate(model_labels):
-        mean_val = df[df["model_label"] == label]["gap"].mean() * 100
+        mean_val = gap_df[gap_df["model_label"] == label]["gap"].mean() * 100
         ax.scatter(
             i + 1,
             mean_val,
@@ -355,6 +381,9 @@ def plot_difficulty_conditioned_gap(df: pd.DataFrame, output_dir: Path) -> None:
     if "difficulty_bucket" not in df.columns:
         logger.warning("  Skipping fig4: difficulty_bucket not computed yet")
         return
+    if df["gap"].dropna().empty:
+        logger.warning("  Skipping fig4: no gap values available in these results")
+        return
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 6), sharey=True)
     difficulty_order = ["easy", "medium", "hard"]
@@ -374,8 +403,11 @@ def plot_difficulty_conditioned_gap(df: pd.DataFrame, output_dir: Path) -> None:
             if model_subset.empty:
                 continue
 
-            mean_gap = model_subset["gap"].mean() * 100
-            se = model_subset["gap"].std() * 100 / (len(model_subset) ** 0.5)
+            gap_values = model_subset["gap"].dropna()
+            if gap_values.empty:
+                continue
+            mean_gap = gap_values.mean() * 100
+            se = gap_values.std() * 100 / (len(gap_values) ** 0.5)
 
             ax.bar(
                 model,
@@ -430,6 +462,9 @@ def plot_difficulty_conditioned_gap(df: pd.DataFrame, output_dir: Path) -> None:
 
 def plot_category_conditioned_gap(df: pd.DataFrame, output_dir: Path) -> None:
     """Gap by scale × task category (math, science, knowledge, truthfulness)."""
+    if df["gap"].dropna().empty:
+        logger.warning("  Skipping fig4b: no gap values available in these results")
+        return
     fig, axes = plt.subplots(1, 4, figsize=(20, 5), sharey=True)
     categories = ["math", "science", "knowledge", "truthfulness"]
     model_labels = [m for m in SCALE_ORDER if m in df["model_label"].unique()]
@@ -443,8 +478,11 @@ def plot_category_conditioned_gap(df: pd.DataFrame, output_dir: Path) -> None:
             if model_subset.empty:
                 continue
 
-            mean_gap = model_subset["gap"].mean() * 100
-            se = model_subset["gap"].std() * 100 / max(1, len(model_subset) ** 0.5)
+            gap_values = model_subset["gap"].dropna()
+            if gap_values.empty:
+                continue
+            mean_gap = gap_values.mean() * 100
+            se = gap_values.std() * 100 / max(1, len(gap_values) ** 0.5)
 
             ax.bar(
                 model,
@@ -520,7 +558,7 @@ def save_summary_table(reports: dict[str, CalibrationReport], output_dir: Path) 
 
 
 def main() -> None:
-    results_dir = Path("results/scale")
+    results_dir = Path("results/dynamic")
     if not results_dir.exists():
         logger.error(
             f"Results directory {results_dir} not found! Run run_scale_generator.py first."

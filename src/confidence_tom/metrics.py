@@ -1,11 +1,11 @@
-"""Calibration and miscalibration metrics for the scale experiment.
+"""Calibration and miscalibration metrics for dynamic benchmark tasks.
 
 ALL metrics operate in 0-1 scale internally.
 Multiply by 100 only when displaying to humans (plots/tables).
 
 Terminology:
-- C_rep: Reported (verbalized) confidence — model's self-assessment [0-1]
-- C_beh: Behavioral confidence — K-sample majority fraction [0-1]
+- C_rep: Reported (verbalized) confidence — agent's self-assessment at end of run [0-1]
+- C_beh: Behavioral confidence — fraction of K independent runs that succeeded [0-1]
 - Gap: C_rep - C_beh — positive means overconfident
 """
 

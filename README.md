@@ -62,6 +62,18 @@ uv run python experiments/run_observer.py
 uv run python experiments/run_evaluator.py
 ```
 
+## 🔁 下一階段：Dynamic Agent Benchmarks
+
+如果你要把下一步實驗切到動態 agent benchmark，已經加了一套 bootstrap 工具可管理：
+
+- tau-bench
+- Plancraft
+- BIRD-SQL
+- InterCode
+- AgentBench OS-Interaction
+
+說明文件在 [docs/dynamic-benchmarks.md](docs/dynamic-benchmarks.md)，setup 腳本在 [tools/setup_dynamic_benchmarks.py](tools/setup_dynamic_benchmarks.py)。
+
 ## 📄 License
 
 MIT

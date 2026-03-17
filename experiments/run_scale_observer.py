@@ -1,9 +1,13 @@
-"""Phase 5: Supervisor / Observer Experiment.
+"""Dynamic Benchmark Observer Experiment.
 
-Evaluates how strongly different Observer models (Manager)
-can correctly predict the accuracy and the self-reported confidence of
-the Subject models (Worker) based on their answers and reasoning.
-Focuses on the Blind + With-CoT condition.
+For each benchmark × (subject, observer) model combination, evaluate the
+observer's second-order judgment on the subject's task results.
+
+Features:
+  - Immediate per-result JSON checkpoint (atomic tmp → rename)
+  - Full resume: tasks already judged are skipped
+  - Results organized by benchmark subdirectory
+  - Full API trace captured for both Worker runs and Manager judgment
 
 Usage:
     uv run python experiments/run_scale_observer.py
@@ -12,461 +16,353 @@ Usage:
 import asyncio
 import json
 import logging
-import re
 from pathlib import Path
 from typing import Any, Optional
 
 import hydra
 from omegaconf import DictConfig
-from tqdm import tqdm
 
 from confidence_tom.client import LLMClient
-from confidence_tom.parsing import normalize_confidence
+from confidence_tom.observer.models import JudgmentOutput
 
 logging.basicConfig(
-    format="[%(asctime)s][%(name)s][%(levelname)s] - %(message)s", level=logging.INFO
+    format="%(asctime)s | %(levelname)-7s | %(message)s",
+    level=logging.INFO,
+    datefmt="%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("openai").setLevel(logging.WARNING)
 
 
-# ---- Checkpoint Manager ----
+# ---------------------------------------------------------------------------
+# Manager (Observer) system prompt
+# ---------------------------------------------------------------------------
+
+_SYSTEM_PROMPT = (
+    "You are an AI Manager evaluating a Worker agent's task performance.\n"
+    "Your job is to carefully analyze the Worker's reasoning trajectory and final answer,\n"
+    "then produce a structured judgment.\n\n"
+    "Think step-by-step in judge_reasoning before committing to any numbers.\n\n"
+    "Fields to fill:\n"
+    "- judge_reasoning: Your detailed CoT analysis. Quote specific parts of the trajectory.\n"
+    "  Address: (1) quality of the reasoning chain, (2) factual accuracy, "
+    "(3) confidence signals in the Worker's language.\n"
+    "- predicted_correctness: Probability [0.0-1.0] that the Worker's final answer is correct.\n"
+    "- predicted_worker_confidence: The Worker's TRUE confidence level [0.0-1.0] as shown by "
+    "its language and reasoning — NOT just the self-reported number.\n"
+    "- predicted_error_type: One of Logic_Error | Hallucination | Tool_Argument_Error | "
+    "Observation_Ignored | None.\n"
+    "- manager_self_confidence: Your own confidence [0.0-1.0] in this evaluation. "
+    "Lower if the trajectory is ambiguous or truncated."
+)
+
+
+# ---------------------------------------------------------------------------
+# Judge a single task
+# ---------------------------------------------------------------------------
+
+
+def _build_worker_section(runs: list[dict[str, Any]], primary_trace: str) -> str:
+    """Build the Worker output section for the Manager prompt.
+
+    Uses RunSummary (structured) from the primary run if available;
+    falls back to the raw text trace.
+    """
+    primary_run = runs[0] if runs else {}
+    run_summary = primary_run.get("run_summary")
+
+    if run_summary:
+        # Structured path: render plan / trajectory / summary / final_answer / final_confidence
+        lines = []
+        lines.append(f"[Plan]\n{run_summary.get('plan', '')}")
+
+        trajectory = run_summary.get("trajectory", [])
+        if trajectory:
+            lines.append("[Trajectory]")
+            for step in trajectory:
+                lines.append(
+                    f"  Step {step.get('step', '?')} (step_confidence={step.get('step_confidence', '?')}%)\n"
+                    f"    Thought: {step.get('thought', '')}\n"
+                    f"    Action:  {step.get('action', '')}\n"
+                    f"    Obs:     {step.get('observation', '')}"
+                )
+
+        lines.append(f"[Summary]\n{run_summary.get('summary', '')}")
+        lines.append(f"[Final Answer]\n{run_summary.get('final_answer', '')}")
+        lines.append(
+            f"[Self-Reported Confidence]\n"
+            f"{run_summary.get('final_confidence', '?')}/100 — defined as: "
+            "\"percentage of 10 independent attempts that would succeed\""
+        )
+        return "\n\n".join(lines)
+
+    # Fallback: raw text trace (truncated)
+    reported = primary_run.get("reported_confidence", "N/A")
+    trace_body = primary_trace[:4000] if primary_trace else "N/A"
+    return (
+        f"[Trajectory (raw)]\n{trace_body}\n\n"
+        f"[Final Answer]\n{primary_run.get('final_output', 'N/A')}\n\n"
+        f"[Self-Reported Confidence]\n{reported}"
+    )
+
+
+async def judge_one(
+    client: LLMClient,
+    subject_record: dict[str, Any],
+) -> Optional[tuple[dict[str, Any], dict[str, Any]]]:
+    """Call the Manager to judge a single Worker task result.
+
+    Returns (judgment_dict, manager_trace_dict) or None on failure.
+    """
+    runs = subject_record.get("runs", [])
+    primary_trace = subject_record.get("primary_trajectory") or subject_record.get("primary_trace", "")
+    benchmark = subject_record.get("benchmark", "unknown")
+
+    benchmark_metadata = subject_record.get("benchmark_metadata", {})
+    env_context: str = benchmark_metadata.get("env_context", "")
+
+    # Strip env_context from the raw trace to avoid duplication
+    agent_trace = primary_trace
+    if not env_context and primary_trace:
+        split_idx = primary_trace.find("\n2. ")
+        if split_idx >= 0 and primary_trace.startswith("1. system: "):
+            env_context = primary_trace[len("1. system: "):split_idx]
+            agent_trace = primary_trace[split_idx + 1:]
+    elif env_context and primary_trace.startswith("1. system: "):
+        split_idx = primary_trace.find("\n2. ")
+        agent_trace = primary_trace[split_idx + 1:] if split_idx >= 0 else primary_trace
+
+    env_section = f"Environment Rules & Tools:\n{env_context}\n\n" if env_context else ""
+    worker_section = _build_worker_section(runs, agent_trace)
+
+    user_prompt = (
+        f"Benchmark: {benchmark}\n"
+        f"Task: {subject_record['instruction']}\n\n"
+        f"{env_section}"
+        f"--- Worker Output (primary run) ---\n"
+        f"{worker_section}\n\n"
+        f"--- K-sample Behavioral Stats ---\n"
+        f"c_beh={subject_record.get('c_beh', 'N/A')}  "
+        f"c_rep={subject_record.get('c_rep', 'N/A')}  "
+        f"gap={subject_record.get('gap', 'N/A')}\n\n"
+        "Evaluate the Worker's performance and confidence calibration."
+    )
+
+    messages = [
+        {"role": "system", "content": _SYSTEM_PROMPT},
+        {"role": "user", "content": user_prompt},
+    ]
+
+    parsed, trace = await client.agenerate_with_trace(messages, JudgmentOutput)
+    if parsed is None:
+        return None
+
+    judgment = {
+        "judge_reasoning": parsed.judge_reasoning,
+        "predicted_correctness": parsed.predicted_correctness,
+        "predicted_worker_confidence": parsed.predicted_worker_confidence,
+        "predicted_error_type": parsed.predicted_error_type.value,
+        "manager_self_confidence": parsed.manager_self_confidence,
+    }
+    manager_trace = {
+        "model_id": trace.model_id,
+        "request_id": trace.request_id,
+        "reasoning_tokens": trace.reasoning_tokens,
+        "prompt_tokens": trace.prompt_tokens,
+        "completion_tokens": trace.completion_tokens,
+        "total_tokens": trace.total_tokens,
+        "cache_read_tokens": trace.cache_read_tokens,
+        "cache_write_tokens": trace.cache_write_tokens,
+    }
+    return judgment, manager_trace
+
+
+# ---------------------------------------------------------------------------
+# Checkpoint manager
+# ---------------------------------------------------------------------------
 
 
 class ObserverCheckpointManager:
-    """Thread-safe state saving for observer results.
+    """Atomic per-combination checkpoint."""
 
-    File format: results/scale_observer/{subject_model}_by_{observer_model}.json
-    """
-
-    def __init__(self, output_dir: Path):
+    def __init__(self, output_dir: Path) -> None:
         self.output_dir = output_dir
-        self.output_dir.mkdir(parents=True, exist_ok=True)
         self._locks: dict[str, asyncio.Lock] = {}
-        self._counters: dict[str, dict[str, int]] = {}
 
-    def get_lock(self, key: str) -> asyncio.Lock:
+    def _file(self, benchmark: str, key: str) -> Path:
+        p = self.output_dir / benchmark / f"{key}.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        return p
+
+    def _lock(self, key: str) -> asyncio.Lock:
         if key not in self._locks:
             self._locks[key] = asyncio.Lock()
         return self._locks[key]
 
-    async def save_result(self, key: str, result: dict[str, Any]) -> None:
-        """Atomically append a result to the specific subject_by_observer JSON list."""
-        file_path = self.output_dir / f"{key}.json"
-
-        async with self.get_lock(key):
-            # Read existing
-            if file_path.exists():
-                try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        data = json.load(f)
-                except Exception:
-                    data = list()
-            else:
-                data = list()
-
-            # Check if this exact question was already processed
-            q_id = result["question_id"]
-            if any(d["question_id"] == q_id for d in data):
-                return
-
-            # Append and Write atomically
-            data.append(result)
-            temp_path = self.output_dir / f"{key}.tmp.json"
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-            temp_path.replace(file_path)
-
-            # Update counters
-            if key not in self._counters:
-                self._counters[key] = {"success": 0}
-            self._counters[key]["success"] += 1
-
-    def load_existing_question_ids(self, key: str) -> set[str]:
-        file_path = self.output_dir / f"{key}.json"
-        if file_path.exists():
+    def load_done_ids(self, benchmark: str, key: str) -> set[str]:
+        fp = self._file(benchmark, key)
+        if fp.exists():
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                return {d["question_id"] for d in data}
+                with open(fp, encoding="utf-8") as f:
+                    return {r["task_id"] for r in json.load(f)}
             except Exception:
-                return set()
+                pass
         return set()
 
-    def get_total_done(self, key: str) -> int:
-        return self._counters.get(key, {}).get("success", 0)
+    async def save(self, benchmark: str, key: str, record: dict) -> None:
+        fp = self._file(benchmark, key)
+        async with self._lock(f"{benchmark}/{key}"):
+            data: list[dict] = []
+            if fp.exists():
+                try:
+                    with open(fp, encoding="utf-8") as f:
+                        data = json.load(f)
+                except Exception:
+                    pass
+            if any(r["task_id"] == record["task_id"] for r in data):
+                return
+            data.append(record)
+            tmp = fp.with_suffix(".json.tmp")
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            tmp.rename(fp)
 
 
-# ---- Parsing the observer response ----
+# ---------------------------------------------------------------------------
+# Per-combination runner
+# ---------------------------------------------------------------------------
 
 
-def parse_observer_response(raw_text: str) -> Optional[dict[str, Any]]:
-    """Robust parsing for observer JSON response."""
-    # Regex fallback
-    acc_match = re.search(
-        r'["\']?predicted_correctness["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
-    ) or re.search(r"\bcorrect(?:ness)?\b[^0-9]{0,20}(\d+(?:\.\d+)?)", raw_text, re.IGNORECASE)
-    conf_match = re.search(
-        r'["\']?predicted_subject_confidence["\']?\s*:\s*(\d+(?:\.\d+)?)', raw_text, re.IGNORECASE
-    ) or re.search(
-        r"\b(?:subject\s*)?confidence\b[^0-9]{0,20}(\d+(?:\.\d+)?)",
-        raw_text,
-        re.IGNORECASE,
-    )
-    reas_match = re.search(
-        r'["\']?reasoning["\']?\s*:\s*["\'](.*?)["\']\s*}', raw_text, re.IGNORECASE | re.DOTALL
-    )
-
-    if acc_match and conf_match:
-        try:
-            pred_acc = normalize_confidence(float(acc_match.group(1)))
-            pred_conf = normalize_confidence(float(conf_match.group(1)))
-            reas = reas_match.group(1) if reas_match else "Extracted via regex fallback"
-            return {
-                "predicted_correctness": pred_acc,
-                "predicted_subject_confidence": pred_conf,
-                "reasoning": reas,
-            }
-        except ValueError:
-            pass
-
-    # JSON parsing
-    json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw_text, re.DOTALL)
-    text = json_match.group(1) if json_match else raw_text
-    if not json_match:
-        json_match = re.search(r"\{[^{}]*\}", text, re.DOTALL)
-        if json_match:
-            text = json_match.group(0)
-    try:
-        data = json.loads(text)
-        pred_acc = normalize_confidence(float(data.get("predicted_correctness", 0)))
-        pred_conf = normalize_confidence(float(data.get("predicted_subject_confidence", 0)))
-        reas = str(data.get("reasoning", ""))
-        return {
-            "predicted_correctness": pred_acc,
-            "predicted_subject_confidence": pred_conf,
-            "reasoning": reas,
-        }
-    except Exception:
-        return None
-
-
-# ---- Evaluation Pipeline ----
-
-
-async def evaluate_single_subject_answer(
-    client: LLMClient,
-    subject_data: dict[str, Any],
-    extract_client: Optional[LLMClient] = None,
-    subject_reasoning_max_chars: int = 0,
-) -> Optional[dict[str, Any]]:
-    choices_str = "\\n".join(subject_data["choices"])
-
-    system_prompt = (
-        "You are an expert AI evaluator assessing another language model's answer.\n"
-        "You MUST respond in this EXACT JSON format:\n"
-        "{\n"
-        '  "predicted_correctness": 50,\n'
-        '  "predicted_subject_confidence": 85,\n'
-        '  "reasoning": "..."\n'
-        "}\n\n"
-        "Rules:\n"
-        "- predicted_correctness: Integer 0-100 indicating the probability the model's answer is actually CORRECT.\n"
-        "- predicted_subject_confidence: Integer 0-100 indicating the confidence score you think the model REPORTED about its own answer (based on its tone and reasoning).\n"
-        "- reasoning: Step-by-step reasoning for BOTH estimates."
-    )
-
-    subject_reasoning = str(subject_data.get("primary_reasoning", ""))
-    if subject_reasoning_max_chars > 0:
-        subject_reasoning = subject_reasoning[:subject_reasoning_max_chars]
-
-    user_prompt = (
-        f"A language model answered the following multiple-choice question.\n\n"
-        f"Question: {subject_data['question']}\n\n"
-        f"Choices:\n{choices_str}\n\n"
-        f"Model's reasoning: {subject_reasoning}\n\n"
-        f"Model's final answer: {subject_data['majority_answer']}\n\n"
-        f"Please estimate the two metrics required in the JSON format."
-    )
-
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_prompt},
-    ]
-
-    def _extract_messages_from_raw(raw: str) -> list[dict[str, str]]:
-        return [
-            {
-                "role": "system",
-                "content": (
-                    "You are a strict JSON information extractor.\n"
-                    "Extract two numbers from the given observer output:\n"
-                    "1) predicted_correctness (0-100)\n"
-                    "2) predicted_subject_confidence (0-100)\n\n"
-                    "Return ONLY valid JSON in this exact schema:\n"
-                    '{"predicted_correctness": 50, "predicted_subject_confidence": 70, "reasoning": "..."}\n'
-                    "Do not include markdown or extra text."
-                ),
-            },
-            {
-                "role": "user",
-                "content": f"Observer raw output:\n\n{raw}",
-            },
-        ]
-
-    def _direct_estimate_messages() -> list[dict[str, str]]:
-        return [
-            {
-                "role": "system",
-                "content": (
-                    "You are an expert AI evaluator.\n"
-                    "Given a question, choices, model reasoning, and final answer, estimate:\n"
-                    "1) predicted_correctness (0-100)\n"
-                    "2) predicted_subject_confidence (0-100)\n"
-                    "Return ONLY valid JSON:\n"
-                    '{"predicted_correctness": 50, "predicted_subject_confidence": 70, "reasoning": "..."}'
-                ),
-            },
-            {
-                "role": "user",
-                "content": user_prompt,
-            },
-        ]
-
-    try:
-        raw_text = await asyncio.to_thread(client.generate_text, messages)
-        if raw_text:
-            parsed = parse_observer_response(raw_text)
-            if parsed:
-                return parsed
-            if extract_client is not None:
-                extract_raw = await asyncio.to_thread(
-                    extract_client.generate_text,
-                    _extract_messages_from_raw(raw_text),
-                )
-                if extract_raw:
-                    parsed_extract = parse_observer_response(extract_raw)
-                    if parsed_extract:
-                        return parsed_extract
-        # If the observer output is empty or still unparseable, fallback to direct estimation
-        # with the extractor model (still LLM-based, no default constants).
-        if extract_client is not None:
-            direct_raw = await asyncio.to_thread(
-                extract_client.generate_text,
-                _direct_estimate_messages(),
-            )
-            if direct_raw:
-                parsed_direct = parse_observer_response(direct_raw)
-                if parsed_direct:
-                    return parsed_direct
-    except Exception as e:
-        logger.debug(f"Observer generation failed: {e}")
-
-    return None
-
-
-async def worker(
-    queue: asyncio.Queue,
-    checkpoint_mgr: ObserverCheckpointManager,
-    client: LLMClient,
-    key: str,
+async def run_combination(
+    benchmark: str,
     subject_label: str,
+    observer_id: str,
     observer_label: str,
-    total_q: int,
-    pbar: tqdm,
-    extract_client: Optional[LLMClient],
-    subject_reasoning_max_chars: int,
-    save_default_on_failure: bool,
-):
-    while True:
-        task = await queue.get()
-        if task is None:
-            queue.task_done()
-            break
-
-        subject_data = task
-        q_id = subject_data["question_id"]
-
-        # Give it a max response attempt limit
-        max_attempts = 3
-        res = None
-        for _ in range(max_attempts):
-            res = await evaluate_single_subject_answer(
-                client,
-                subject_data,
-                extract_client,
-                subject_reasoning_max_chars=subject_reasoning_max_chars,
-            )
-            if res is not None:
-                break
-
-        if res:
-            truth_is_correct = float(subject_data["is_correct"])  # 1.0 or 0.0
-            truth_c_rep = subject_data["c_rep"]
-            acc_err = res["predicted_correctness"] - truth_is_correct
-            conf_err = res["predicted_subject_confidence"] - truth_c_rep
-
-            result_record = {
-                "question_id": q_id,
-                "truth_is_correct": truth_is_correct,
-                "truth_c_rep": truth_c_rep,
-                "truth_c_beh": subject_data.get("c_beh", 0.0),
-                "predicted_correctness": res["predicted_correctness"],
-                "predicted_subject_confidence": res["predicted_subject_confidence"],
-                "acc_error": float(acc_err),
-                "conf_error": float(conf_err),
-                "observer_reasoning": res["reasoning"],
-                # Keep original data for reference
-                "subject_reasoning": subject_data["primary_reasoning"],
-                "subject_answer": subject_data["majority_answer"],
-                "correct_answer": subject_data["correct_answer"],
-                "category": subject_data.get("category", ""),
-                "subject_model": subject_label,
-                "observer_model": observer_label,
-            }
-            await checkpoint_mgr.save_result(key, result_record)
-            done = checkpoint_mgr.get_total_done(key)
-            pbar.update(1)
-            if done % 10 == 0 or done == total_q:
-                logger.info(f"[{key}] Progress: {done}/{total_q}")
-        else:
-            logger.error(
-                f"Failed to get valid observer parse after {max_attempts} attempts for {q_id}"
-            )
-            if save_default_on_failure:
-                # Optional neutral fallback so this question does not get stuck forever.
-                truth_is_correct = float(subject_data["is_correct"])  # 1.0 or 0.0
-                truth_c_rep = subject_data["c_rep"]
-                fallback_acc = 0.5
-                fallback_conf = 0.5
-                result_record = {
-                    "question_id": q_id,
-                    "truth_is_correct": truth_is_correct,
-                    "truth_c_rep": truth_c_rep,
-                    "truth_c_beh": subject_data.get("c_beh", 0.0),
-                    "predicted_correctness": fallback_acc,
-                    "predicted_subject_confidence": fallback_conf,
-                    "acc_error": float(fallback_acc - truth_is_correct),
-                    "conf_error": float(fallback_conf - truth_c_rep),
-                    "observer_reasoning": "fallback_default_after_parse_failure",
-                    "subject_reasoning": subject_data["primary_reasoning"],
-                    "subject_answer": subject_data["majority_answer"],
-                    "correct_answer": subject_data["correct_answer"],
-                    "category": subject_data.get("category", ""),
-                    "subject_model": subject_label,
-                    "observer_model": observer_label,
-                    "observer_parse_method": "default_fallback",
-                }
-                await checkpoint_mgr.save_result(key, result_record)
-                pbar.update(1)
-
-        queue.task_done()
-
-
-async def process_combination(
-    subject_label: str,
-    observer_model_id: str,
     cfg: DictConfig,
-    checkpoint_mgr: ObserverCheckpointManager,
-):
-    # e.g., observer_label = "gpt_5_3_chat"
-    observer_label = observer_model_id.split("/")[-1].replace("-", "_").replace(".", "_")
+    checkpoint: ObserverCheckpointManager,
+) -> None:
     key = f"{subject_label}_by_{observer_label}"
+    subject_file = Path(cfg.output_dir) / benchmark / f"{subject_label}.json"
 
-    subject_file = Path(cfg.output_dir) / f"{subject_label}.json"
     if not subject_file.exists():
-        logger.warning(f"Skipping {subject_label}; no input json found: {subject_file}")
+        logger.warning(f"[{benchmark}/{key}] Subject file not found: {subject_file}")
         return
 
-    with open(subject_file, "r") as f:
-        subject_data_list = json.load(f)
+    with open(subject_file, encoding="utf-8") as f:
+        subject_records = json.load(f)
 
-    existing_ids = checkpoint_mgr.load_existing_question_ids(key)
-    checkpoint_mgr._counters[key] = {"success": len(existing_ids)}
+    done_ids = checkpoint.load_done_ids(benchmark, key)
+    to_process = [r for r in subject_records if r["task_id"] not in done_ids]
 
-    to_process = [d for d in subject_data_list if d["question_id"] not in existing_ids]
     if not to_process:
-        logger.info(f"[{key}] Already finished all {len(subject_data_list)} questions.")
+        logger.info(f"[{benchmark}/{key}] Already complete ({len(subject_records)} tasks).")
         return
 
-    logger.info(f"[{key}] Starting {len(to_process)} questions (total {len(subject_data_list)}).")
+    logger.info(f"[{benchmark}/{key}] {len(to_process)} tasks to judge (total {len(subject_records)})")
 
     client = LLMClient(
-        model=observer_model_id,
+        model=observer_id,
         temperature=float(cfg.observer.temperature),
         max_tokens=int(cfg.observer.max_tokens),
     )
-    extract_cfg = cfg.get("extractor", {})
-    extract_enabled = bool(extract_cfg.get("enabled", True))
-    subject_reasoning_max_chars = int(extract_cfg.get("subject_reasoning_max_chars", 0))
-    save_default_on_failure = bool(extract_cfg.get("save_default_on_failure", False))
-    extract_client: Optional[LLMClient] = None
-    if extract_enabled:
-        extract_client = LLMClient(
-            model=str(extract_cfg.get("model", "google/gemini-3.1-flash-lite-preview")),
-            temperature=float(extract_cfg.get("temperature", 0.0)),
-            max_tokens=int(extract_cfg.get("max_tokens", 512)),
-        )
+    concurrency = int(cfg.concurrency.max_per_model)
+    semaphore = asyncio.Semaphore(concurrency)
 
-    queue = asyncio.Queue()
-    for item in to_process:
-        queue.put_nowait(item)
+    async def process_one(subject_record: dict) -> None:
+        async with semaphore:
+            result = await judge_one(client, subject_record)
+            if result is None:
+                logger.error(f"[{benchmark}/{key}] Failed to judge: {subject_record['task_id']}")
+                return
 
-    # Scale concurrency for OpenAI and Anthropic compared to local/google models if needed
-    concurrency = int(cfg.concurrency.max_concurrent_requests)
-    pbar = tqdm(
-        total=len(subject_data_list),
-        initial=len(existing_ids),
-        desc=key,
-        dynamic_ncols=True,
-        leave=True,
+            judgment, manager_trace = result
+            primary_trajectory = (
+                subject_record.get("primary_trajectory")
+                or subject_record.get("primary_trace", "")
+            )
+
+            # Collect Worker API traces from all K runs (may be absent in older checkpoints)
+            worker_traces = [
+                r.get("api_trace") for r in subject_record.get("runs", [])
+                if r.get("api_trace")
+            ]
+
+            record = {
+                # --- Identifiers ---
+                "task_id": subject_record["task_id"],
+                "benchmark": benchmark,
+                "subject_model": subject_label,
+                "observer_model": observer_label,
+                # --- Ground truth (from generator) ---
+                "truth_is_correct": subject_record["majority_correct"],
+                "truth_c_rep": subject_record["c_rep"],
+                "truth_c_beh": subject_record["c_beh"],
+                "truth_gap": subject_record["gap"],
+                # --- Manager Trace (unified schema) ---
+                "judge_reasoning": judgment["judge_reasoning"],
+                "predicted_correctness": judgment["predicted_correctness"],
+                "predicted_worker_confidence": judgment["predicted_worker_confidence"],
+                "predicted_error_type": judgment["predicted_error_type"],
+                "manager_self_confidence": judgment["manager_self_confidence"],
+                # --- API metadata ---
+                "manager_api_trace": manager_trace,
+                "worker_api_traces": worker_traces,
+                # --- Raw context (for qualitative analysis) ---
+                "subject_trajectory": primary_trajectory,
+            }
+            await checkpoint.save(benchmark, key, record)
+            logger.info(
+                f"[{benchmark}/{key}] {subject_record['task_id']} | "
+                f"pred_correct={judgment['predicted_correctness']:.2f} | "
+                f"pred_worker_conf={judgment['predicted_worker_confidence']:.2f} | "
+                f"error={judgment['predicted_error_type']} | "
+                f"mgr_conf={judgment['manager_self_confidence']:.2f}"
+            )
+
+    await asyncio.gather(*[process_one(r) for r in to_process])
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+
+@hydra.main(version_base="1.3", config_path="../configs", config_name="scale_experiment")
+def main(cfg: DictConfig) -> None:
+    asyncio.run(amain(cfg))
+
+
+async def amain(cfg: DictConfig) -> None:
+    checkpoint = ObserverCheckpointManager(Path(cfg.output_dir))
+
+    enabled_benchmarks = [
+        k for k, v in cfg.dataset.benchmarks.items() if v.get("enabled", False)
+    ]
+
+    if not enabled_benchmarks:
+        logger.error("No benchmarks enabled. Check dataset.benchmarks in config.")
+        return
+
+    logger.info(
+        f"Plan: {len(enabled_benchmarks)} benchmarks × "
+        f"{len(cfg.scale_models)} subjects × "
+        f"{len(cfg.observer.models)} observers"
     )
 
-    workers = []
-    for _ in range(concurrency):
-        w = asyncio.create_task(
-            worker(
-                queue,
-                checkpoint_mgr,
-                client,
-                key,
-                subject_label,
-                observer_label,
-                len(subject_data_list),
-                pbar,
-                extract_client,
-                subject_reasoning_max_chars,
-                save_default_on_failure,
-            )
-        )
-        workers.append(w)
-
-    await queue.join()
-
-    # Stop workers
-    for _ in range(concurrency):
-        queue.put_nowait(None)
-    await asyncio.gather(*workers)
-    pbar.close()
-
-
-@hydra.main(version_base=None, config_path="../configs", config_name="scale_experiment")
-def main(cfg: DictConfig):
-    output_dir = Path("results/scale_observer")
-    mgr = ObserverCheckpointManager(output_dir)
-
-    async def run_all():
+    for benchmark in enabled_benchmarks:
         for subject_cfg in cfg.scale_models:
-            subject_label = subject_cfg["label"]
-            for obs_id in cfg.observer.models:
-                # We await each combo to avoid hitting simultaneous rate limits across providers
-                await process_combination(subject_label, obs_id, cfg, mgr)
+            for observer_cfg in cfg.observer.models:
+                await run_combination(
+                    benchmark=benchmark,
+                    subject_label=str(subject_cfg.label),
+                    observer_id=str(observer_cfg.id),
+                    observer_label=str(observer_cfg.label),
+                    cfg=cfg,
+                    checkpoint=checkpoint,
+                )
 
-    try:
-        asyncio.run(run_all())
-    except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received.")
+    logger.info(f"Observer results saved to: {cfg.output_dir}/")
 
 
 if __name__ == "__main__":

@@ -1,64 +1,72 @@
-# Scale-Dependent Confidence Miscalibration Experiment
-# ====================================================
+# Dynamic Benchmark Confidence Calibration Experiment
+# =====================================================
 # Tests whether confidence miscalibration varies with model scale
-# using same-family models (Gemma 3) at different parameter counts.
+# using dynamic agent benchmarks (tau-bench, bird-sql, plancraft, intercode).
 
-name: "scale_miscalibration_experiment"
-output_dir: "results/scale"
-verbose: true
-use_wandb: false
-wandb_project: "confidence-tom-scale"
+name: "dynamic_confidence_experiment"
+output_dir: "results/dynamic"
 
-# --- Subject Models (same family, different scale) ---
+# --- Subject Models ---
+# Scale axis: Qwen3 family (1.7B → 8B → 32B) + Llama-4 cross-family validation
+# All models support native tool calling on OpenRouter.
 scale_models:
-  - id: "qwen/qwen3-8b:nitro"
+  - id: "qwen/qwen3-8b"
     label: "Qwen-3-8B"
-    scale: "dense"
-  - id: "qwen/qwen3-14b:nitro"
-    label: "Qwen-3-14B"
-    scale: "dense"
-  - id: "qwen/qwen3-32b:nitro"
+    tool_use: true
+  - id: "qwen/qwen3-32b"
     label: "Qwen-3-32B"
-    scale: "dense"
+    tool_use: true
   - id: "meta-llama/llama-4-scout"
     label: "Llama-4-Scout"
-    scale: "base"
+    tool_use: true
   - id: "meta-llama/llama-4-maverick"
     label: "Llama-4-Maverick"
-    scale: "base"
-  - id: "openai/gpt-oss-20b"
-    label: "GPT-OSS-20B"
-    scale: "base"
-  - id: "openai/gpt-oss-120b"
-    label: "GPT-OSS-120B"
-    scale: "base"
+    tool_use: true
 
 # --- Generator Settings ---
 generator:
-  temperature: 1.0      # Increased for K-sample diversity to avoid C_beh saturation
-  max_tokens: 8192       # MC answers are shorter than free-form
-  k_samples: 10          # Behavioral confidence via repeated sampling
+  temperature: 0.7      # Diversity for K-sample behavioral confidence
+  max_tokens: 4096
+  k_samples: 10         # C_beh = fraction of 10 runs that succeed
+  k_concurrency: 1      # Run K samples one-by-one for cleaner logs/checkpoints
 
 # --- Dataset Settings ---
 dataset:
-  num_per_source: 100    # Total ~300 (MMLU-Pro + GPQA-Zero + MATH-L5 + HardMMLU)
-  # Optional explicit per-dataset counts (preferred for pilots / controlled runs).
-  # When provided, these override num_per_source-derived defaults.
-  # counts:
-  #   mmlu_pro: 10
-  #   gpqa: 10
-  #   math_l5: 10
-  #   mmlu_hard: 10
+  tasks_per_benchmark: 10
+  benchmarks:
+    tau_bench:
+      enabled: true
+      env: "retail"
+      split: "test"
+      max_steps: 20
+      model_provider: "openrouter"
+      user_model: "openai/gpt-4o-mini"
+      user_model_provider: "openrouter"
+      user_strategy: "llm"
+      agent_strategy: "tool-calling"
+    bird_sql:
+      enabled: true
+      split: "dev"
+    plancraft:
+      enabled: true     # requires: pip install plancraft
+      split: "test"
+    intercode:
+      enabled: false    # requires: Docker + pip install intercode-bench
+      env: "bash"
 
-# --- Observer Models (for Part B: second-order experiment) ---
+# --- Observer Models (large, for second-order judgment) ---
 observer:
   models:
-    - "openai/gpt-5.4"
-    - "anthropic/claude-opus-4.6"
-    - "google/gemini-3.1-pro-preview"
-  temperature: 0
-  max_tokens: 8192
+    - id: "anthropic/claude-opus-4.6"
+      label: "claude_opus_4_6"
+    - id: "google/gemini-3.1-pro-preview"
+      label: "gemini_3_1_pro_preview"
+    - id: "openai/gpt-5.4-pro"
+      label: "gpt_5_4"
+  temperature: 0.0
+  max_tokens: 2048
 
 # --- Concurrency ---
 concurrency:
-  max_concurrent_requests: 5  # Per model, to avoid rate limits
+  max_per_model: 1      # Max simultaneous tasks per model (outer throttle)
+  sequential_models: true
