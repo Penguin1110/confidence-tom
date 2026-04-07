@@ -20,6 +20,7 @@ AUTO_MESSAGE_PREFIX="${AUTO_MESSAGE_PREFIX:-chore(colab): autosave}"
 AUTO_PATHS="${AUTO_PATHS:-results logs}"
 BACKUP_INTERVAL_SEC="${BACKUP_INTERVAL_SEC:-300}"
 BACKUP_DIR="${BACKUP_DIR:-/content/drive/MyDrive/confidence-tom-backups}"
+BACKUP_GCS_URI="${BACKUP_GCS_URI:-}"
 
 MODELS="${MODELS:-all}"
 BENCHMARKS="${BENCHMARKS:-olympiadbench,livebench_reasoning}"
@@ -58,7 +59,22 @@ AUTOPUSH_PID=$!
 
 # Optional Google Drive backup loop (works when Drive is mounted in Colab)
 BACKUP_PID=""
-if [[ -d "/content/drive/MyDrive" ]]; then
+if [[ -n "$BACKUP_GCS_URI" ]]; then
+  nohup bash -lc "
+    set -euo pipefail
+    cd '$ROOT_DIR'
+    while true; do
+      ts=\$(date '+%Y%m%d_%H%M%S')
+      gsutil -m rsync -r results '${BACKUP_GCS_URI%/}/latest/results' || true
+      gsutil -m rsync -r logs '${BACKUP_GCS_URI%/}/latest/logs' || true
+      tar -czf /tmp/snapshot_\$ts.tar.gz results logs || true
+      gsutil cp /tmp/snapshot_\$ts.tar.gz '${BACKUP_GCS_URI%/}/snapshots/' || true
+      rm -f /tmp/snapshot_\$ts.tar.gz || true
+      sleep '$BACKUP_INTERVAL_SEC'
+    done
+  " > "$BACKUP_LOG" 2>&1 &
+  BACKUP_PID=$!
+elif [[ -d "/content/drive/MyDrive" ]]; then
   mkdir -p "$BACKUP_DIR"
   nohup bash -lc "
     set -euo pipefail
@@ -105,9 +121,13 @@ fi
 echo "STARTED"
 echo "AUTOPUSH_PID=$AUTOPUSH_PID LOG=$AUTOPUSH_LOG"
 if [[ -n "$BACKUP_PID" ]]; then
-  echo "BACKUP_PID=$BACKUP_PID LOG=$BACKUP_LOG DIR=$BACKUP_DIR"
+  if [[ -n "$BACKUP_GCS_URI" ]]; then
+    echo "BACKUP_PID=$BACKUP_PID LOG=$BACKUP_LOG GCS=$BACKUP_GCS_URI"
+  else
+    echo "BACKUP_PID=$BACKUP_PID LOG=$BACKUP_LOG DIR=$BACKUP_DIR"
+  fi
 else
-  echo "BACKUP=disabled (Google Drive not mounted at /content/drive/MyDrive)"
+  echo "BACKUP=disabled (set BACKUP_GCS_URI=gs://bucket/path or mount Google Drive)"
 fi
 echo "MATRIX_LOG=$MATRIX_LOG"
 echo "tail -n 120 $AUTOPUSH_LOG"
