@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import logging
 import random
@@ -63,7 +64,7 @@ Final Answer: <answer>
 
 
 def _client_kwargs_from_cfg(worker_cfg: DictConfig) -> dict[str, Any]:
-    return {
+    raw_kwargs = {
         "model": str(worker_cfg.model),
         "temperature": float(worker_cfg.get("temperature", 0.0)),
         "max_tokens": int(worker_cfg.get("max_tokens", 2048)),
@@ -77,6 +78,11 @@ def _client_kwargs_from_cfg(worker_cfg: DictConfig) -> dict[str, Any]:
         "num_predict": worker_cfg.get("num_predict"),
         "enable_thinking": worker_cfg.get("enable_thinking"),
     }
+    # Keep compatibility with older LLMClient signatures in heterogeneous envs
+    # (e.g. Colab image with stale package cache).
+    valid = set(inspect.signature(LLMClient.__init__).parameters.keys())
+    valid.discard("self")
+    return {k: v for k, v in raw_kwargs.items() if k in valid}
 
 
 def _sanitize_label(text: str) -> str:
