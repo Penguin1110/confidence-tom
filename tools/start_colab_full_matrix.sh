@@ -39,6 +39,8 @@ TASK_CONCURRENCY="${TASK_CONCURRENCY:-1}"
 EXTRACTOR_ENABLED="${EXTRACTOR_ENABLED:-1}"
 EXTRACTOR_MODEL="${EXTRACTOR_MODEL:-openai/gpt-5.4}"
 EXTRACTOR_BACKEND="${EXTRACTOR_BACKEND:-openrouter}"
+PULL_BEFORE_RUN="${PULL_BEFORE_RUN:-0}"
+DELETE_AFTER_RUN="${DELETE_AFTER_RUN:-0}"
 
 if [[ -n "$AUTO_BRANCH" ]]; then
   git checkout "$AUTO_BRANCH"
@@ -116,6 +118,13 @@ if [[ "$EXTRACTOR_ENABLED" == "1" ]]; then
     --extractor-model "$EXTRACTOR_MODEL"
     --extractor-backend "$EXTRACTOR_BACKEND"
   )
+fi
+
+if [[ "$PULL_BEFORE_RUN" == "1" ]]; then
+  MATRIX_CMD+=(--pull-before-run)
+fi
+if [[ "$DELETE_AFTER_RUN" == "1" ]]; then
+  MATRIX_CMD+=(--delete-after-run)
 fi
 
 echo "STARTED"

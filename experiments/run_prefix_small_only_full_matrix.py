@@ -135,6 +135,11 @@ def _run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=ROOT, check=True)
 
 
+def _run_optional(cmd: list[str]) -> int:
+    print("$", shlex.join(cmd), flush=True)
+    return subprocess.run(cmd, cwd=ROOT, check=False).returncode
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="One-shot queue runner for small-only matrix on Colab/L4."
@@ -181,6 +186,16 @@ def main() -> None:
     parser.add_argument(
         "--extractor-backend", choices=["openrouter", "ollama", "local"], default="openrouter"
     )
+    parser.add_argument(
+        "--pull-before-run",
+        action="store_true",
+        help="For Ollama backend: pull each model before running it.",
+    )
+    parser.add_argument(
+        "--delete-after-run",
+        action="store_true",
+        help="For Ollama backend: remove each model after all benchmarks finish.",
+    )
     args = parser.parse_args()
 
     preset_table = MODEL_PRESETS if args.small_backend != "local" else LOCAL_MODEL_PRESETS
@@ -201,6 +216,9 @@ def main() -> None:
     idx = 0
     for model_key in model_keys:
         preset = preset_table[model_key]
+        local_tag = str(preset["small_local_model_name"])
+        if args.small_backend == "ollama" and args.pull_before_run:
+            _run(["ollama", "pull", local_tag])
         for benchmark in benchmarks:
             idx += 1
             limit = args.olympiad_limit if benchmark == "olympiadbench" else args.livebench_limit
@@ -273,6 +291,9 @@ def main() -> None:
                     ]
                 )
             _run(cmd)
+        if args.small_backend == "ollama" and args.delete_after_run:
+            # Best-effort cleanup for constrained disks (e.g. Colab ephemeral storage).
+            _run_optional(["ollama", "rm", local_tag])
 
 
 if __name__ == "__main__":
