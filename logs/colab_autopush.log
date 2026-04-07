@@ -1,0 +1,5 @@
+repo=/content/confidence-tom
+branch=feat/oracle-gain-fragility
+paths=['results', 'logs']
+Start autopush loop every 60s ...
+$ git add -- results logs
