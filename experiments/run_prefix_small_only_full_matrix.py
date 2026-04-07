@@ -5,7 +5,6 @@ import shlex
 import subprocess
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / "experiments" / "run_prefix_small_only_mapping.py"
 
@@ -94,6 +93,42 @@ MODEL_PRESETS: dict[str, dict[str, str | int]] = {
     },
 }
 
+LOCAL_MODEL_PRESETS: dict[str, dict[str, str | int]] = {
+    # HF/Transformers-friendly presets for A100 runtime.
+    "qwen25_7b": {
+        "small_model": "Qwen/Qwen2.5-7B-Instruct",
+        "small_label": "HF-Qwen2.5-7B-Instruct",
+        "small_local_model_name": "Qwen/Qwen2.5-7B-Instruct",
+        "small_max_tokens": 8192,
+        "num_ctx": 16384,
+        "num_predict": 1024,
+    },
+    "qwen25_14b": {
+        "small_model": "Qwen/Qwen2.5-14B-Instruct",
+        "small_label": "HF-Qwen2.5-14B-Instruct",
+        "small_local_model_name": "Qwen/Qwen2.5-14B-Instruct",
+        "small_max_tokens": 8192,
+        "num_ctx": 16384,
+        "num_predict": 1024,
+    },
+    "gemma2_9b": {
+        "small_model": "google/gemma-2-9b-it",
+        "small_label": "HF-gemma-2-9b-it",
+        "small_local_model_name": "google/gemma-2-9b-it",
+        "small_max_tokens": 6144,
+        "num_ctx": 12288,
+        "num_predict": 1024,
+    },
+    "mistral7b_v03": {
+        "small_model": "mistralai/Mistral-7B-Instruct-v0.3",
+        "small_label": "HF-Mistral-7B-Instruct-v0.3",
+        "small_local_model_name": "mistralai/Mistral-7B-Instruct-v0.3",
+        "small_max_tokens": 6144,
+        "num_ctx": 12288,
+        "num_predict": 1024,
+    },
+}
+
 
 def _run(cmd: list[str]) -> None:
     print("$", shlex.join(cmd), flush=True)
@@ -127,7 +162,9 @@ def main() -> None:
         help="0 means full split.",
     )
     parser.add_argument("--output-prefix", default="colab_full_small")
-    parser.add_argument("--small-backend", choices=["ollama", "openrouter", "local"], default="ollama")
+    parser.add_argument(
+        "--small-backend", choices=["ollama", "openrouter", "local"], default="ollama"
+    )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--top-p", type=float, default=0.9)
     parser.add_argument("--top-k", type=int, default=20)
@@ -141,14 +178,17 @@ def main() -> None:
     parser.add_argument("--task-sec", type=int, default=7200)
     parser.add_argument("--extractor-enabled", action="store_true")
     parser.add_argument("--extractor-model", default="openai/gpt-5.4")
-    parser.add_argument("--extractor-backend", choices=["openrouter", "ollama", "local"], default="openrouter")
+    parser.add_argument(
+        "--extractor-backend", choices=["openrouter", "ollama", "local"], default="openrouter"
+    )
     args = parser.parse_args()
 
+    preset_table = MODEL_PRESETS if args.small_backend != "local" else LOCAL_MODEL_PRESETS
     if args.models == "all":
-        model_keys = list(MODEL_PRESETS.keys())
+        model_keys = list(preset_table.keys())
     else:
         model_keys = [m.strip() for m in args.models.split(",") if m.strip()]
-        unknown = [m for m in model_keys if m not in MODEL_PRESETS]
+        unknown = [m for m in model_keys if m not in preset_table]
         if unknown:
             raise SystemExit(f"Unknown model preset(s): {unknown}")
 
@@ -160,12 +200,19 @@ def main() -> None:
     total = len(model_keys) * len(benchmarks)
     idx = 0
     for model_key in model_keys:
-        preset = MODEL_PRESETS[model_key]
+        preset = preset_table[model_key]
         for benchmark in benchmarks:
             idx += 1
             limit = args.olympiad_limit if benchmark == "olympiadbench" else args.livebench_limit
-            out_dir = ROOT / "results" / f"{args.output_prefix}_{model_key}_{benchmark}_{'full' if limit == 0 else limit}"
-            print(f"\n[{idx}/{total}] model={model_key} benchmark={benchmark} limit={limit} out={out_dir}", flush=True)
+            out_dir = (
+                ROOT
+                / "results"
+                / f"{args.output_prefix}_{model_key}_{benchmark}_{'full' if limit == 0 else limit}"
+            )
+            print(
+                f"\n[{idx}/{total}] model={model_key} benchmark={benchmark} limit={limit} out={out_dir}",
+                flush=True,
+            )
 
             cmd = [
                 "uv",
