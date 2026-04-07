@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Any, Optional, Type, TypeVar
 
-from confidence_tom.client import LLMClient, _coerce_json_response
+from confidence_tom.client import LLMClient
 from confidence_tom.intervention.models import (
     ExtractedFinalAnswerOutput,
     NextStepOutput,
@@ -11,6 +12,48 @@ from confidence_tom.intervention.models import (
 )
 
 T = TypeVar("T")
+
+
+def _extract_first_json_object(raw: str) -> str:
+    start = raw.find("{")
+    if start == -1:
+        return ""
+    depth = 0
+    in_string = False
+    escape = False
+    for idx in range(start, len(raw)):
+        ch = raw[idx]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return raw[start : idx + 1]
+    return ""
+
+
+def _coerce_json_response_local(raw: str, response_model: Type[T]) -> Optional[T]:
+    candidate = _extract_first_json_object(raw.strip())
+    if not candidate:
+        return None
+    try:
+        data = json.loads(candidate)
+    except Exception:
+        return None
+    try:
+        return response_model.model_validate(data)
+    except Exception:
+        return None
 
 
 _NEXT_STEP_SCHEMA = """{
@@ -144,5 +187,5 @@ async def parse_with_llm_fallback(
     if not extract_raw:
         return None, extract_trace
 
-    parsed = _coerce_json_response(extract_raw, response_model)
+    parsed = _coerce_json_response_local(extract_raw, response_model)
     return parsed, extract_trace
