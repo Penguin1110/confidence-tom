@@ -1,0 +1,71 @@
+name: "voi_intervention_pilot"
+output_dir: "results/intervention_pilot"
+
+small_worker:
+  model: "mistralai/ministral-8b-instruct-2410"
+  label: "Ministral-8B-Instruct-2410"
+  temperature: 0.2
+  max_tokens: 8192
+  max_steps: 8
+  reasoning_effort: none
+
+large_worker:
+  models:
+    - "openai/gpt-5.4"
+    - "anthropic/claude-opus-4.6"
+    - "google/gemini-3.1-pro-preview"
+  temperature: 0.0
+  max_tokens: 8192
+  reasoning_effort: null
+
+router:
+  name: "threshold_router"
+  lambda_cost: 0.05
+  takeover_success_prior: 0.9
+  min_step_confidence: 0.45
+  min_drop_intensity: 0.20
+  min_token_density_ratio: 1.8
+  min_hedge_density: 0.03
+  min_semantic_drift: 0.35
+
+# Leave rates at 0 if you only want token-cost accounting.
+pricing:
+  "mistralai/ministral-8b-instruct-2410":
+    input_per_1k: 0.0
+    output_per_1k: 0.0
+    reasoning_per_1k: 0.0
+  "openai/gpt-5.4":
+    input_per_1k: 0.0
+    output_per_1k: 0.0
+    reasoning_per_1k: 0.0
+  "anthropic/claude-opus-4.6":
+    input_per_1k: 0.0
+    output_per_1k: 0.0
+    reasoning_per_1k: 0.0
+  "google/gemini-3.1-pro-preview":
+    input_per_1k: 0.0
+    output_per_1k: 0.0
+    reasoning_per_1k: 0.0
+
+dataset:
+  benchmark: "olympiadbench"
+  num_per_source: 0
+  olympiadbench: 50
+  livebench: 0
+  limit: null
+
+embedding:
+  enabled: true
+  model: "google/gemini-embedding-001"
+
+extractor:
+  enabled: true
+  model: "google/gemini-3.1-flash-lite-preview"
+  max_tokens: 512
+  temperature: 0.0
+  reasoning_effort: null
+
+timeouts:
+  small_worker_sec: 180
+  embedding_sec: 60
+  large_worker_sec: 300

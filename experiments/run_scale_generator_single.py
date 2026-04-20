@@ -26,6 +26,7 @@ import re
 import signal
 import sys
 import time
+import traceback
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,7 @@ from confidence_tom.dataset_models import StaticTask
 from confidence_tom.parsing import (
     get_parse_stats,
     normalize_confidence,
+    parse_extract_response,
     parse_mc_response,
     parse_static_response,
     reset_parse_stats,
@@ -203,6 +205,37 @@ def _build_static_prompt(task: StaticTask) -> tuple[str, str]:
     return system_prompt, f"Question: {task.question}"
 
 
+def _build_short_retry_prompt(task: StaticTask) -> tuple[str, str]:
+    """Compact retry prompt for cases where the model exhausts the token budget."""
+    if task.answer_format == "multiple_choice":
+        choices_str = "\n".join(task.choices)
+        system_prompt = (
+            "Your previous attempt was too long.\n"
+            "Reply with ONLY one compact JSON object:\n"
+            '{"strategy":"...", "reasoning":"...", "answer":"B", "confidence":45}\n'
+            "Rules:\n"
+            "- answer must be exactly one choice letter\n"
+            "- confidence must be an integer 0-100\n"
+            "- strategy max 12 words\n"
+            "- reasoning max 25 words\n"
+        )
+        return system_prompt, f"Question: {task.question}\n\n{choices_str}"
+
+    system_prompt = (
+        "Your previous attempt was too long and did not finish.\n"
+        "Reply with ONLY one compact JSON object:\n"
+        '{"strategy":"...", "reasoning":"...", "answer":"...", "confidence":45}\n'
+        "Rules:\n"
+        "- Put the final answer in `answer`\n"
+        "- answer must be concise and direct\n"
+        "- confidence must be an integer 0-100\n"
+        "- strategy max 12 words\n"
+        "- reasoning max 25 words\n"
+        "- No text outside the JSON object\n"
+    )
+    return system_prompt, f"Question: {task.question}"
+
+
 # ---- Pydantic models for structured output ----
 
 
@@ -236,23 +269,67 @@ class CheckpointManager:
     def _file_path(self, model_label: str) -> Path:
         return self.output_dir / f"{model_label}.json"
 
+    def _partials_dir(self, model_label: str) -> Path:
+        model_dir = self.output_dir / "partials" / model_label
+        model_dir.mkdir(parents=True, exist_ok=True)
+        return model_dir
+
+    def _partial_path(self, model_label: str, question_id: str) -> Path:
+        safe_qid = re.sub(r"[^A-Za-z0-9_.-]+", "_", question_id)
+        return self._partials_dir(model_label) / f"{safe_qid}.json"
+
+    def _load_partial_results(self, model_label: str) -> list[dict[str, Any]]:
+        partials_dir = self.output_dir / "partials" / model_label
+        if not partials_dir.exists():
+            return []
+        rows: list[dict[str, Any]] = []
+        for fp in sorted(partials_dir.glob("*.json")):
+            try:
+                with open(fp, "r", encoding="utf-8") as f:
+                    rows.append(json.load(f))
+            except (json.JSONDecodeError, OSError):
+                logger.warning(f"  [{model_label}] Skipping corrupt partial: {fp.name}")
+        return rows
+
+    def _write_main_file(self, model_label: str) -> None:
+        fp = self._file_path(model_label)
+        tmp_fp = fp.with_suffix(".json.tmp")
+        with open(tmp_fp, "w", encoding="utf-8") as f:
+            json.dump(
+                self._results[model_label],
+                f,
+                indent=2,
+                ensure_ascii=False,
+            )
+        tmp_fp.rename(fp)
+
     def load_checkpoint(self, model_label: str) -> int:
         """Load existing checkpoint for a model. Returns count of loaded items."""
         self._results[model_label] = []
         self._processed[model_label] = set()
         self._counters[model_label] = {"success": 0, "failed": 0, "skipped": 0}
 
-        fp = self._file_path(model_label)
-        if fp.exists():
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    existing = json.load(f)
-                self._results[model_label] = existing
-                self._processed[model_label] = {r["question_id"] for r in existing}
-                self._counters[model_label]["skipped"] = len(existing)
-                return len(existing)
-            except (json.JSONDecodeError, KeyError):
-                logger.warning(f"  [{model_label}] Corrupt checkpoint, starting fresh")
+        existing = self._load_partial_results(model_label)
+        if not existing:
+            fp = self._file_path(model_label)
+            if fp.exists():
+                try:
+                    with open(fp, "r", encoding="utf-8") as f:
+                        existing = json.load(f)
+                except (json.JSONDecodeError, KeyError):
+                    logger.warning(f"  [{model_label}] Corrupt checkpoint, starting fresh")
+
+        if existing:
+            deduped: dict[str, dict[str, Any]] = {}
+            for row in existing:
+                qid = row.get("question_id")
+                if qid:
+                    deduped[str(qid)] = row
+            self._results[model_label] = [deduped[qid] for qid in sorted(deduped)]
+            self._processed[model_label] = set(deduped)
+            self._counters[model_label]["skipped"] = len(deduped)
+            self._write_main_file(model_label)
+            return len(deduped)
         return 0
 
     def is_processed(self, model_label: str, question_id: str) -> bool:
@@ -262,21 +339,32 @@ class CheckpointManager:
         """Thread-safe append + save to disk."""
         lock = self._get_lock(model_label)
         async with lock:
-            self._results[model_label].append(result)
-            self._processed[model_label].add(result["question_id"])
-            self._counters[model_label]["success"] += 1
+            partial_fp = self._partial_path(model_label, str(result["question_id"]))
+            partial_tmp = partial_fp.with_suffix(".json.tmp")
+            with open(partial_tmp, "w", encoding="utf-8") as f:
+                json.dump(result, f, indent=2, ensure_ascii=False)
+            partial_tmp.rename(partial_fp)
 
-            # Atomic-ish write: write to tmp then rename
-            fp = self._file_path(model_label)
-            tmp_fp = fp.with_suffix(".json.tmp")
-            with open(tmp_fp, "w", encoding="utf-8") as f:
-                json.dump(
-                    self._results[model_label],
-                    f,
-                    indent=2,
-                    ensure_ascii=False,
-                )
-            tmp_fp.rename(fp)
+            qid = str(result["question_id"])
+            if qid not in self._processed[model_label]:
+                self._counters[model_label]["success"] += 1
+            self._processed[model_label].add(qid)
+
+            existing_idx = next(
+                (
+                    i
+                    for i, row in enumerate(self._results[model_label])
+                    if row.get("question_id") == qid
+                ),
+                None,
+            )
+            if existing_idx is None:
+                self._results[model_label].append(result)
+            else:
+                self._results[model_label][existing_idx] = result
+
+            self._results[model_label].sort(key=lambda row: str(row.get("question_id", "")))
+            self._write_main_file(model_label)
 
     async def record_failure(self, model_label: str) -> None:
         lock = self._get_lock(model_label)
@@ -302,6 +390,7 @@ async def solve_question_k_times(
     extract_client: LLMClient | None = None,
     store_raw_samples: bool = False,
     raw_truncate_chars: int = 800,
+    request_timeout_sec: int = 180,
 ) -> dict[str, Any] | None:
     """Run a model on a single static task K times.
 
@@ -376,9 +465,47 @@ async def solve_question_k_times(
             "api_trace": ApiTrace().model_dump(),
             "extract_api_trace": ApiTrace().model_dump(),
         }
+
+        async def _request(
+            request_messages: list[dict[str, str]],
+            *,
+            max_tokens: int | None = None,
+            temperature: float | None = None,
+        ) -> tuple[str, ApiTrace]:
+            return await asyncio.wait_for(
+                client.agenerate_text_with_trace(
+                    request_messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                ),
+                timeout=request_timeout_sec,
+            )
+
         try:
-            raw_text, trace = await client.agenerate_text_with_trace(messages)
+            raw_text, trace = await _request(messages)
             result["api_trace"] = trace.model_dump()
+            if (
+                not raw_text
+                and question.answer_format == "open_ended"
+                and (trace.completion_tokens or 0) >= client.max_tokens
+            ):
+                retry_system_prompt, retry_user_prompt = _build_short_retry_prompt(question)
+                retry_messages = [
+                    {"role": "system", "content": retry_system_prompt},
+                    {"role": "user", "content": retry_user_prompt},
+                ]
+                raw_text, retry_trace = await _request(
+                    retry_messages,
+                    max_tokens=min(512, client.max_tokens),
+                    temperature=0.2,
+                )
+                result["api_trace"] = retry_trace.model_dump()
+                if raw_text:
+                    result["note"] = "recovered_after_short_retry"
+            if not raw_text and trace.reasoning_content:
+                raw_text = trace.reasoning_content
+                result["note"] = "reasoning_only_response"
+
             if not raw_text:
                 result["parse_method"] = "empty"
                 result["note"] = "empty_raw_response"
@@ -408,7 +535,8 @@ async def solve_question_k_times(
                     {
                         "answer": parsed_resp.answer,
                         "confidence": parsed_resp.confidence,
-                        "strategy": parsed_resp.strategy or _extract_strategy(raw_text, parsed_resp.reasoning),
+                        "strategy": parsed_resp.strategy
+                        or _extract_strategy(raw_text, parsed_resp.reasoning),
                         "reasoning": parsed_resp.reasoning or raw_text,
                         "parse_method": "text",
                     }
@@ -431,8 +559,11 @@ async def solve_question_k_times(
                 valid_labels = ", ".join(
                     sorted({c.split(")")[0].strip() for c in question.choices if ")" in c})
                 )
-                extract_raw, extract_trace = await extract_client.agenerate_text_with_trace(
-                    _extractor_messages(raw_text, valid_labels or "A, B, C, D")
+                extract_raw, extract_trace = await asyncio.wait_for(
+                    extract_client.agenerate_text_with_trace(
+                        _extractor_messages(raw_text, valid_labels or "A, B, C, D")
+                    ),
+                    timeout=request_timeout_sec,
                 )
                 result["extract_attempted"] = True
                 result["extract_api_trace"] = extract_trace.model_dump()
@@ -441,23 +572,18 @@ async def solve_question_k_times(
                 )
                 extracted = None
                 if extract_raw:
-                    extracted = (
-                        parse_mc_response(
-                            extract_raw,
-                            model_name=f"{model_id}::extractor",
-                        )
-                        if question.answer_format == "multiple_choice"
-                        else parse_static_response(
-                            extract_raw,
-                            model_name=f"{model_id}::extractor",
-                        )
+                    extracted = parse_extract_response(
+                        extract_raw,
+                        model_name=f"{model_id}::extractor",
                     )
                 if extracted:
                     result.update(
                         {
                             "answer": extracted.answer,
                             "confidence": extracted.confidence,
-                            "strategy": _extract_strategy(raw_text, extracted.reasoning or raw_text),
+                            # The extractor only returns answer/confidence; preserve
+                            # the original model trace as the reasoning source.
+                            "strategy": _extract_strategy(raw_text, raw_text),
                             "reasoning": raw_text,
                             "parse_method": "llm_extract",
                             "extract_answer": extracted.answer,
@@ -481,9 +607,14 @@ async def solve_question_k_times(
             result["parse_method"] = "unparsed"
             result["note"] = "no_extract_client"
             return result
+        except asyncio.TimeoutError:
+            logger.debug(f"  Sample {i + 1} timed out")
+            result["note"] = "request_timeout"
+            return result
         except Exception as e:
             logger.debug(f"  Sample {i + 1} failed: {e}")
-            result["note"] = f"request_exception:{type(e).__name__}"
+            tb = traceback.format_exc(limit=4).strip().replace("\n", " | ")
+            result["note"] = f"request_exception:{type(e).__name__}:{tb[:500]}"
             return result
 
     # Run K samples concurrently
@@ -554,6 +685,7 @@ async def solve_question_k_times(
             "majority_answer": "",
             "is_correct": False,
             "c_beh": 0.0,
+            "c_consistency": 0.0,
             "c_rep": 0.0,
             "gap": 0.0,
             "strategy": "",
@@ -574,16 +706,22 @@ async def solve_question_k_times(
             "sample_traces": sample_traces,
         }
 
-    # Compute behavioral confidence
+    evaluator = build_static_evaluator(question)
+
+    # Compute answer consistency from the modal answer.
     answers = [str(s["answer"]).strip() for s in samples]
     counter = collections.Counter(answers)
     majority_answer, majority_count = counter.most_common(1)[0]
-    c_beh = majority_count / len(samples)
+    c_consistency = majority_count / len(samples)
+
+    # Behavioral confidence should reflect correctness frequency across k runs.
+    sample_correct = [evaluator(str(s["answer"]).strip(), question).is_correct for s in samples]
+    c_beh = sum(sample_correct) / len(samples)
 
     # Average reported confidence (0-1)
     c_rep = sum(s["confidence"] for s in samples) / len(samples)
 
-    eval_result = build_static_evaluator(question)(majority_answer, question)
+    eval_result = evaluator(majority_answer, question)
     is_correct = eval_result.is_correct
 
     # Primary reasoning from majority-answer sample
@@ -626,6 +764,7 @@ async def solve_question_k_times(
         "majority_answer": majority_answer,
         "is_correct": is_correct,
         "c_beh": round(c_beh, 4),
+        "c_consistency": round(c_consistency, 4),
         "c_rep": round(c_rep, 4),
         "gap": round(c_rep - c_beh, 4),
         "strategy": primary_strategy,
@@ -676,6 +815,9 @@ async def run_model(
         model=model_id,
         temperature=gen_cfg.temperature,
         max_tokens=gen_cfg.max_tokens,
+        reasoning_effort=str(gen_cfg.get("reasoning_effort"))
+        if gen_cfg.get("reasoning_effort") is not None
+        else None,
     )
     extract_client: LLMClient | None = None
     if bool(extract_cfg.get("enabled", False)):
@@ -701,6 +843,7 @@ async def run_model(
                 extract_client=extract_client,
                 store_raw_samples=bool(extract_cfg.get("store_raw_samples", True)),
                 raw_truncate_chars=int(extract_cfg.get("raw_truncate_chars", 1200)),
+                request_timeout_sec=int(extract_cfg.get("request_timeout_sec", 180)),
             )
 
             if result:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import re
 import subprocess
 import sys
@@ -11,6 +12,7 @@ from pathlib import Path
 from typing import Any, Callable, Protocol
 
 from confidence_tom.dataset_models import StaticTask
+from confidence_tom.parsing import extract_answer_candidate
 
 
 @dataclass
@@ -81,8 +83,12 @@ def evaluate_olympiadbench(prediction: str, task: StaticTask) -> EvaluationResul
     if official is not None:
         return official
 
-    normalized_pred = _normalize_text_answer(prediction)
-    normalized_ref = _normalize_text_answer(task.reference_answer)
+    normalized_pred = _normalize_text_answer(
+        _normalize_olympiadbench_prediction(prediction, task.reference_answer)
+    )
+    normalized_ref = _normalize_text_answer(
+        _normalize_olympiadbench_prediction(task.reference_answer, task.reference_answer)
+    )
     is_correct = bool(normalized_pred) and normalized_pred == normalized_ref
     return EvaluationResult(
         is_correct=is_correct,
@@ -120,7 +126,8 @@ def evaluate_livebench_reasoning(prediction: str, task: StaticTask) -> Evaluatio
 
 def _try_official_olympiadbench(prediction: str, task: StaticTask) -> EvaluationResult | None:
     """Call official scorer when the package/repo is installed locally."""
-    isolated = _try_isolated_olympiadbench(prediction, task)
+    normalized_prediction = _normalize_olympiadbench_prediction(prediction, task.reference_answer)
+    isolated = _try_isolated_olympiadbench(normalized_prediction, task)
     if isolated is not None:
         return isolated
 
@@ -131,7 +138,7 @@ def _try_official_olympiadbench(prediction: str, task: StaticTask) -> Evaluation
     try:
         judger = judge_cls()
         precision = task.metadata.get("precision", 1e-8)
-        score = judger.judge(task.reference_answer, prediction, precision)
+        score = judger.judge(task.reference_answer, normalized_prediction, precision)
     except Exception:
         return None
 
@@ -174,11 +181,84 @@ def _normalize_mc_letter(text: str) -> str:
 
 
 def _normalize_text_answer(text: str) -> str:
-    normalized = text.strip().lower()
+    normalized = extract_answer_candidate(text) or (text or "").strip()
+    normalized = normalized.lower()
     normalized = re.sub(r"\*\*(.*?)\*\*", r"\1", normalized)
     normalized = re.sub(r"[^a-z0-9,.\-_/=\s]", " ", normalized)
     normalized = re.sub(r"\s+", " ", normalized).strip()
     return normalized
+
+
+def _normalize_olympiadbench_prediction(prediction: str, reference: str) -> str:
+    """Normalize common mathematically-equivalent output formats before scoring."""
+    text = (prediction or "").strip()
+    if not text:
+        return text
+
+    text = extract_answer_candidate(text) or text
+    text = re.sub(
+        r"^\s*the (?:real )?(?:solutions?|answer(?:s)?) (?:are|is)\s*",
+        "",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = _strip_box_wrappers(text)
+    if "=" not in (reference or ""):
+        text = re.sub(r"^\s*[A-Za-z][A-Za-z0-9_]*\s*=\s*", "", text)
+    text = text.replace(r"\dfrac", r"\frac")
+    text = text.replace(r"\tfrac", r"\frac")
+    text = text.replace("√", r"\sqrt")
+    text = re.sub(r"\\sqrt\s*([A-Za-z0-9(])", r"\\sqrt{\1}", text)
+    text = re.sub(r"\be\(\d+\)\s*=\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\s+", " ", text).strip()
+
+    if "," in (reference or "") and " and " in text.lower():
+        parts = [p.strip() for p in re.split(r"\band\b", text, flags=re.IGNORECASE) if p.strip()]
+        if parts:
+            text = ", ".join(parts)
+
+    if _looks_like_multi_answer(text) and _looks_like_multi_answer(reference or ""):
+        pred_parts = _split_multi_answer(text)
+        ref_parts = _split_multi_answer(reference or "")
+        if pred_parts and len(pred_parts) == len(ref_parts):
+            text = ", ".join(sorted(pred_parts, key=_sortable_math_key))
+
+    return text
+
+
+def _strip_box_wrappers(text: str) -> str:
+    cleaned = text.strip()
+    patterns = [
+        r"^\$?\\boxed\{(.+)\}\$?$",
+        r"^\$?\\fbox\{(.+)\}\$?$",
+        r"^\$?boxed\{(.+)\}\$?$",
+    ]
+    changed = True
+    while changed:
+        changed = False
+        for pattern in patterns:
+            match = re.match(pattern, cleaned, flags=re.DOTALL)
+            if match:
+                cleaned = match.group(1).strip()
+                changed = True
+    return cleaned
+
+
+def _looks_like_multi_answer(text: str) -> bool:
+    return bool(text) and (" and " in text.lower() or text.count(",") >= 1)
+
+
+def _split_multi_answer(text: str) -> list[str]:
+    protected = re.sub(r"\)\s*,\s*\(", ")@@(", text)
+    protected = re.sub(r"\}\s*,\s*\{", "}@@{", protected)
+    protected = re.sub(r"\band\b", "@@", protected, flags=re.IGNORECASE)
+    return [p.strip() for p in protected.split("@@") if p.strip()]
+
+
+def _sortable_math_key(text: str) -> str:
+    cleaned = text.replace("$", "").replace(" ", "")
+    cleaned = cleaned.replace(r"\sqrt", "sqrt")
+    return cleaned.lower()
 
 
 def _load_olympiadbench_judger() -> type[Any] | None:
@@ -224,7 +304,7 @@ def _try_isolated_olympiadbench(prediction: str, task: StaticTask) -> Evaluation
         payload = completed.stdout.strip()
         if not payload:
             return None
-        data = importlib.import_module("json").loads(payload)
+        data = json.loads(payload)
         score = float(data.get("score", 0.0))
         return EvaluationResult(
             is_correct=bool(data.get("is_correct", False)),

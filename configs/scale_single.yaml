@@ -36,8 +36,19 @@ scale_models:
 # --- Generator Settings ---
 generator:
   temperature: 1.0      # Increased for K-sample diversity to avoid C_beh saturation
-  max_tokens: 8192       # MC answers are shorter than free-form
+  max_tokens: 12288      # Keep a larger budget for open-ended tasks like OlympiadBench/LiveBench
   k_samples: 10          # Behavioral confidence via repeated sampling
+  reasoning_effort: null # Set to "none" to disable provider-side thinking when supported
+
+# --- Extractor (recover final answer/confidence from partial or messy outputs) ---
+extractor:
+  enabled: true
+  model: "google/gemini-3.1-flash-lite-preview"
+  max_tokens: 512
+  temperature: 0.0
+  store_raw_samples: true
+  raw_truncate_chars: 1200
+  request_timeout_sec: 600
 
 # --- Dataset Settings ---
 dataset:

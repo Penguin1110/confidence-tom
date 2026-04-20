@@ -12,9 +12,87 @@ import logging
 import re
 from typing import Optional
 
+_REASONING_TAG_PATTERNS = [
+    r"<think>.*?</think>",
+    r"<analysis>.*?</analysis>",
+    r"<reasoning>.*?</reasoning>",
+    r"<thought>.*?</thought>",
+    r"<scratchpad>.*?</scratchpad>",
+]
+
+
+_ANSWER_CANDIDATE_PATTERNS = [
+    r"\bfinal answer\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bthe final answer\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bthe answer is\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\banswer is\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bmy answer\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\btherefore[, ]+(?:the )?answer(?: is)?\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bthus[, ]+(?:the )?answer(?: is)?\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bso[, ]+(?:the )?answer(?: is)?\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bhence[, ]+(?:the )?answer(?: is)?\s*[:=\-]?\s*(.+?)(?:\n|$)",
+    r"\bwe conclude that\b\s*(.+?)(?:\n|$)",
+    r"\bthe result is\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
+]
+
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
+
+
+def _strip_reasoning_artifacts(text: str) -> str:
+    cleaned = text or ""
+    for pattern in _REASONING_TAG_PATTERNS:
+        cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE | re.DOTALL)
+    cleaned = re.sub(
+        r"</?(?:analysis|think|reasoning|thought|scratchpad)>", "", cleaned, flags=re.IGNORECASE
+    )
+    return cleaned.strip()
+
+
+def _strip_box_wrappers(text: str) -> str:
+    cleaned = text.strip()
+    patterns = [
+        r"^\$?\\boxed\{(.+)\}\$?$",
+        r"^\$?\\fbox\{(.+)\}\$?$",
+        r"^\$?boxed\{(.+)\}\$?$",
+    ]
+    changed = True
+    while changed:
+        changed = False
+        for pattern in patterns:
+            match = re.match(pattern, cleaned, flags=re.DOTALL)
+            if match:
+                cleaned = match.group(1).strip()
+                changed = True
+    return cleaned
+
+
+def extract_answer_candidate(text: str) -> str:
+    cleaned = _strip_reasoning_artifacts(text)
+    if not cleaned:
+        return ""
+
+    for pattern in _ANSWER_CANDIDATE_PATTERNS:
+        match = re.search(pattern, cleaned, re.IGNORECASE | re.DOTALL)
+        if match:
+            answer = match.group(1).strip().strip('"').strip("'")
+            answer = re.sub(r"[.,;:]\s*$", "", answer).strip()
+            answer = _strip_box_wrappers(answer)
+            if answer:
+                return answer
+
+    lines = [line.strip() for line in cleaned.splitlines() if line.strip()]
+    if not lines:
+        return ""
+
+    tail = lines[-1]
+    tail = re.sub(r"^(?:therefore|thus|hence|so)[,:]?\s*", "", tail, flags=re.IGNORECASE)
+    tail = re.sub(r"^(?:the )?answer(?: is)?[:\-]?\s*", "", tail, flags=re.IGNORECASE)
+    tail = re.sub(r"^(?:the )?final answer[:\-]?\s*", "", tail, flags=re.IGNORECASE)
+    tail = tail.strip().strip('"').strip("'")
+    tail = re.sub(r"[.,;:]\s*$", "", tail).strip()
+    return _strip_box_wrappers(tail)
 
 
 class MCResponse(BaseModel):
@@ -33,6 +111,13 @@ class StaticResponse(BaseModel):
     confidence: float = Field(description="Confidence in 0-1 scale")
     strategy: str = Field(description="High-level solution plan", default="")
     reasoning: str = Field(description="Step-by-step reasoning", default="")
+
+
+class ExtractResponse(BaseModel):
+    """Minimal parser schema for LLM extraction."""
+
+    answer: str = Field(description="Final extracted answer")
+    confidence: float = Field(description="Confidence in 0-1 scale")
 
 
 # ---- Parsing stats tracker ----
@@ -104,6 +189,7 @@ def parse_mc_response(
     Returns:
         Parsed MCResponse or None if all strategies fail.
     """
+    raw_text = _strip_reasoning_artifacts(raw_text)
     if valid_choices is None:
         valid_choices = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
@@ -139,6 +225,7 @@ def parse_static_response(
     model_name: str = "unknown",
 ) -> Optional[StaticResponse]:
     """Parse a free-form static-task answer from JSON or light regex."""
+    raw_text = _strip_reasoning_artifacts(raw_text)
     json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw_text, re.DOTALL)
     text = json_match.group(1) if json_match else raw_text
     if not json_match:
@@ -162,14 +249,42 @@ def parse_static_response(
     except (json.JSONDecodeError, ValueError, TypeError):
         pass
 
-    answer_match = re.search(r'["\']?[Aa]nswer["\']?\s*[:=]\s*["\']?(.*?)["\']?(?:,|$)', raw_text, re.DOTALL)
+    final_patterns = [
+        r"\bfinal answer\b\s*[:=\-]\s*(.+?)(?:\n|$)",
+        r"\btherefore[, ]+(?:the )?answer(?: is)?\s*[:=\-]?\s*(.+?)(?:\n|$)",
+        r"\bso[, ]+(?:the )?answer(?: is)?\s*[:=\-]?\s*(.+?)(?:\n|$)",
+        r"\bmy answer\b\s*[:=\-]\s*(.+?)(?:\n|$)",
+    ]
+    for pat in final_patterns:
+        match = re.search(pat, raw_text, re.IGNORECASE | re.DOTALL)
+        if match:
+            answer = extract_answer_candidate(match.group(1)) or extract_answer_candidate(raw_text)
+            if answer:
+                conf_match = re.search(
+                    r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
+                    raw_text,
+                    re.IGNORECASE,
+                )
+                confidence = normalize_confidence(float(conf_match.group(1))) if conf_match else 0.5
+                return StaticResponse(
+                    answer=answer,
+                    confidence=confidence,
+                    strategy="",
+                    reasoning=raw_text.strip(),
+                )
+
+    answer_match = re.search(
+        r'["\']?[Aa]nswer["\']?\s*[:=]\s*["\']?(.*?)["\']?(?:,|$)', raw_text, re.DOTALL
+    )
     conf_match = re.search(
         r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
         raw_text,
         re.IGNORECASE,
     )
     if answer_match:
-        answer = answer_match.group(1).strip()
+        answer = extract_answer_candidate(answer_match.group(1)) or extract_answer_candidate(
+            raw_text
+        )
         confidence = normalize_confidence(float(conf_match.group(1))) if conf_match else 0.5
         return StaticResponse(
             answer=answer,
@@ -177,6 +292,52 @@ def parse_static_response(
             strategy="",
             reasoning=raw_text.strip(),
         )
+
+    _track_parse(model_name, False)
+    return None
+
+
+def parse_extract_response(
+    raw_text: str,
+    model_name: str = "unknown",
+) -> Optional[ExtractResponse]:
+    """Parse a minimal extractor response that only contains answer/confidence."""
+    raw_text = _strip_reasoning_artifacts(raw_text)
+    json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw_text, re.DOTALL)
+    text = json_match.group(1) if json_match else raw_text
+    if not json_match:
+        start_idx = raw_text.find("{")
+        end_idx = raw_text.rfind("}")
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            text = raw_text[start_idx : end_idx + 1]
+
+    try:
+        data = json.loads(text)
+        answer = str(data.get("answer", "")).strip()
+        confidence = normalize_confidence(float(data.get("confidence", 50)))
+        if not answer:
+            return None
+        return ExtractResponse(answer=answer, confidence=confidence)
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+
+    answer_match = re.search(
+        r'["\']?[Aa]nswer["\']?\s*[:=]\s*["\']?(.*?)["\']?(?:,|\n|$)',
+        raw_text,
+        re.DOTALL,
+    )
+    conf_match = re.search(
+        r'["\']?[Cc]onfidence["\']?\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?',
+        raw_text,
+        re.IGNORECASE,
+    )
+    if answer_match:
+        answer = extract_answer_candidate(answer_match.group(1)) or extract_answer_candidate(
+            raw_text
+        )
+        if answer:
+            confidence = normalize_confidence(float(conf_match.group(1))) if conf_match else 0.5
+            return ExtractResponse(answer=answer, confidence=confidence)
 
     _track_parse(model_name, False)
     return None

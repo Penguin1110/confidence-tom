@@ -2,34 +2,40 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import json
 import logging
 import sys
 import traceback
 from pathlib import Path
 from typing import Any
 
-from omegaconf import OmegaConf
-
-from confidence_tom.client import LLMClient
-from confidence_tom.intervention import PrefixOracleGainStepResult, PrefixOracleGainTaskResult, PrefixSegment, trace_to_cost
-from confidence_tom.scale_dataset import load_livebench_reasoning, load_olympiadbench
-from confidence_tom.static_evaluators import build_static_evaluator
-
 THIS_DIR = Path(__file__).resolve().parent
-if str(THIS_DIR) not in sys.path:
-    sys.path.insert(0, str(THIS_DIR))
+ROOT_DIR = THIS_DIR.parent
+for candidate in (ROOT_DIR / "src", ROOT_DIR, THIS_DIR):
+    candidate_str = str(candidate)
+    if candidate_str not in sys.path:
+        sys.path.insert(0, candidate_str)
 
+from omegaconf import OmegaConf
 from run_prefix_oracle_gain_mapping import (  # noqa: E402
+    _SMALL_CONTINUE_SYSTEM_PROMPT,
     PartialTaskStore,
     ResultStore,
-    _SMALL_CONTINUE_SYSTEM_PROMPT,
     _client_kwargs_from_cfg,
     _pricing_from_cfg,
     _run_continue,
     _run_full_trace,
     _segment_full_trace,
 )
+
+from confidence_tom.client import LLMClient
+from confidence_tom.intervention import (
+    PrefixOracleGainStepResult,
+    PrefixOracleGainTaskResult,
+    PrefixSegment,
+    trace_to_cost,
+)
+from confidence_tom.scale_dataset import load_livebench_reasoning, load_olympiadbench
+from confidence_tom.static_evaluators import build_static_evaluator
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -117,7 +123,10 @@ async def _map_task_small_only(task: Any, cfg: Any) -> PrefixOracleGainTaskResul
         full_answer = str(resume_payload.get("full_trace_answer") or "")
         parse_incomplete = bool(resume_payload.get("parse_incomplete", False))
         segments = resume_payload.get("segments", [])
-        oracle_steps = [PrefixOracleGainStepResult.model_validate(s) for s in resume_payload.get("prefix_oracle_steps", [])]
+        oracle_steps = [
+            PrefixOracleGainStepResult.model_validate(s)
+            for s in resume_payload.get("prefix_oracle_steps", [])
+        ]
         full_trace_api = resume_payload.get("full_trace_api_trace")
         logger.info("partial.resume task=%s completed_steps=%d", task.id, len(oracle_steps))
     else:
@@ -129,7 +138,9 @@ async def _map_task_small_only(task: Any, cfg: Any) -> PrefixOracleGainTaskResul
             retry_attempts,
             retry_backoff_sec,
         )
-        segs, parsed_final_answer, parse_incomplete = await _segment_full_trace(full_text, extract_client, task.id)
+        segs, parsed_final_answer, parse_incomplete = await _segment_full_trace(
+            full_text, extract_client, task.id
+        )
         segments = [s.model_dump() for s in segs]
         if parsed_final_answer:
             full_answer = parsed_final_answer
@@ -145,7 +156,9 @@ async def _map_task_small_only(task: Any, cfg: Any) -> PrefixOracleGainTaskResul
                 "full_trace_text": full_text,
                 "full_trace_answer": full_answer,
                 "full_trace_correct": full_eval.is_correct,
-                "full_trace_api_trace": full_trace_api.model_dump() if hasattr(full_trace_api, "model_dump") else full_trace_api,
+                "full_trace_api_trace": full_trace_api.model_dump()
+                if hasattr(full_trace_api, "model_dump")
+                else full_trace_api,
                 "parse_incomplete": parse_incomplete,
                 "segments": segments,
                 "prefix_oracle_steps": [],
@@ -157,7 +170,11 @@ async def _map_task_small_only(task: Any, cfg: Any) -> PrefixOracleGainTaskResul
     start_step_index = len(oracle_steps) + 1
     for step_index in range(start_step_index, len(segments) + 1):
         prefix_segments = segments[:step_index]
-        prefix_text = "\n".join(str(seg.get("text", "")).strip() for seg in prefix_segments if str(seg.get("text", "")).strip())
+        prefix_text = "\n".join(
+            str(seg.get("text", "")).strip()
+            for seg in prefix_segments
+            if str(seg.get("text", "")).strip()
+        )
         prefix_id = f"{trace_id}_p{step_index}"
         parent_prefix_id = f"{trace_id}_p{step_index - 1}" if step_index > 1 else ""
         logger.info("prefix.step.small_only task=%s step=%d/%d", task.id, step_index, len(segments))
@@ -175,7 +192,12 @@ async def _map_task_small_only(task: Any, cfg: Any) -> PrefixOracleGainTaskResul
                 retry_backoff_sec=retry_backoff_sec,
             )
         except Exception:
-            logger.error("small_continue_prefix.error task=%s step=%d\n%s", task.id, step_index, traceback.format_exc())
+            logger.error(
+                "small_continue_prefix.error task=%s step=%d\n%s",
+                task.id,
+                step_index,
+                traceback.format_exc(),
+            )
             small_text, small_answer, small_api = "", "", None
 
         small_eval = evaluator(small_answer, task) if small_answer else evaluator("", task)
@@ -212,7 +234,9 @@ async def _map_task_small_only(task: Any, cfg: Any) -> PrefixOracleGainTaskResul
                 "full_trace_text": full_text,
                 "full_trace_answer": full_answer,
                 "full_trace_correct": full_eval.is_correct,
-                "full_trace_api_trace": full_trace_api.model_dump() if hasattr(full_trace_api, "model_dump") else full_trace_api,
+                "full_trace_api_trace": full_trace_api.model_dump()
+                if hasattr(full_trace_api, "model_dump")
+                else full_trace_api,
                 "parse_incomplete": parse_incomplete,
                 "segments": segments,
                 "prefix_oracle_steps": [s.model_dump() for s in oracle_steps],
@@ -246,7 +270,10 @@ async def _run_all(args: argparse.Namespace) -> None:
     cfg = _build_cfg(args)
     output_dir = Path(str(cfg.output_dir))
     output_dir.mkdir(parents=True, exist_ok=True)
-    out_path = output_dir / f"{args.small_label.replace('/', '_').replace(':', '_')}_to_{args.placeholder_large_label.replace('/', '_').replace(':', '_')}.json"
+    out_path = (
+        output_dir
+        / f"{args.small_label.replace('/', '_').replace(':', '_')}_to_{args.placeholder_large_label.replace('/', '_').replace(':', '_')}.json"
+    )
     store = ResultStore(out_path)
 
     # limit<=0 means "load full benchmark split".
@@ -268,7 +295,9 @@ async def _run_all(args: argparse.Namespace) -> None:
         async with sem:
             logger.info("[%d/%d] %s", i, len(questions), task.id)
             try:
-                result = await asyncio.wait_for(_map_task_small_only(task, cfg), timeout=float(args.task_sec))
+                result = await asyncio.wait_for(
+                    _map_task_small_only(task, cfg), timeout=float(args.task_sec)
+                )
             except Exception:
                 logger.error("task.error task=%s\n%s", task.id, traceback.format_exc())
                 return
@@ -281,8 +310,12 @@ async def _run_all(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run prefix mapping small-side only (for Colab precompute).")
-    parser.add_argument("--benchmark", choices=["olympiadbench", "livebench_reasoning"], required=True)
+    parser = argparse.ArgumentParser(
+        description="Run prefix mapping small-side only (for Colab precompute)."
+    )
+    parser.add_argument(
+        "--benchmark", choices=["olympiadbench", "livebench_reasoning"], required=True
+    )
     parser.add_argument(
         "--limit",
         type=int,
@@ -293,7 +326,9 @@ def main() -> None:
 
     parser.add_argument("--small-model", required=True)
     parser.add_argument("--small-label", required=True)
-    parser.add_argument("--small-backend", choices=["openrouter", "ollama", "local"], default="openrouter")
+    parser.add_argument(
+        "--small-backend", choices=["openrouter", "ollama", "local"], default="openrouter"
+    )
     parser.add_argument("--small-local-model-name", default=None)
     parser.add_argument("--small-max-tokens", type=int, default=8192)
     parser.add_argument("--temperature", type=float, default=0.0)
@@ -310,7 +345,9 @@ def main() -> None:
 
     parser.add_argument("--extractor-enabled", action="store_true")
     parser.add_argument("--extractor-model", default="openai/gpt-5.4")
-    parser.add_argument("--extractor-backend", choices=["openrouter", "ollama", "local"], default="openrouter")
+    parser.add_argument(
+        "--extractor-backend", choices=["openrouter", "ollama", "local"], default="openrouter"
+    )
     parser.add_argument("--extractor-max-tokens", type=int, default=512)
 
     parser.add_argument("--task-concurrency", type=int, default=1)

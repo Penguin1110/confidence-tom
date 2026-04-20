@@ -26,7 +26,7 @@ scale_models:
 # --- Generator Settings ---
 generator:
   temperature: 0.7      # Diversity for K-sample behavioral confidence
-  max_tokens: 4096
+  max_tokens: 8192
   k_samples: 10         # C_beh = fraction of 10 runs that succeed
   k_concurrency: 1      # Run K samples one-by-one for cleaner logs/checkpoints
 

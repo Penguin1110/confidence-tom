@@ -43,6 +43,22 @@ MODEL_PRESETS: dict[str, dict[str, str | int]] = {
         "num_ctx": 32768,
         "num_predict": 4096,
     },
+    "qwen35_4b": {
+        "small_model": "qwen/qwen3-14b:nitro",
+        "small_label": "Ollama-qwen3.5:4b",
+        "small_local_model_name": "qwen3.5:4b",
+        "small_max_tokens": 12288,
+        "num_ctx": 16384,
+        "num_predict": 3072,
+    },
+    "qwen35_4b_fast": {
+        "small_model": "qwen/qwen3-14b:nitro",
+        "small_label": "Ollama-qwen3.5:4b_fast",
+        "small_local_model_name": "qwen3.5:4b_fast",
+        "small_max_tokens": 12288,
+        "num_ctx": 16384,
+        "num_predict": 3072,
+    },
     "qwen35_27b": {
         "small_model": "qwen/qwen3-14b:nitro",
         "small_label": "Ollama-qwen3.5:27b",
@@ -57,6 +73,14 @@ MODEL_PRESETS: dict[str, dict[str, str | int]] = {
         "small_local_model_name": "gemma3:12b",
         "small_max_tokens": 8192,
         "num_ctx": 24576,
+        "num_predict": 3072,
+    },
+    "gemma3_4b": {
+        "small_model": "google/gemma-3-4b-it",
+        "small_label": "Ollama-gemma3:4b",
+        "small_local_model_name": "gemma3:4b",
+        "small_max_tokens": 8192,
+        "num_ctx": 16384,
         "num_predict": 3072,
     },
     "gemma3_27b": {
