@@ -20,6 +20,10 @@ from confidence_tom.intervention.voi import trace_to_cost
 
 ROOT = project_root()
 RESULTS_DIR = results_root()
+LEGACY_RESULTS_DIR = ROOT / "results"
+RESULT_DIR_CANDIDATES = [RESULTS_DIR]
+if LEGACY_RESULTS_DIR != RESULTS_DIR:
+    RESULT_DIR_CANDIDATES.append(LEGACY_RESULTS_DIR)
 DEFAULT_OUT_DIR = RESULTS_DIR / "_prefix_reentry_controls_v1"
 DEFAULT_RUN_NAMES = [
     "qwen_to_openai_50",
@@ -108,27 +112,53 @@ def _normalize_prefix_surface(text: str) -> str:
     return cleaned.strip()
 
 
-def _benchmark_family(run_name: str) -> tuple[str, str]:
+def _family_from_run_name(run_name: str) -> str:
     if run_name.startswith("livebench_"):
-        benchmark = "livebench_reasoning"
-        family = run_name.split("_")[1]
-    else:
-        benchmark = "olympiadbench"
-        family = run_name.split("_")[0]
-    return benchmark, family
+        return run_name.split("_")[1]
+    return run_name.split("_")[0]
+
+
+def _benchmark_from_task_id(task_id: str) -> str:
+    if task_id.startswith("livebench_reasoning_"):
+        return "livebench_reasoning"
+    return "olympiadbench"
 
 
 def _find_result_json(run_name: str) -> Path:
-    run_dir = RESULTS_DIR / run_name
-    candidates = [
-        path
-        for path in run_dir.glob("*.json")
-        if path.name not in {"summary.json", "dataset_meta.json", "baseline_results.json"}
-    ]
-    json_candidates = [path for path in candidates if "per_prefix_rows" not in path.name]
-    if not json_candidates:
-        raise FileNotFoundError(f"Could not find main result JSON in {run_dir}")
-    return json_candidates[0]
+    searched_dirs: list[Path] = []
+    for results_dir in RESULT_DIR_CANDIDATES:
+        run_dir = results_dir / run_name
+        searched_dirs.append(run_dir)
+        if not run_dir.exists():
+            continue
+        candidates = [
+            path
+            for path in run_dir.glob("*.json")
+            if path.name not in {"summary.json", "dataset_meta.json", "baseline_results.json"}
+        ]
+        json_candidates: list[Path] = [
+            path for path in candidates if "per_prefix_rows" not in path.name
+        ]
+        if json_candidates:
+            return json_candidates[0]
+    searched = ", ".join(str(path) for path in searched_dirs)
+    raise FileNotFoundError(f"Could not find main result JSON for {run_name} in: {searched}")
+
+
+def _discover_run_names() -> list[str]:
+    discovered: dict[str, None] = {}
+    for results_dir in RESULT_DIR_CANDIDATES:
+        if not results_dir.exists():
+            continue
+        for run_dir in sorted(path for path in results_dir.iterdir() if path.is_dir()):
+            if run_dir.name.startswith("_"):
+                continue
+            try:
+                _find_result_json(run_dir.name)
+            except FileNotFoundError:
+                continue
+            discovered[run_dir.name] = None
+    return list(discovered)
 
 
 def _load_task_map(benchmark: str) -> dict[str, StaticTask]:
@@ -146,8 +176,10 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
     for run_name in run_names:
         result_json = _find_result_json(run_name)
         data = json.loads(result_json.read_text(encoding="utf-8"))
-        benchmark, small_family = _benchmark_family(run_name)
+        small_family = _family_from_run_name(run_name)
         for task in data:
+            task_id = str(task["task_id"])
+            benchmark = _benchmark_from_task_id(task_id)
             for step in task.get("prefix_oracle_steps", []):
                 prefix_text = str(step.get("prefix_text", "")).strip()
                 if not prefix_text:
@@ -157,7 +189,7 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
                         "run_name": run_name,
                         "benchmark": benchmark,
                         "small_family": small_family,
-                        "task_id": str(task["task_id"]),
+                        "task_id": task_id,
                         "small_model": str(task["small_model"]),
                         "full_trace_answer": str(task.get("full_trace_answer", "")),
                         "full_trace_correct": int(bool(task.get("full_trace_correct", False))),
@@ -581,12 +613,27 @@ async def amain(args: argparse.Namespace) -> None:
     except BlockingIOError:
         raise SystemExit(f"Another re-entry control process is already running: {lock_path}")
 
+    run_names = args.run_name or DEFAULT_RUN_NAMES
+    if args.run_name is None:
+        missing_defaults = [
+            run_name
+            for run_name in run_names
+            if not any((results_dir / run_name).exists() for results_dir in RESULT_DIR_CANDIDATES)
+        ]
+        if missing_defaults:
+            discovered = _discover_run_names()
+            if discovered:
+                run_names = discovered
+    if not run_names:
+        raise FileNotFoundError(
+            "No result runs found under any configured results directory. "
+            "Pass --run-name or create outputs/results/<run_name>."
+        )
+
     existing_rows = _dedupe_rows(out_rows)
     done = {_row_key(row) for row in existing_rows if "error" not in row}
     pending = [
-        row
-        for row in _load_prefix_rows(args.run_name or DEFAULT_RUN_NAMES, args.max_rows)
-        if _row_key(row) not in done
+        row for row in _load_prefix_rows(run_names, args.max_rows) if _row_key(row) not in done
     ]
 
     if args.category:
