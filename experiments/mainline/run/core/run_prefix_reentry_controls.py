@@ -15,10 +15,11 @@ from confidence_tom.data.dataset_models import StaticTask
 from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.infra.client import LLMClient
+from confidence_tom.infra.paths import project_root, results_root
 from confidence_tom.intervention.voi import trace_to_cost
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+ROOT = project_root()
+RESULTS_DIR = results_root()
 DEFAULT_OUT_DIR = RESULTS_DIR / "_prefix_reentry_controls_v1"
 DEFAULT_RUN_NAMES = [
     "qwen_to_openai_50",

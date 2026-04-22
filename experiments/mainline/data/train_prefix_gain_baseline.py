@@ -5,13 +5,13 @@ import hashlib
 import json
 import math
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Callable, TypedDict, cast
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
-DATASET_DIR = ROOT / "results" / "_prefix_predictor_v1"
+from confidence_tom.infra.paths import results_root
+
+DATASET_DIR = results_root() / "_prefix_predictor_v1"
 DATASET_CSV = DATASET_DIR / "prefix_predictor_rows.csv"
 OUTPUT_JSON = DATASET_DIR / "baseline_results.json"
 

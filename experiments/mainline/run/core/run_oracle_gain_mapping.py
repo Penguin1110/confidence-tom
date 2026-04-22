@@ -12,11 +12,10 @@ from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
 from confidence_tom.eval.static_evaluators import build_static_evaluator
-from confidence_tom.infra.client import LLMClient, _coerce_json_response
+from confidence_tom.infra.client import LLMClient
+from confidence_tom.infra.client_utils import coerce_json_response as _coerce_json_response
 from confidence_tom.intervention import (
-    ModelPricing,
     NextStepOutput,
     OracleGainStepResult,
     OracleGainTaskResult,
@@ -24,6 +23,15 @@ from confidence_tom.intervention import (
     StepwiseWorkerOutput,
     parse_with_llm_fallback,
     trace_to_cost,
+)
+from experiments.mainline.run.core.common import (
+    load_static_questions,
+)
+from experiments.mainline.run.core.common import (
+    pricing_from_cfg as _pricing_from_cfg,
+)
+from experiments.mainline.run.core.common import (
+    sanitize_label as _sanitize_label,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(message)s")
@@ -134,28 +142,6 @@ class PartialTaskStore:
         path = self.root / f"{task_id}.json"
         if path.exists():
             path.unlink()
-
-
-def _sanitize_label(text: str) -> str:
-    return text.replace("/", "_").replace(":", "_").replace("-", "_").replace(".", "_")
-
-
-def _pricing_from_cfg(cfg: DictConfig, model_name: str) -> Optional[ModelPricing]:
-    item = cfg.pricing.get(model_name)
-    if not item:
-        return None
-    pricing = ModelPricing(
-        input_per_1k=float(item.get("input_per_1k", 0.0)),
-        output_per_1k=float(item.get("output_per_1k", 0.0)),
-        reasoning_per_1k=float(item.get("reasoning_per_1k", 0.0)),
-    )
-    if (
-        pricing.input_per_1k == 0.0
-        and pricing.output_per_1k == 0.0
-        and pricing.reasoning_per_1k == 0.0
-    ):
-        return None
-    return pricing
 
 
 def _steps_to_json(steps: list[StepRecord]) -> str:
@@ -486,14 +472,7 @@ def main(cfg: DictConfig) -> None:
 
     benchmark_name = str(cfg.dataset.benchmark)
     if benchmark_name == "olympiadbench":
-        questions = load_olympiadbench(num_samples=int(cfg.dataset.olympiadbench))
-    elif benchmark_name == "livebench_reasoning":
-        questions = load_livebench_reasoning(num_samples=int(cfg.dataset.livebench))
-    else:
-        raise ValueError(f"Unsupported oracle-gain benchmark: {benchmark_name}")
-
-    if cfg.dataset.limit:
-        questions = questions[: int(cfg.dataset.limit)]
+        questions = load_static_questions(benchmark_name, cfg.dataset)
 
     out_path = output_dir / (
         f"{_sanitize_label(str(cfg.small_worker.label))}_to_"

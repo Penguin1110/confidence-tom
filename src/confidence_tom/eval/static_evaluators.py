@@ -13,7 +13,7 @@ from types import ModuleType
 from typing import Any, Callable, Protocol, cast
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.parsing import extract_answer_candidate
+from confidence_tom.eval.parsing import extract_answer_candidate
 
 
 @dataclass

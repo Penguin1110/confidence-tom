@@ -4,10 +4,11 @@ import argparse
 import os
 import shlex
 import subprocess
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-REMOTE_PIPELINE = ROOT / "experiments" / "legacy" / "run_remote_pipeline.py"
+from confidence_tom.infra.paths import project_root
+
+ROOT = project_root()
+REMOTE_PIPELINE = ROOT / "experiments" / "mainline" / "run" / "remote" / "run_remote_pipeline.py"
 REMOTE_PROJECT_DIR = os.environ.get("REMOTE_PROJECT_DIR", "~/confidence-tom")
 
 

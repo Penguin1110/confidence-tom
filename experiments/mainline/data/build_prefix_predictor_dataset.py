@@ -6,8 +6,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+from confidence_tom.infra.paths import results_root
+
+RESULTS_DIR = results_root()
 OUTPUT_DIR = RESULTS_DIR / "_prefix_predictor_v1"
 OUTPUT_CSV = OUTPUT_DIR / "prefix_predictor_rows.csv"
 OUTPUT_META = OUTPUT_DIR / "dataset_meta.json"

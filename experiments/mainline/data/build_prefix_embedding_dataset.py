@@ -10,9 +10,9 @@ from typing import Any, cast
 import numpy as np
 
 from confidence_tom.infra.client import LLMClient
+from confidence_tom.infra.paths import results_root
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+RESULTS_DIR = results_root()
 PREDICTOR_CSV = RESULTS_DIR / "_prefix_predictor_v1" / "prefix_predictor_rows.csv"
 OUT_DIR = RESULTS_DIR / "_prefix_embedding_v1"
 OUT_ROWS = OUT_DIR / "pilot_rows.jsonl"

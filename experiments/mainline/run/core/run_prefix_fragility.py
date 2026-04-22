@@ -13,13 +13,16 @@ from confidence_tom.data.dataset_models import StaticTask
 from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.infra.client import LLMClient
+from confidence_tom.infra.paths import project_root, results_root
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+ROOT = project_root()
+RESULTS_DIR = results_root()
 OUT_DIR = RESULTS_DIR / "_prefix_fragility_v1"
 OUT_ROWS = OUT_DIR / "pilot_rows.jsonl"
 OUT_SUMMARY = OUT_DIR / "pilot_summary.json"
-OUT_MD = ROOT / "docs" / "prefix_fragility_pilot.md"
+OUT_MD = (
+    ROOT / "docs" / "mainline" / "generated" / "analysis" / "prefix" / "prefix_fragility_pilot.md"
+)
 LOCK_PATH = OUT_DIR / ".pilot.lock"
 
 MAX_PER_RUN = 2

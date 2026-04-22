@@ -4,11 +4,12 @@ import argparse
 import os
 import shlex
 import subprocess
-from pathlib import Path
 from typing import TypedDict
 
-ROOT = Path(__file__).resolve().parents[2]
-REMOTE_PIPELINE = ROOT / "experiments" / "legacy" / "run_remote_pipeline.py"
+from confidence_tom.infra.paths import project_root
+
+ROOT = project_root()
+REMOTE_PIPELINE = ROOT / "experiments" / "mainline" / "run" / "remote" / "run_remote_pipeline.py"
 REMOTE_PROJECT_DIR = os.environ.get("REMOTE_PROJECT_DIR", "~/confidence-tom")
 REMOTE_OLLAMA_BASE_URL = os.environ.get("REMOTE_OLLAMA_BASE_URL", "http://127.0.0.1:11435/v1")
 

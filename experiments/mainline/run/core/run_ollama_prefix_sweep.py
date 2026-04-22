@@ -3,10 +3,11 @@ from __future__ import annotations
 import argparse
 import shlex
 import subprocess
-from pathlib import Path
 from typing import TypedDict
 
-ROOT = Path(__file__).resolve().parents[4]
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
 RUNNER = ROOT / "experiments" / "mainline" / "run" / "core" / "run_prefix_oracle_gain_mapping.py"
 ANALYZER = (
     ROOT / "experiments" / "mainline" / "analysis" / "prefix" / "analyze_prefix_oracle_gain.py"
@@ -125,7 +126,7 @@ def main() -> None:
             run_name = (
                 f"{args.output_prefix}_livebench_{args.family}_to_{large['family']}_{args.limit}"
             )
-        output_dir = ROOT / "results" / run_name
+        output_dir = results_root() / run_name
         result_path = (
             output_dir / f"{_sanitize_label(small_label)}_to_{_sanitize_label(large['label'])}.json"
         )

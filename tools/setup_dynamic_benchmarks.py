@@ -25,7 +25,7 @@ if str(SRC_DIR) not in sys.path:
 
 
 def _load_registry_functions() -> tuple[Any, Any]:
-    module = importlib.import_module("confidence_tom.dynamic_benchmarks")
+    module = importlib.import_module("confidence_tom.data.dynamic_benchmarks")
     return module.get_dynamic_benchmark, module.list_dynamic_benchmarks
 
 

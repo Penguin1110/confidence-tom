@@ -2,17 +2,26 @@ from __future__ import annotations
 
 import hashlib
 import json
-from pathlib import Path
 from typing import Any, cast
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
-DATA_DIR = ROOT / "results" / "_prefix_embedding_v1"
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
+DATA_DIR = results_root() / "_prefix_embedding_v1"
 ROWS_PATH = DATA_DIR / "pilot_rows.jsonl"
 EMBED_PATH = DATA_DIR / "pilot_embeddings.npz"
 OUT_JSON = DATA_DIR / "pilot_probe_results.json"
-OUT_MD = ROOT / "docs" / "prefix_embedding_pilot.md"
+OUT_MD = (
+    ROOT
+    / "docs"
+    / "mainline"
+    / "generated"
+    / "analysis"
+    / "embedding"
+    / "prefix_embedding_pilot.md"
+)
 
 
 def _stable_test_split(task_id: str, test_ratio: float = 0.2) -> bool:

@@ -11,8 +11,6 @@ def test_mainline_and_compat_layout() -> None:
         ROOT / "src" / "confidence_tom" / "compat",
         ROOT / "src" / "confidence_tom" / "compat" / "generator",
         ROOT / "src" / "confidence_tom" / "compat" / "observer",
-        ROOT / "src" / "confidence_tom" / "parsing.py",
-        ROOT / "src" / "confidence_tom" / "dynamic_benchmarks.py",
         ROOT / "src" / "confidence_tom" / "generator",
         ROOT / "src" / "confidence_tom" / "observer",
         ROOT / "experiments" / "mainline",
@@ -64,6 +62,8 @@ def test_mainline_and_compat_layout() -> None:
         ROOT / "src" / "confidence_tom" / "infra" / "client.py",
         ROOT / "src" / "confidence_tom" / "data" / "task_models.py",
         ROOT / "src" / "confidence_tom" / "eval" / "static_evaluators.py",
+        ROOT / "src" / "confidence_tom" / "eval" / "parsing.py",
+        ROOT / "src" / "confidence_tom" / "data" / "dynamic_benchmarks.py",
     ]
     for path in expected_exists:
         assert path.exists(), f"missing expected path: {path.relative_to(ROOT)}"

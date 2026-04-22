@@ -6,11 +6,21 @@ from typing import Any, cast
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
+RESULTS_DIR = results_root()
 OUT_DIR = RESULTS_DIR / "_prefix_predictor_v1"
 OUT_JSON = OUT_DIR / "cross_benchmark_task_clusters.json"
-OUT_MD = ROOT / "docs" / "cross_benchmark_task_clusters.md"
+OUT_MD = (
+    ROOT
+    / "docs"
+    / "mainline"
+    / "generated"
+    / "analysis"
+    / "embedding"
+    / "cross_benchmark_task_clusters.md"
+)
 
 BENCHMARK_RUNS: dict[str, list[tuple[str, str, str]]] = {
     "olympiadbench": [

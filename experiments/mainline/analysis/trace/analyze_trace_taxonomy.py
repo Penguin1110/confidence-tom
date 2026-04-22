@@ -7,11 +7,15 @@ from pathlib import Path
 from statistics import mean, median
 from typing import cast
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
+RESULTS_DIR = results_root()
 OUT_DIR = RESULTS_DIR / "_trace_taxonomy_v1"
 OUT_JSON = OUT_DIR / "trace_taxonomy_summary.json"
-OUT_MD = ROOT / "docs" / "trace_taxonomy_analysis.md"
+OUT_MD = (
+    ROOT / "docs" / "mainline" / "generated" / "analysis" / "trace" / "trace_taxonomy_analysis.md"
+)
 
 EARLY_FRACTION = 1.0 / 3.0
 MIN_STABLE_LOCAL_RATE = 0.5

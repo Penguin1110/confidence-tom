@@ -5,7 +5,9 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-ROOT = Path(__file__).resolve().parents[2]
+from confidence_tom.infra.paths import project_root
+
+ROOT = project_root()
 DEFAULT_DIR = ROOT / "outputs" / "results" / "_prefix_reentry_controls_v1"
 DEFAULT_ROWS = DEFAULT_DIR / "reentry_rows.jsonl"
 DEFAULT_SUMMARY = DEFAULT_DIR / "reentry_summary.json"

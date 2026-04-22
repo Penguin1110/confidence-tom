@@ -8,12 +8,16 @@ from typing import Any, TypedDict, cast
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS_DIR = ROOT / "results"
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
+RESULTS_DIR = results_root()
 EARLY_DIR = RESULTS_DIR / "_early_decision_v1"
 DATASET_CSV = EARLY_DIR / "early_decision_rows.csv"
 OUTPUT_JSON = EARLY_DIR / "routing_simulation.json"
-OUTPUT_MD = ROOT / "docs" / "routing_simulation.md"
+OUTPUT_MD = (
+    ROOT / "docs" / "mainline" / "generated" / "analysis" / "routing" / "routing_simulation.md"
+)
 
 
 STATE_FEATURES = [

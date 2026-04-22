@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import inspect
 import json
 import logging
 import random
@@ -16,18 +15,28 @@ from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.infra.client import LLMClient
 from confidence_tom.intervention import (
     ExtractedFinalAnswerOutput,
-    ModelPricing,
     PrefixOracleGainStepResult,
     PrefixOracleGainTaskResult,
     PrefixSegment,
     SegmentedTraceOutput,
     parse_with_llm_fallback,
     trace_to_cost,
+)
+from experiments.mainline.run.core.common import (
+    client_kwargs_from_cfg as _client_kwargs_from_cfg,
+)
+from experiments.mainline.run.core.common import (
+    load_static_questions,
+)
+from experiments.mainline.run.core.common import (
+    pricing_from_cfg as _pricing_from_cfg,
+)
+from experiments.mainline.run.core.common import (
+    sanitize_label as _sanitize_label,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(message)s")
@@ -64,50 +73,6 @@ Do not use JSON.
 End with a final line exactly in the form:
 Final Answer: <answer>
 """
-
-
-def _client_kwargs_from_cfg(worker_cfg: DictConfig) -> dict[str, Any]:
-    raw_kwargs = {
-        "model": str(worker_cfg.model),
-        "temperature": float(worker_cfg.get("temperature", 0.0)),
-        "max_tokens": int(worker_cfg.get("max_tokens", 2048)),
-        "reasoning_effort": worker_cfg.get("reasoning_effort"),
-        "backend": str(worker_cfg.get("backend", "openrouter")),
-        "local_model_name": worker_cfg.get("local_model_name"),
-        "top_p": worker_cfg.get("top_p"),
-        "top_k": worker_cfg.get("top_k"),
-        "seed": worker_cfg.get("seed"),
-        "num_ctx": worker_cfg.get("num_ctx"),
-        "num_predict": worker_cfg.get("num_predict"),
-        "enable_thinking": worker_cfg.get("enable_thinking"),
-    }
-    # Keep compatibility with older LLMClient signatures in heterogeneous envs
-    # (e.g. Colab image with stale package cache).
-    valid = set(inspect.signature(LLMClient.__init__).parameters.keys())
-    valid.discard("self")
-    return {k: v for k, v in raw_kwargs.items() if k in valid}
-
-
-def _sanitize_label(text: str) -> str:
-    return text.replace("/", "_").replace(":", "_").replace("-", "_").replace(".", "_")
-
-
-def _pricing_from_cfg(cfg: DictConfig, model_name: str) -> Optional[ModelPricing]:
-    item = cfg.pricing.get(model_name)
-    if not item:
-        return None
-    pricing = ModelPricing(
-        input_per_1k=float(item.get("input_per_1k", 0.0)),
-        output_per_1k=float(item.get("output_per_1k", 0.0)),
-        reasoning_per_1k=float(item.get("reasoning_per_1k", 0.0)),
-    )
-    if (
-        pricing.input_per_1k == 0.0
-        and pricing.output_per_1k == 0.0
-        and pricing.reasoning_per_1k == 0.0
-    ):
-        return None
-    return pricing
 
 
 class ResultStore:
@@ -742,17 +707,7 @@ def main(cfg: DictConfig) -> None:
 
     benchmark_name = str(cfg.dataset.benchmark)
     if benchmark_name == "olympiadbench":
-        questions = load_olympiadbench(num_samples=int(cfg.dataset.olympiadbench))
-    elif benchmark_name == "livebench_reasoning":
-        livebench_count = int(
-            cfg.dataset.get("livebench_reasoning", cfg.dataset.get("livebench", 0))
-        )
-        questions = load_livebench_reasoning(num_samples=livebench_count)
-    else:
-        raise ValueError(f"Unsupported prefix oracle-gain benchmark: {benchmark_name}")
-
-    if cfg.dataset.limit:
-        questions = questions[: int(cfg.dataset.limit)]
+        questions = load_static_questions(benchmark_name, cfg.dataset)
 
     out_path = output_dir / (
         f"{_sanitize_label(str(cfg.small_worker.label))}_to_"

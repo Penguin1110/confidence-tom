@@ -3,16 +3,25 @@ from __future__ import annotations
 import argparse
 import json
 from collections import defaultdict
-from pathlib import Path
 from typing import Any, cast
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[3]
-RESULTS_DIR = ROOT / "outputs" / "results"
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
+RESULTS_DIR = results_root()
 OUT_DIR = RESULTS_DIR / "_prefix_predictor_v1"
 OUT_JSON = OUT_DIR / "task_structure_analysis.json"
-OUT_MD = ROOT / "docs" / "mainline" / "analysis" / "prefix_task_structure_analysis.md"
+OUT_MD = (
+    ROOT
+    / "docs"
+    / "mainline"
+    / "generated"
+    / "analysis"
+    / "prefix"
+    / "prefix_task_structure_analysis.md"
+)
 OUT_MAP = OUT_DIR / "task_structure_rank_variance_map.png"
 OUT_CLUSTER = OUT_DIR / "task_structure_clusters.png"
 

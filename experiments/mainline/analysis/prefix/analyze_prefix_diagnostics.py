@@ -5,10 +5,11 @@ import csv
 import json
 import math
 from collections import defaultdict
-from pathlib import Path
 from typing import Any, Sequence, cast
 
-ROOT = Path(__file__).resolve().parents[3]
+from confidence_tom.infra.paths import project_root
+
+ROOT = project_root()
 DATASET_CSV = ROOT / "outputs" / "results" / "_prefix_predictor_v1" / "prefix_predictor_rows.csv"
 OUT_DIR = ROOT / "outputs" / "results" / "_prefix_predictor_v1"
 SIGNAL_JSON = OUT_DIR / "signal_pattern_analysis.json"

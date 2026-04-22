@@ -1,8 +1,8 @@
+from confidence_tom.eval.parsing import extract_answer_candidate, parse_static_response
 from confidence_tom.eval.static_evaluators import (
     _normalize_olympiadbench_prediction,
     _normalize_text_answer,
 )
-from confidence_tom.parsing import extract_answer_candidate, parse_static_response
 
 
 def test_extract_answer_candidate_handles_natural_language_tail() -> None:

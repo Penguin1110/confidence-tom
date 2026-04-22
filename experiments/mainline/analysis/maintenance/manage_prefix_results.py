@@ -12,7 +12,9 @@ from typing import Any
 
 from omegaconf import OmegaConf
 
-ROOT = Path(__file__).resolve().parents[3]
+from confidence_tom.infra.paths import project_root
+
+ROOT = project_root()
 CORE_RUNNER_DIR = ROOT / "experiments" / "mainline" / "run" / "core"
 if str(CORE_RUNNER_DIR) not in sys.path:
     sys.path.insert(0, str(CORE_RUNNER_DIR))

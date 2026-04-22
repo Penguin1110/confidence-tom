@@ -2,4 +2,5 @@
 
 from .evaluators import *  # noqa: F401,F403
 from .metrics import *  # noqa: F401,F403
+from .parsing import *  # noqa: F401,F403
 from .static_evaluators import *  # noqa: F401,F403

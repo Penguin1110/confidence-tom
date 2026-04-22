@@ -4,16 +4,25 @@ import csv
 import hashlib
 import json
 from collections import Counter, defaultdict
-from pathlib import Path
 from typing import Any, cast
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[2]
-DATASET_DIR = ROOT / "results" / "_early_decision_v1"
+from confidence_tom.infra.paths import project_root, results_root
+
+ROOT = project_root()
+DATASET_DIR = results_root() / "_early_decision_v1"
 DATASET_CSV = DATASET_DIR / "early_decision_rows.csv"
 OUTPUT_JSON = DATASET_DIR / "probability_stable_msp_analysis.json"
-OUTPUT_MD = ROOT / "docs" / "probability_stable_msp_analysis.md"
+OUTPUT_MD = (
+    ROOT
+    / "docs"
+    / "mainline"
+    / "generated"
+    / "analysis"
+    / "prefix"
+    / "probability_stable_msp_analysis.md"
+)
 
 STATE_FEATURES = [
     "step_index",
