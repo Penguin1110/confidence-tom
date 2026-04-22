@@ -122,7 +122,7 @@ def test_old_top_level_entrypoints_are_gone() -> None:
 
 def test_mainline_root_is_subdivided() -> None:
     mainline_root = ROOT / "experiments" / "mainline"
-    assert not any(mainline_root.glob("*.py"))
+    assert sorted(p.name for p in mainline_root.glob("*.py")) == ["__init__.py"]
     assert sorted(p.name for p in mainline_root.glob("*.md")) == ["README.md"]
 
     docs_mainline_root = ROOT / "docs" / "mainline"

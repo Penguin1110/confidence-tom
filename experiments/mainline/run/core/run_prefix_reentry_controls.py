@@ -2,14 +2,19 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import fcntl
 import hashlib
 import json
 import os
 import re
+import socket
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
+
+try:
+    import fcntl  # type: ignore[import-not-found]
+except ImportError:  # pragma: no cover - Windows fallback
+    fcntl = None
 
 from confidence_tom.data.dataset_models import StaticTask
 from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
@@ -564,7 +569,7 @@ async def _process_one(
 
     return {
         **row,
-        "execution_host": os.uname().nodename,
+        "execution_host": socket.gethostname(),
         "prefix_tokens_observed": len(_tokenize(prefix_text)),
         "original_small_answer_key": original_small_answer,
         "original_full_answer_key": original_full_answer,
@@ -608,10 +613,11 @@ async def amain(args: argparse.Namespace) -> None:
     lock_path = output_dir / ".reentry.lock"
 
     lock_file = lock_path.open("w", encoding="utf-8")
-    try:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except BlockingIOError:
-        raise SystemExit(f"Another re-entry control process is already running: {lock_path}")
+    if fcntl is not None:
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise SystemExit(f"Another re-entry control process is already running: {lock_path}")
 
     run_names = args.run_name or DEFAULT_RUN_NAMES
     if args.run_name is None:

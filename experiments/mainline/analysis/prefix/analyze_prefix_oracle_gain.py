@@ -21,7 +21,7 @@ from confidence_tom.eval.static_evaluators import build_static_evaluator
 def _load_rows(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding="utf-8"))
     return cast(list[dict[str, Any]], data) if isinstance(data, list) else []
 
 
@@ -498,7 +498,9 @@ def main(cfg: DictConfig) -> None:
     # Persist outputs before verbose logging so partial runs still leave usable summaries.
     if summary_path:
         summary_path.parent.mkdir(parents=True, exist_ok=True)
-        summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2))
+        summary_path.write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
     if per_prefix_rows_csv and per_prefix_rows:
         per_prefix_rows_csv.parent.mkdir(parents=True, exist_ok=True)

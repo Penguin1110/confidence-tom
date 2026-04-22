@@ -51,7 +51,7 @@ def _load_final_json_files() -> list[Path]:
         if not _is_final_result_file(path):
             continue
         try:
-            data = json.loads(path.read_text())
+            data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
             continue
         if (
@@ -71,7 +71,7 @@ def _mean_or_zero(values: list[float]) -> float:
 def _load_records() -> list[TaskRecord]:
     records: list[TaskRecord] = []
     for path in _load_final_json_files():
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
         for task in data:
             steps = task.get("prefix_oracle_steps", [])
             small_corrects = [bool(step.get("small_continue_correct")) for step in steps]

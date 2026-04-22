@@ -90,7 +90,7 @@ class ResultStore:
         if not self.path.exists():
             return []
         try:
-            return cast(list[dict[str, Any]], json.loads(self.path.read_text()))
+            return cast(list[dict[str, Any]], json.loads(self.path.read_text(encoding="utf-8")))
         except Exception:
             return []
 
@@ -106,7 +106,7 @@ class ResultStore:
         else:
             self.rows[existing] = row
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(self.path)
 
 
@@ -123,14 +123,14 @@ class PartialTaskStore:
         if not path.exists():
             return None
         try:
-            return cast(dict[str, Any], json.loads(path.read_text()))
+            return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
         except Exception:
             return None
 
     def save(self, task_id: str, payload: dict[str, Any]) -> None:
         tmp = self.root / f"{task_id}.tmp"
         final = self.path_for(task_id)
-        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(final)
 
     def clear(self, task_id: str) -> None:
