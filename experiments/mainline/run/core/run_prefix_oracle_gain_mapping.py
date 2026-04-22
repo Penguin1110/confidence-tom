@@ -5,10 +5,14 @@ import json
 import logging
 import random
 import re
+import sys
 import traceback
 import uuid
 from pathlib import Path
 from typing import Any, Optional, cast
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 import hydra
 from hydra.utils import to_absolute_path

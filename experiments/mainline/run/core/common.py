@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from omegaconf import DictConfig
 
@@ -66,4 +66,4 @@ def load_static_questions(benchmark_name: str, dataset_cfg: DictConfig) -> list[
 
     if dataset_cfg.limit:
         questions = questions[: int(dataset_cfg.limit)]
-    return questions
+    return cast(list[StaticTask], questions)

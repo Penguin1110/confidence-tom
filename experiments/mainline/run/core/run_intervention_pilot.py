@@ -3,9 +3,13 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import sys
 import traceback
 from pathlib import Path
 from typing import Any, Optional, cast
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 import hydra
 from hydra.utils import to_absolute_path
