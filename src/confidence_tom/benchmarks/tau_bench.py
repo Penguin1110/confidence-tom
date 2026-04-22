@@ -10,16 +10,30 @@ Setup:
 import logging
 import sys
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal, Protocol, cast
 
-from confidence_tom.task_models import DynamicTask
+from confidence_tom.data.task_models import DynamicTask
 
 logger = logging.getLogger(__name__)
 
 TAU_BENCH_DIR = Path(__file__).resolve().parents[3] / "external" / "tau-bench"
 
 
-def _load_env_assets(env: Literal["retail", "airline"], split: str):
+class _TauToolProtocol(Protocol):
+    @classmethod
+    def get_info(cls) -> dict[str, Any]: ...
+
+
+class _TauTaskProtocol(Protocol):
+    instruction: str
+    actions: list[Any]
+    outputs: list[Any]
+    user_id: str
+
+
+def _load_env_assets(
+    env: Literal["retail", "airline"], split: str
+) -> tuple[list[dict[str, Any]], list[str], list[type[_TauToolProtocol]]]:
     """Load tau-bench tasks plus environment rules/tools for prompting."""
     if env == "retail":
         from tau_bench.envs.retail.rules import RULES
@@ -34,12 +48,13 @@ def _load_env_assets(env: Literal["retail", "airline"], split: str):
         return tasks_raw, RULES, ALL_TOOLS
 
     from tau_bench.envs.airline.rules import RULES
-    from tau_bench.envs.airline.tools import ALL_TOOLS
     from tau_bench.envs.airline.tasks_test import TASKS_TEST as tasks_raw
+    from tau_bench.envs.airline.tools import ALL_TOOLS
+
     return tasks_raw, RULES, ALL_TOOLS
 
 
-def _format_tool_catalog(tool_classes: list[type]) -> str:
+def _format_tool_catalog(tool_classes: list[type[_TauToolProtocol]]) -> str:
     """Render a concise tool catalog from tau-bench tool schemas."""
     blocks: list[str] = []
     for tool_cls in tool_classes:
@@ -71,7 +86,7 @@ def _build_tau_instruction(
     user_instruction: str,
     env: Literal["retail", "airline"],
     rules: list[str],
-    tool_classes: list[type],
+    tool_classes: list[type[_TauToolProtocol]],
 ) -> str:
     """Build a benchmark-faithful instruction for the generator."""
     tools_text = _format_tool_catalog(tool_classes)
@@ -80,12 +95,17 @@ def _build_tau_instruction(
         f"You are solving a tau-bench {env} environment task.\n\n"
         "Environment constraints:\n"
         "- You must operate only through the tau-bench environment tools listed below.\n"
-        "- Do not use external websites, search engines, email, phone calls, customer-service chats, or invented systems.\n"
-        "- Do not invent product names, order outcomes, prices, fees, confirmations, or tool observations.\n"
+        "- Do not use external websites, search engines, email, phone calls, "
+        "customer-service chats, or invented systems.\n"
+        "- Do not invent product names, order outcomes, prices, fees, "
+        "confirmations, or tool observations.\n"
         "- If a backend-changing action is needed, follow the environment policy exactly.\n"
-        "- In trajectory.action, write one tau-bench tool call at a time using the exact tool name and concrete arguments.\n"
+        "- In trajectory.action, write one tau-bench tool call at a time using "
+        "the exact tool name and concrete arguments.\n"
         "- In observation, only state what the tool returned or what the user explicitly said.\n"
-        "- In final_answer, summarize the completed in-environment result only; if the task cannot be completed from available evidence, say so briefly.\n\n"
+        "- In final_answer, summarize the completed in-environment result only; "
+        "if the task cannot be completed from available evidence, say so "
+        "briefly.\n\n"
         f"Environment rules:\n{rules_text}\n\n"
         f"Available tools:\n{tools_text}\n\n"
         f"User task:\n{user_instruction}"
@@ -123,8 +143,9 @@ def load_tau_bench(
 
     tasks: list[DynamicTask] = []
     for i, t in enumerate(tasks_raw[:num_samples]):
+        task = cast(_TauTaskProtocol, t)
         instruction = _build_tau_instruction(
-            user_instruction=t.instruction,
+            user_instruction=task.instruction,
             env=env,
             rules=rules,
             tool_classes=tool_classes,
@@ -135,13 +156,13 @@ def load_tau_bench(
                 benchmark="tau-bench",
                 instruction=instruction,
                 ground_truth={
-                    "actions": [a.model_dump() for a in t.actions],
-                    "outputs": t.outputs,
+                    "actions": [a.model_dump() for a in task.actions],
+                    "outputs": task.outputs,
                 },
                 metadata={
                     "env": env,
                     "split": split,
-                    "user_id": t.user_id,
+                    "user_id": task.user_id,
                     "task_index": i,
                     "rules": list(rules),
                     "tool_names": [tool.get_info()["function"]["name"] for tool in tool_classes],

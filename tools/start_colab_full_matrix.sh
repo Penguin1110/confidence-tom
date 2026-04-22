@@ -46,10 +46,10 @@ if [[ -n "$AUTO_BRANCH" ]]; then
   git checkout "$AUTO_BRANCH"
 fi
 
-AUTOPUSH_LOG="logs/colab_autopush.log"
-MATRIX_LOG="logs/colab_l4_full_matrix.log"
+AUTOPUSH_LOG="outputs/logs/colab_autopush.log"
+MATRIX_LOG="outputs/logs/colab_l4_full_matrix.log"
 RUN_FOREGROUND="${RUN_FOREGROUND:-1}"
-BACKUP_LOG="logs/colab_backup_loop.log"
+BACKUP_LOG="outputs/logs/colab_backup_loop.log"
 
 nohup uv run python tools/colab_autopush.py \
   --repo . \
@@ -84,9 +84,9 @@ elif [[ -d "/content/drive/MyDrive" ]]; then
     while true; do
       ts=\$(date '+%Y%m%d_%H%M%S')
       mkdir -p '$BACKUP_DIR'/latest
-      rsync -a --delete results/ '$BACKUP_DIR'/latest/results/
-      rsync -a --delete logs/ '$BACKUP_DIR'/latest/logs/
-      tar -czf '$BACKUP_DIR'/snapshot_\$ts.tar.gz results logs || true
+      rsync -a --delete outputs/results/ '$BACKUP_DIR'/latest/outputs/results/
+      rsync -a --delete outputs/logs/ '$BACKUP_DIR'/latest/outputs/logs/
+      tar -czf '$BACKUP_DIR'/snapshot_\$ts.tar.gz outputs || true
       ls -1t '$BACKUP_DIR'/snapshot_*.tar.gz 2>/dev/null | tail -n +6 | xargs -r rm -f
       sleep '$BACKUP_INTERVAL_SEC'
     done
@@ -95,7 +95,8 @@ elif [[ -d "/content/drive/MyDrive" ]]; then
 fi
 
 MATRIX_CMD=(
-  uv run python experiments/run_prefix_small_only_full_matrix.py
+  uv run python experiments/mainline/run/batch/run_small_only.py
+  matrix
   --models "$MODELS"
   --benchmarks "$BENCHMARKS"
   --olympiad-limit "$OLYMPIAD_LIMIT"

@@ -1,6 +1,6 @@
 # Confidence-ToM Experiment Configuration
 name: "confidence_tom_experiment"
-output_dir: "results"
+output_dir: "outputs/results"
 verbose: true
 use_wandb: false
 wandb_project: "confidence-tom"

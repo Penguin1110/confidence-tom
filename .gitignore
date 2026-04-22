@@ -34,9 +34,9 @@ ENV/
 *.swp
 *.swo
 
-# Results
-results/*.csv
-results/*.json
+# Results / logs
+results/
+logs/
 
 # OS
 .DS_Store

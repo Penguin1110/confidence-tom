@@ -4,7 +4,7 @@
 # using dynamic agent benchmarks (tau-bench, bird-sql, plancraft, intercode).
 
 name: "scale_dynamic_confidence_experiment"
-output_dir: "results/scale_dynamic"
+output_dir: "outputs/results/scale_dynamic"
 observer_output_dir: "results/scale_dynamic_observer"
 
 # --- Subject Models ---

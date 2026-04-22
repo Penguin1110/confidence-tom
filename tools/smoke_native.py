@@ -22,6 +22,7 @@ import sys
 import traceback
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -40,65 +41,78 @@ logging.basicConfig(
 
 # ── colour helpers ────────────────────────────────────────────────────────────
 _G, _R, _Y, _B, _X = "\033[32m", "\033[31m", "\033[33m", "\033[1m", "\033[0m"
-def ok(m):   return f"{_G}PASS{_X}  {m}"
-def fail(m): return f"{_R}FAIL{_X}  {m}"
-def hdr(m):  return f"\n{_B}{m}{_X}"
+
+
+def ok(m: str) -> str:
+    return f"{_G}PASS{_X}  {m}"
+
+
+def fail(m: str) -> str:
+    return f"{_R}FAIL{_X}  {m}"
+
+
+def hdr(m: str) -> str:
+    return f"\n{_B}{m}{_X}"
 
 
 # ── check helpers ─────────────────────────────────────────────────────────────
 
-def _check_result(label: str, result) -> list[tuple[bool, str]]:
-    checks = []
 
-    def c(cond, msg):
+def _check_result(label: str, result: Any) -> list[tuple[bool, str]]:
+    checks: list[tuple[bool, str]] = []
+
+    def c(cond: object, msg: str) -> None:
         checks.append((bool(cond), f"[{label}] {msg}"))
 
-    c(isinstance(result.c_beh, float) and 0.0 <= result.c_beh <= 1.0,
-      f"c_beh={result.c_beh!r} in [0,1]")
+    c(
+        isinstance(result.c_beh, float) and 0.0 <= result.c_beh <= 1.0,
+        f"c_beh={result.c_beh!r} in [0,1]",
+    )
 
-    c(result.c_rep is not None,
-      f"c_rep={result.c_rep!r} (confidence elicitation returned a value)")
+    c(result.c_rep is not None, f"c_rep={result.c_rep!r} (confidence elicitation returned a value)")
 
-    c(result.gap is not None,
-      f"gap={result.gap!r}")
+    c(result.gap is not None, f"gap={result.gap!r}")
 
     trace = result.primary_trace or ""
-    c(len(trace) > 20,
-      f"primary_trace len={len(trace)}")
+    c(len(trace) > 20, f"primary_trace len={len(trace)}")
 
     run0 = result.runs[0] if result.runs else None
     c(run0 is not None, "has at least one run")
     if run0:
-        c(run0.reported_confidence is not None,
-          f"runs[0].reported_confidence={run0.reported_confidence!r}")
-        c(len(run0.trace_text) > 0,
-          f"runs[0].trace_text len={len(run0.trace_text)}")
+        c(
+            run0.reported_confidence is not None,
+            f"runs[0].reported_confidence={run0.reported_confidence!r}",
+        )
+        c(len(run0.trace_text) > 0, f"runs[0].trace_text len={len(run0.trace_text)}")
 
     return checks
 
 
 # ── per-benchmark runners ─────────────────────────────────────────────────────
 
+
 async def run_tau_bench(model_id: str, user_model: str) -> object:
     from run_scale_generator import (
-        _load_tau_tasks, _run_tau_native_task,
-        _TauBenchUserSimulator,
+        _run_tau_native_task,
     )
-    from confidence_tom.client import LLMClient
+
+    from confidence_tom.infra.client import LLMClient
 
     tau_root = ROOT / "external" / "tau-bench"
     sys.path.insert(0, str(tau_root))
-    from tau_bench.envs import get_env  # type: ignore
-    from tau_bench.types import Action  # type: ignore
+    from tau_bench.envs import get_env
+    from tau_bench.types import Action
 
     tau_cfg = SimpleNamespace(
-        env="retail", split="test", max_steps=20,
+        env="retail",
+        split="test",
+        max_steps=20,
         get=lambda k, d=None: d,
     )
     tau_cfg.get = lambda k, d=None: {"max_steps": 20}.get(k, d)
 
     agent_client = LLMClient(model=model_id, temperature=0.7, max_tokens=4096)
-    user_client  = LLMClient(model=user_model, temperature=0.0, max_tokens=256)
+    user_client = LLMClient(model=user_model, temperature=0.0, max_tokens=256)
 
     task_spec = {"task_id": "tau_retail_test_0000", "task_index": 0}
     return await _run_tau_native_task(
@@ -116,8 +130,9 @@ async def run_tau_bench(model_id: str, user_model: str) -> object:
 
 async def run_bird_sql(model_id: str) -> object:
     from run_scale_generator import _run_bird_native_task
+
     from confidence_tom.benchmarks.bird_sql import load_bird_sql
-    from confidence_tom.client import LLMClient
+    from confidence_tom.infra.client import LLMClient
 
     tasks = load_bird_sql(split="dev", num_samples=1)
     client = LLMClient(model=model_id, temperature=0.7, max_tokens=2048)
@@ -126,7 +141,8 @@ async def run_bird_sql(model_id: str) -> object:
 
 async def run_plancraft(model_id: str) -> object:
     from run_scale_generator import _load_plancraft_examples, _run_plancraft_native_task
-    from confidence_tom.client import LLMClient
+
+    from confidence_tom.infra.client import LLMClient
 
     specs = _load_plancraft_examples(split="test", limit=1)
     client = LLMClient(model=model_id, temperature=0.7, max_tokens=512)
@@ -135,20 +151,22 @@ async def run_plancraft(model_id: str) -> object:
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
-RUNNERS = {
+RUNNERS: dict[str, Callable[..., Any]] = {
     "tau_bench": run_tau_bench,
-    "bird_sql":  run_bird_sql,
-    "plancraft":  run_plancraft,
+    "bird_sql": run_bird_sql,
+    "plancraft": run_plancraft,
 }
 
 
 async def amain() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model",      default="qwen/qwen3-8b")
-    parser.add_argument("--user-model", default="openai/gpt-4o-mini",
-                        help="User simulator model for tau_bench")
-    parser.add_argument("--skip", nargs="*", default=[],
-                        help="Benchmarks to skip, e.g. --skip tau_bench")
+    parser.add_argument("--model", default="qwen/qwen3-8b")
+    parser.add_argument(
+        "--user-model", default="openai/gpt-4o-mini", help="User simulator model for tau_bench"
+    )
+    parser.add_argument(
+        "--skip", nargs="*", default=[], help="Benchmarks to skip, e.g. --skip tau_bench"
+    )
     args = parser.parse_args()
 
     print(hdr("=" * 55))
@@ -183,9 +201,18 @@ async def amain() -> None:
                 rs = r0.run_summary
                 has_trajectory = bool(rs and rs.trajectory)
                 confidence_source = "structured" if has_trajectory else "text-fallback"
-                print(f"  is_correct={r0.is_correct}  reported_confidence={r0.reported_confidence}  [{confidence_source}]")
+                print(
+                    "  "
+                    f"is_correct={r0.is_correct}  "
+                    f"reported_confidence={r0.reported_confidence}  "
+                    f"[{confidence_source}]"
+                )
                 if rs:
-                    print(f"  final_confidence (raw)={rs.final_confidence}  final_answer={rs.final_answer!r:.60}")
+                    print(
+                        "  "
+                        f"final_confidence (raw)={rs.final_confidence}  "
+                        f"final_answer={rs.final_answer!r:.60}"
+                    )
                 print(f"  trace_text preview: {r0.trace_text[:120]!r}")
 
         except Exception:

@@ -8,6 +8,11 @@ import importlib
 import json
 import sys
 from pathlib import Path
+from typing import Protocol, cast
+
+
+class _MathJudgerProtocol(Protocol):
+    def judge(self, reference: str, prediction: str, precision: object) -> bool: ...
 
 
 def _candidate_repo_paths() -> list[Path]:
@@ -19,7 +24,7 @@ def _candidate_repo_paths() -> list[Path]:
     ]
 
 
-def _load_math_judger() -> type[object]:
+def _load_math_judger() -> type[_MathJudgerProtocol]:
     for path in _candidate_repo_paths():
         if not path.exists():
             continue
@@ -27,7 +32,7 @@ def _load_math_judger() -> type[object]:
             sys.path.insert(0, str(path))
         try:
             module = importlib.import_module("math_judger")
-            return getattr(module, "MathJudger")
+            return cast(type[_MathJudgerProtocol], module.MathJudger)
         except Exception:
             continue
     raise RuntimeError("Could not import OlympiadBench MathJudger from any known repo path")

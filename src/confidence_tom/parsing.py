@@ -12,6 +12,8 @@ import logging
 import re
 from typing import Optional
 
+from pydantic import BaseModel, Field
+
 _REASONING_TAG_PATTERNS = [
     r"<think>.*?</think>",
     r"<analysis>.*?</analysis>",
@@ -34,8 +36,6 @@ _ANSWER_CANDIDATE_PATTERNS = [
     r"\bwe conclude that\b\s*(.+?)(?:\n|$)",
     r"\bthe result is\b\s*[:=\-]?\s*(.+?)(?:\n|$)",
 ]
-
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -346,16 +346,15 @@ def parse_extract_response(
 def _try_json_parse(raw: str, valid: list[str]) -> Optional[MCResponse]:
     """Attempt to parse as JSON, handling markdown code blocks."""
     # Extract JSON from markdown code blocks if present
-    json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
-    text = json_match.group(1) if json_match else raw
+    json_block_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
+    text = json_block_match.group(1) if json_block_match else raw
 
     # Also try finding raw JSON object if no code block
-    if not json_match:
+    if not json_block_match:
         start_idx = raw.find("{")
         end_idx = raw.rfind("}")
         if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
             text = raw[start_idx : end_idx + 1]
-            json_match = True
 
     try:
         data = json.loads(text)

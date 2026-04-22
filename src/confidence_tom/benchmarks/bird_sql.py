@@ -20,11 +20,13 @@ import sqlite3
 from pathlib import Path
 from typing import Optional
 
-from confidence_tom.task_models import DynamicTask
+from confidence_tom.data.task_models import DynamicTask
 
 logger = logging.getLogger(__name__)
 
-BIRD_DATA_DIR = Path(__file__).resolve().parents[3] / "external" / "birdsql" / "bird" / "llm" / "data"
+BIRD_DATA_DIR = (
+    Path(__file__).resolve().parents[3] / "external" / "birdsql" / "bird" / "llm" / "data"
+)
 
 
 def _get_schema(db_path: Path) -> str:
@@ -56,7 +58,11 @@ def load_bird_sql(
     # Support both flat layout (data/dev/dev.json) and versioned layout
     # (data/dev/dev_20240627/dev.json) as shipped in the official download.
     flat_file = BIRD_DATA_DIR / split / f"{split}.json"
-    versioned_dirs = sorted((BIRD_DATA_DIR / split).glob(f"{split}_*")) if (BIRD_DATA_DIR / split).exists() else []
+    versioned_dirs = (
+        sorted((BIRD_DATA_DIR / split).glob(f"{split}_*"))
+        if (BIRD_DATA_DIR / split).exists()
+        else []
+    )
     versioned_file = versioned_dirs[-1] / f"{split}.json" if versioned_dirs else None
 
     if flat_file.exists():
@@ -92,7 +98,10 @@ def load_bird_sql(
             instruction += f"\n\nHint: {item['evidence']}"
         if schema:
             instruction += f"\n\nSchema:\n{schema}"
-        instruction += "\n\nYour final_answer must be a valid SQLite SQL query that answers the question. Output only the SQL query string, nothing else."
+        instruction += (
+            "\n\nYour final_answer must be a valid SQLite SQL query that answers "
+            "the question. Output only the SQL query string, nothing else."
+        )
 
         tasks.append(
             DynamicTask(

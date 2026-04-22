@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 from typing import Any, Optional, Type, TypeVar
 
-from confidence_tom.client import LLMClient
+from pydantic import BaseModel
+
+from confidence_tom.infra.client import LLMClient
 from confidence_tom.intervention.models import (
     ExtractedFinalAnswerOutput,
     NextStepOutput,
@@ -11,7 +13,7 @@ from confidence_tom.intervention.models import (
     StepwiseWorkerOutput,
 )
 
-T = TypeVar("T")
+T = TypeVar("T", bound=BaseModel)
 
 
 def _extract_first_json_object(raw: str) -> str:
@@ -150,22 +152,34 @@ def _extract_messages_from_raw(raw: str, response_model: Type[Any]) -> list[dict
             "role": "system",
             "content": (
                 "You are a strict JSON information extractor.\n"
-                f"Convert the raw model output into a valid JSON object for a {_task_label(response_model)}.\n\n"
+                "Convert the raw model output into a valid JSON object for a "
+                f"{_task_label(response_model)}.\n\n"
                 "Return ONLY valid JSON in exactly this schema shape:\n"
                 f"{_schema_text(response_model)}\n\n"
                 "Rules:\n"
                 "- Preserve the original semantics if recoverable.\n"
                 "- Normalize minor enum/style mismatches.\n"
                 "- If a field is missing, use a safe default.\n"
-                "- Do NOT invent mathematical facts, new steps, or a final answer that is not explicitly supported by the raw text.\n"
-                "- For segmented traces, only regroup existing reasoning into coherent segments; do not add new reasoning content.\n"
-                "- For segmented traces, prefer coarse, semantically self-contained reasoning chunks rather than sentence-level splits.\n"
-                "- Do NOT create standalone segments for section headers, transition phrases, or isolated formula blocks when they clearly belong with adjacent reasoning.\n"
-                "- Merge short setup lines, short transitions, and displayed equations into the surrounding reasoning chunk when possible.\n"
-                "- A good segment usually corresponds to one subgoal or one meaningful reasoning unit, not one line.\n"
-                "- For final-answer extraction, only return an answer explicitly supported by the raw text.\n"
-                "- Only set done=true or final_answer when the raw text clearly indicates the step finishes the task.\n"
-                "- If the raw text is missing important information needed for a reliable extraction, set parse_incomplete=true and explain briefly in parse_incomplete_note.\n"
+                "- Do NOT invent mathematical facts, new steps, or a final "
+                "answer that is not explicitly supported by the raw text.\n"
+                "- For segmented traces, only regroup existing reasoning into "
+                "coherent segments; do not add new reasoning content.\n"
+                "- For segmented traces, prefer coarse, semantically self-"
+                "contained reasoning chunks rather than sentence-level splits.\n"
+                "- Do NOT create standalone segments for section headers, "
+                "transition phrases, or isolated formula blocks when they "
+                "clearly belong with adjacent reasoning.\n"
+                "- Merge short setup lines, short transitions, and displayed "
+                "equations into the surrounding reasoning chunk when possible.\n"
+                "- A good segment usually corresponds to one subgoal or one "
+                "meaningful reasoning unit, not one line.\n"
+                "- For final-answer extraction, only return an answer "
+                "explicitly supported by the raw text.\n"
+                "- Only set done=true or final_answer when the raw text "
+                "clearly indicates the step finishes the task.\n"
+                "- If the raw text is missing important information needed for "
+                "a reliable extraction, set parse_incomplete=true and explain "
+                "briefly in parse_incomplete_note.\n"
                 "- Do not include markdown fences or extra text."
             ),
         },

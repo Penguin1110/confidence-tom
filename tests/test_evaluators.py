@@ -1,7 +1,18 @@
 import sqlite3
+import sys
+from types import ModuleType
+from typing import Any
 
-from confidence_tom.evaluators import build_evaluator, evaluate_bird_sql, evaluate_plancraft, evaluate_tau_bench, extract_sql
-from confidence_tom.task_models import DynamicTask
+import pytest
+
+from confidence_tom.data.task_models import DynamicTask
+from confidence_tom.eval.evaluators import (
+    build_evaluator,
+    evaluate_bird_sql,
+    evaluate_plancraft,
+    evaluate_tau_bench,
+    extract_sql,
+)
 
 
 def test_extract_sql_from_code_fence() -> None:
@@ -9,7 +20,7 @@ def test_extract_sql_from_code_fence() -> None:
     assert extract_sql(text) == "SELECT 1"
 
 
-def test_bird_sql_accepts_wrapped_sql(tmp_path) -> None:
+def test_bird_sql_accepts_wrapped_sql(tmp_path: Any) -> None:
     db_path = tmp_path / "sample.sqlite"
     conn = sqlite3.connect(db_path)
     conn.execute("CREATE TABLE numbers (value INTEGER)")
@@ -43,7 +54,32 @@ def test_plancraft_rejects_contradiction_even_with_target_answer() -> None:
     assert not evaluate_plancraft("cake", task, evidence)
 
 
-def test_plancraft_accepts_reachable_target() -> None:
+def test_plancraft_accepts_reachable_target(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeRecipe:
+        def can_craft_from_inventory(self, inventory: dict[str, int]) -> bool:
+            return inventory.get("sugar_cane", 0) > 0
+
+        def craft_from_inventory(self, inventory: dict[str, int]) -> dict[str, int]:
+            next_state = dict(inventory)
+            if next_state.get("sugar_cane", 0) <= 0:
+                return {}
+            next_state["sugar_cane"] -= 1
+            if next_state["sugar_cane"] <= 0:
+                next_state.pop("sugar_cane", None)
+            next_state["sugar"] = next_state.get("sugar", 0) + 1
+            return next_state
+
+    recipes_module = ModuleType("plancraft.environment.recipes")
+    setattr(recipes_module, "RECIPES", {"sugar": [FakeRecipe()]})
+    environment_module = ModuleType("plancraft.environment")
+    setattr(environment_module, "recipes", recipes_module)
+    plancraft_module = ModuleType("plancraft")
+    setattr(plancraft_module, "environment", environment_module)
+
+    monkeypatch.setitem(sys.modules, "plancraft", plancraft_module)
+    monkeypatch.setitem(sys.modules, "plancraft.environment", environment_module)
+    monkeypatch.setitem(sys.modules, "plancraft.environment.recipes", recipes_module)
+
     task = DynamicTask(
         task_id="plancraft_test",
         benchmark="plancraft",
@@ -87,12 +123,16 @@ def test_tau_bench_rejects_missing_required_output() -> None:
         benchmark="tau-bench",
         instruction="",
         ground_truth={
-            "actions": [{"name": "return_delivered_order_items", "kwargs": {"order_id": "#W2378156"}}],
+            "actions": [
+                {"name": "return_delivered_order_items", "kwargs": {"order_id": "#W2378156"}}
+            ],
             "outputs": ["10"],
         },
         metadata={},
     )
-    assert not evaluate_tau_bench("There are 35 options.", task, "Action: return_delivered_order_items")
+    assert not evaluate_tau_bench(
+        "There are 35 options.", task, "Action: return_delivered_order_items"
+    )
 
 
 def test_build_evaluator_returns_callable() -> None:

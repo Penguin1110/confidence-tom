@@ -12,15 +12,16 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from confidence_tom.client import LLMClient
-from confidence_tom.evaluators import extract_sql
+from confidence_tom.eval.evaluators import extract_sql  # noqa: E402
+from confidence_tom.infra.client import LLMClient  # noqa: E402
 
 
-def load_items(split: str):
+def load_items(split: str) -> tuple[list[dict[str, Any]], Path]:
     base = ROOT / "external" / "birdsql" / "bird" / "llm" / "data" / split
     if (base / f"{split}.json").exists():
         questions_file = base / f"{split}.json"
@@ -60,7 +61,7 @@ async def amain() -> None:
     parser.add_argument("--model", required=True)
     parser.add_argument("--split", default="dev")
     parser.add_argument("--num-samples", type=int, default=10)
-    parser.add_argument("--output", default="results/bird_sql_native.json")
+    parser.add_argument("--output", default="outputs/results/bird_sql_native.json")
     args = parser.parse_args()
 
     client = LLMClient(model=args.model, temperature=0.0, max_tokens=1024)
@@ -79,7 +80,10 @@ async def amain() -> None:
         )
         sql_text = await asyncio.to_thread(
             client.generate_text,
-            [{"role": "system", "content": "You are a text-to-SQL model."}, {"role": "user", "content": prompt}],
+            [
+                {"role": "system", "content": "You are a text-to-SQL model."},
+                {"role": "user", "content": prompt},
+            ],
         )
         sql = extract_sql(sql_text) or sql_text.strip()
         results.append(
@@ -92,7 +96,9 @@ async def amain() -> None:
             }
         )
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.output).write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+        Path(args.output).write_text(
+            json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
 
 
 def main() -> None:

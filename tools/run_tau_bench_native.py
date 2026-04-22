@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 TAU_ROOT = ROOT / "external" / "tau-bench"
 sys.path.insert(0, str(TAU_ROOT))
 
-from tau_bench.run import run  # type: ignore
-from tau_bench.types import RunConfig  # type: ignore
+from tau_bench.run import run  # noqa: E402
+from tau_bench.types import RunConfig  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -26,7 +26,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--user-model-provider", default="")
     parser.add_argument("--env", choices=["retail", "airline"], default="retail")
     parser.add_argument("--task-split", choices=["train", "test", "dev"], default="test")
-    parser.add_argument("--agent-strategy", choices=["tool-calling", "act", "react", "few-shot"], default="tool-calling")
+    parser.add_argument(
+        "--agent-strategy",
+        choices=["tool-calling", "act", "react", "few-shot"],
+        default="tool-calling",
+    )
     parser.add_argument("--user-strategy", default="llm")
     parser.add_argument("--num-trials", type=int, default=1)
     parser.add_argument("--task-ids", type=int, nargs="*")
@@ -34,7 +38,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--end-index", type=int, default=-1)
     parser.add_argument("--max-concurrency", type=int, default=1)
     parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--log-dir", default="results/tau_bench_native")
+    parser.add_argument("--log-dir", default="outputs/results/tau_bench_native")
     parser.add_argument("--seed", type=int, default=10)
     parser.add_argument("--shuffle", type=int, default=0)
     parser.add_argument("--few-shot-displays-path")

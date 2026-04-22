@@ -4,7 +4,7 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-from confidence_tom.task_models import ApiTrace
+from confidence_tom.data.task_models import ApiTrace
 
 
 class StepRecord(BaseModel):

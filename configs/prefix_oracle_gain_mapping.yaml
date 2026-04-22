@@ -1,5 +1,5 @@
 name: "prefix_oracle_gain_mapping"
-output_dir: "results/prefix_oracle_gain_mapping"
+output_dir: "outputs/results/prefix_oracle_gain_mapping"
 
 small_worker:
   model: "qwen/qwen3-14b:nitro"

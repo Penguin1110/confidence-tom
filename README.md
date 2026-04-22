@@ -1,79 +1,106 @@
-# Confidence-ToM: 大模型心智理論實驗
+# Confidence-ToM
 
-測試大模型能否讀懂小模型的內在信心狀態 (Theory of Mind for Confidence Prediction)
+這個 repo 現在的主線是：
 
-## 🎯 研究問題
+> **prefix / re-entry / oracle / trace taxonomy**
 
-**大模型能否透過閱讀小模型的思考過程，準確預測小模型的自評信心？**
+我們要研究的是：
+- 小模型在 prefix / re-entry 時的局部穩定性
+- 這些局部訊號能不能預測整題 correctness
+- 這些訊號能不能當成 intervention / routing 的 prior
 
-## 🔬 實驗架構
+## 研究分層
 
-### 第一階段：數據生產 (The Generator)
-- **角色**：小模型 (Target Subject, e.g., Gemma-2-9B-It)
-- **任務**：回答問題並輸出思考過程與自評信心
-- **產出物**：`[Question, CoT, Answer, True_Confidence]`
+### Mainline
+- `experiments/mainline/`
+- `docs/mainline/`
 
-### 第二階段：盲測預測 (The Observer)
-- **角色**：大模型 (Predictor, e.g., GPT-4o, Claude 3.5, Gemini 1.5 Pro)
-- **任務**：閱讀小模型的思考過程，預測其信心狀態
-- **產出物**：`[Question, Predicted_Confidence, Prediction_Reasoning]`
+這裡放的是現在的主研究線：
+- prefix re-entry controls
+- oracle gain / fragility
+- trace taxonomy
+- prefix predictor / minimal sufficient prefix
+- routing / intervention 相關分析
 
-### 第三階段：對齊分析 (The Evaluator)
-- **角色**：分析腳本
-- **任務**：比較 True_Confidence 與 Predicted_Confidence
+### Core library
+- `src/confidence_tom/`
 
-## 🏗️ 專案結構
+這裡是共用核心程式：
+- infra/: client / paths / model_config
+- data/: task schemas / dataset loaders / dynamic benchmark adapters
+- eval/: evaluators / metrics
+- intervention/: features / VOI / router / structured parse
+- compat/: 舊 generator / observer 相容層
 
-```
+## 專案結構
+
+```text
 confidence-tom/
 ├── src/confidence_tom/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── client.py
-│   ├── generator/          # 第一階段：小模型產生數據
-│   ├── observer/           # 第二階段：大模型預測信心
-│   └── evaluator/          # 第三階段：對齊分析
+│   ├── intervention/   # 主線方法：prefix / re-entry / routing / VOI
+│   ├── infra/          # client, paths, model config
+│   ├── data/           # task schemas, dataset loaders, benchmark adapters
+│   ├── eval/           # evaluators and metrics
+│   ├── benchmarks/     # benchmark-specific runners/adapters
+│   ├── compat/         # 舊 generator / observer 相容層
+│   ├── generator/      # 對 compat 的穩定 import shim
+│   └── observer/       # 對 compat 的穩定 import shim
 ├── experiments/
-├── results/
+│   └── mainline/
+│       ├── run/
+│       │   ├── core/
+│       │   ├── batch/
+│       │   └── remote/
+│       ├── analysis/
+│       └── data/
+├── docs/
+│   └── mainline/
+│       ├── notes/
+│       │   ├── reports/
+│       │   └── proposals/
+│       └── generated/
+│           └── analysis/
 ├── configs/
+├── outputs/
+│   ├── results/
+│   └── logs/
 └── tests/
 ```
 
-## 🛠️ 安裝
+## 安裝
 
 ```bash
-# 安裝所有依賴
 uv sync --all-groups
-
-# 安裝 pre-commit hook
 uv run pre-commit install
 ```
 
-## 🚀 執行實驗
+## 常用入口
 
+### Mainline rerun / analysis
 ```bash
-# 第一階段：生成小模型回答
-uv run python experiments/run_generator.py
-
-# 第二階段：大模型預測信心
-uv run python experiments/run_observer.py
-
-# 第三階段：分析結果
-uv run python experiments/run_evaluator.py
+uv run python experiments/mainline/run/core/run_prefix_reentry_controls.py --category fragile-success --small-backend ollama
+uv run python experiments/mainline/run/core/run_prefix_oracle_gain_mapping.py --help
+uv run python experiments/mainline/analysis/trace/analyze_trace_taxonomy.py
 ```
 
-## 🔁 下一階段：Dynamic Agent Benchmarks
+### Determinism audit
+```bash
+uv run python experiments/mainline/run/core/run_api_determinism_audit.py
+```
 
-如果你要把下一步實驗切到動態 agent benchmark，已經加了一套 bootstrap 工具可管理：
+### Remote / queue helpers
+```bash
+uv run python experiments/mainline/run/remote/run_remote_prefix_reentry_controls.py --mode status
+uv run python experiments/mainline/run/remote/run_remote_ollama_livebench_ordered.py --mode status
+```
 
-- tau-bench
-- Plancraft
-- BIRD-SQL
-- InterCode
-- AgentBench OS-Interaction
+## Notes
 
-說明文件在 [docs/dynamic-benchmarks.md](docs/dynamic-benchmarks.md)，setup 腳本在 [tools/setup_dynamic_benchmarks.py](tools/setup_dynamic_benchmarks.py)。
+- `outputs/` 是唯一的生成物根目錄，`results/`、`logs/`、其他中間產物都會放在它底下，並已在 `.gitignore` 排除。
+- `src/confidence_tom/compat/` 目前只保留 generator / observer 的相容層，不再當作對外實驗入口。
+- `.env.example` 提供本地與遠端執行常用欄位；真實密鑰請放在 `.env`。
+- `uv sync --all-groups` 會安裝主線與測試所需依賴。
 
-## 📄 License
+## License
 
 MIT

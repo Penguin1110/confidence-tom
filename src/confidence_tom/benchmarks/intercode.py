@@ -9,7 +9,7 @@ Setup:
 
 import logging
 
-from confidence_tom.task_models import DynamicTask
+from confidence_tom.data.task_models import DynamicTask
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +50,7 @@ def load_intercode(
         docker.from_env().ping()
     except Exception as e:
         raise RuntimeError(
-            f"Docker is not running or not reachable: {e}\n"
-            "Start Docker and retry."
+            f"Docker is not running or not reachable: {e}\nStart Docker and retry."
         ) from e
 
     EnvClass = BashEnv if env == "bash" else SqlEnv

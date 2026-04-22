@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
+from confidence_tom.data.task_models import ApiTrace
 from confidence_tom.intervention.models import CostBreakdown
-from confidence_tom.task_models import ApiTrace
 
 
 @dataclass
@@ -14,7 +14,9 @@ class ModelPricing:
     reasoning_per_1k: float = 0.0
 
 
-def trace_to_cost(trace: Optional[ApiTrace], pricing: Optional[ModelPricing] = None) -> CostBreakdown:
+def trace_to_cost(
+    trace: Optional[ApiTrace], pricing: Optional[ModelPricing] = None
+) -> CostBreakdown:
     if trace is None:
         return CostBreakdown()
     estimated = None

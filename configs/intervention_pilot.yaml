@@ -1,5 +1,5 @@
 name: "voi_intervention_pilot"
-output_dir: "results/intervention_pilot"
+output_dir: "outputs/results/intervention_pilot"
 
 small_worker:
   model: "mistralai/ministral-8b-instruct-2410"

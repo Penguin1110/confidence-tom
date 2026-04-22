@@ -4,7 +4,7 @@
 # using dynamic agent benchmarks (tau-bench, bird-sql, plancraft, intercode).
 
 name: "dynamic_confidence_experiment"
-output_dir: "results/dynamic"
+output_dir: "outputs/results/dynamic"
 
 # --- Subject Models ---
 # Scale axis: Qwen3 family (1.7B → 8B → 32B) + Llama-4 cross-family validation

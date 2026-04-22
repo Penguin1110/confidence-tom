@@ -48,7 +48,7 @@ REMOTE_CMD=(
   "cd ${REMOTE_PROJECT_DIR} && \
    export OLLAMA_BASE_URL=${OLLAMA_BASE_URL} && \
    export OLLAMA_API_KEY=ollama && \
-   uv run python experiments/run_prefix_small_only_full_matrix.py \
+   uv run python experiments/mainline/run/batch/run_small_only.py matrix \
      --models ${MODELS} \
      --benchmarks ${BENCHMARKS} \
      --olympiad-limit 0 \

@@ -10,7 +10,7 @@ Setup:
 
 import logging
 
-from confidence_tom.task_models import DynamicTask
+from confidence_tom.data.task_models import DynamicTask
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,8 @@ def load_plancraft(
     except ImportError as e:
         raise ImportError(
             "plancraft not installed. Run: pip install plancraft\n"
-            "(On Windows also run: python tools/setup_dynamic_benchmarks.py --benchmarks plancraft)\n"
+            "(On Windows also run: python tools/setup_dynamic_benchmarks.py "
+            "--benchmarks plancraft)\n"
             f"({e})"
         ) from e
 
@@ -51,9 +52,7 @@ def load_plancraft(
     for i, ex in enumerate(feasible[:num_samples]):
         target = ex.target
         # ex.inventory is a plain dict {item_name: quantity}
-        inventory_desc = ", ".join(
-            f"{item} x{qty}" for item, qty in ex.inventory.items()
-        )
+        inventory_desc = ", ".join(f"{item} x{qty}" for item, qty in ex.inventory.items())
         instruction = (
             f"You are playing Minecraft. Craft the following item: {target}.\n"
             f"Your current inventory: {inventory_desc or 'empty'}.\n"

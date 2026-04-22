@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from confidence_tom.dataset_models import StaticTask
-from confidence_tom.static_evaluators import build_static_evaluator
+from confidence_tom.data.dataset_models import StaticTask
+from confidence_tom.eval.static_evaluators import build_static_evaluator
 
 
 def recompute_file(path: Path) -> None:
@@ -55,7 +55,7 @@ def recompute_file(path: Path) -> None:
 
 
 def main() -> None:
-    base = Path("results/qwen3_thinkoff_k10_olympiad_livebench_50")
+    base = Path("outputs/results/qwen3_thinkoff_k10_olympiad_livebench_50")
     for name in ["Qwen-3-8B.json", "Qwen-3-14B.json", "Qwen-3-32B.json"]:
         recompute_file(base / name)
 

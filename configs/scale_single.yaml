@@ -4,7 +4,7 @@
 # using same-family models (Gemma 3) at different parameter counts.
 
 name: "scale_single_miscalibration_experiment"
-output_dir: "results/scale"
+output_dir: "outputs/results/scale"
 verbose: true
 use_wandb: false
 wandb_project: "confidence-tom-scale"

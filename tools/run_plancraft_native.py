@@ -11,14 +11,14 @@ import asyncio
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from plancraft.simple import PlancraftGymWrapper, get_plancraft_examples
+from plancraft.simple import PlancraftGymWrapper, get_plancraft_examples  # noqa: E402
 
-from confidence_tom.client import LLMClient
-
+from confidence_tom.infra.client import LLMClient  # noqa: E402
 
 SYSTEM_PROMPT = """You are solving a Plancraft task in the native environment.
 You must output exactly one next action each turn.
@@ -34,18 +34,24 @@ Rules:
 - Do not invent inventory state; rely on the observation."""
 
 
-async def run_one(client: LLMClient, example, max_steps: int) -> dict:
+async def run_one(
+    client: LLMClient,
+    example: Any,
+    max_steps: int,
+) -> dict[str, Any]:
     env = PlancraftGymWrapper(example=example, max_steps=max_steps)
     obs, reward, terminated, truncated, info = env.step()
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": obs["text"]},
     ]
-    trajectory = []
+    trajectory: list[dict[str, Any]] = []
 
     while not terminated and not truncated:
         action = await asyncio.to_thread(client.generate_text, messages)
-        action = action.strip().splitlines()[0] if action.strip() else "impossible: no action produced"
+        action = (
+            action.strip().splitlines()[0] if action.strip() else "impossible: no action produced"
+        )
         obs, reward, terminated, truncated, info = env.step(action)
         trajectory.append(
             {
@@ -78,16 +84,20 @@ async def amain() -> None:
     parser.add_argument("--split", default="test")
     parser.add_argument("--num-samples", type=int, default=10)
     parser.add_argument("--max-steps", type=int, default=30)
-    parser.add_argument("--output", default="results/plancraft_native.json")
+    parser.add_argument("--output", default="outputs/results/plancraft_native.json")
     args = parser.parse_args()
 
     client = LLMClient(model=args.model, temperature=0.0, max_tokens=128)
-    examples = [ex for ex in get_plancraft_examples(split=args.split) if not ex.impossible][: args.num_samples]
+    examples = [ex for ex in get_plancraft_examples(split=args.split) if not ex.impossible][
+        : args.num_samples
+    ]
     results = []
     for example in examples:
         results.append(await run_one(client, example, args.max_steps))
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.output).write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+        Path(args.output).write_text(
+            json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
 
 
 def main() -> None:

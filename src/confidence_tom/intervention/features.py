@@ -5,7 +5,11 @@ import re
 from collections import Counter
 from difflib import SequenceMatcher
 
-from confidence_tom.intervention.models import InterventionFeatureVector, InterventionState, StepRecord
+from confidence_tom.intervention.models import (
+    InterventionFeatureVector,
+    InterventionState,
+    StepRecord,
+)
 
 _HEDGE_PATTERNS = [
     "i think",
@@ -33,7 +37,9 @@ _BACKTRACK_PATTERNS = [
 _VERIFICATION_CODE = {"none": 0, "partial": 1, "verified": 2, "failed": 3}
 
 
-def build_state(task_id: str, question: str, steps: list[StepRecord], step_index: int) -> InterventionState:
+def build_state(
+    task_id: str, question: str, steps: list[StepRecord], step_index: int
+) -> InterventionState:
     prefix = steps[:step_index]
     current = prefix[-1]
     return InterventionState(
@@ -47,7 +53,9 @@ def build_state(task_id: str, question: str, steps: list[StepRecord], step_index
     )
 
 
-def extract_features(state: InterventionState, embedding_window: list[list[float]] | None = None) -> InterventionFeatureVector:
+def extract_features(
+    state: InterventionState, embedding_window: list[list[float]] | None = None
+) -> InterventionFeatureVector:
     steps = state.steps_so_far
     current = steps[-1]
     confidences = [s.step_confidence / 100.0 for s in steps]
@@ -83,14 +91,20 @@ def extract_features(state: InterventionState, embedding_window: list[list[float
         max_confidence_drop_so_far=max(drops, default=0.0),
         mean_confidence_drop_so_far=(sum(drops) / len(drops)) if drops else 0.0,
         num_confidence_drops=sum(1 for d in drops if d > 0),
-        partial_answer_changed=int(bool(prev_answers and current_answer and current_answer != prev_answers[-1])),
+        partial_answer_changed=int(
+            bool(prev_answers and current_answer and current_answer != prev_answers[-1])
+        ),
         num_unique_partial_answers=len(set(answers)),
-        self_correction_depth=_self_correction_depth(prev_answers[-1], current_answer) if prev_answers and current_answer else 0.0,
+        self_correction_depth=_self_correction_depth(prev_answers[-1], current_answer)
+        if prev_answers and current_answer
+        else 0.0,
         backtracking_flag=int(_has_backtracking(current.reasoning)),
         reasoning_length=len(current_tokens),
         token_density_ratio=token_density_ratio,
         hedge_density=_hedge_density(current.reasoning),
-        uncertainty_flag=int(bool(current.uncertainty_note.strip()) or _hedge_density(current.reasoning) > 0.02),
+        uncertainty_flag=int(
+            bool(current.uncertainty_note.strip()) or _hedge_density(current.reasoning) > 0.02
+        ),
         assumptions_count=len(current.assumptions),
         verification_status_code=_VERIFICATION_CODE.get(current.verification_status, 0),
         semantic_drift=semantic_drift,
@@ -147,7 +161,6 @@ def _self_correction_depth(prev_answer: str, current_answer: str) -> float:
     if not prev_answer or not current_answer:
         return 0.0
     return 1.0 - SequenceMatcher(a=prev_answer, b=current_answer).ratio()
-
 
 
 def _dense_cosine_distance(a: list[float], b: list[float]) -> float:

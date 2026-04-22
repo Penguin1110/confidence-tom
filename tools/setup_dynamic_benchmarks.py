@@ -48,7 +48,9 @@ def _patch_plancraft_windows_bug() -> tuple[bool, str]:
     if os.name != "nt":
         return True, "not_windows_no_patch_needed"
 
-    recipes_path = Path(sysconfig.get_paths()["purelib"]) / "plancraft" / "environment" / "recipes.py"
+    recipes_path = (
+        Path(sysconfig.get_paths()["purelib"]) / "plancraft" / "environment" / "recipes.py"
+    )
     if not recipes_path.exists():
         return False, f"plancraft_recipes_not_found:{recipes_path}"
 
@@ -80,7 +82,18 @@ def _sparse_clone_repo(repo_url: str, target_dir: Path, sparse_subdir: str) -> N
     if target_dir.exists():
         print(f"[skip] sparse clone exists: {target_dir}")
         return
-    _run(["git", "clone", "--depth", "1", "--filter=blob:none", "--sparse", repo_url, str(target_dir)])
+    _run(
+        [
+            "git",
+            "clone",
+            "--depth",
+            "1",
+            "--filter=blob:none",
+            "--sparse",
+            repo_url,
+            str(target_dir),
+        ]
+    )
     _run(["git", "sparse-checkout", "set", sparse_subdir], cwd=target_dir)
 
 
@@ -106,11 +119,7 @@ def main() -> None:
     parser.add_argument(
         "--benchmarks",
         nargs="+",
-        default=[
-            spec.key
-            for spec in list_dynamic_benchmarks()
-            if spec.key != "agentbench-os"
-        ],
+        default=[spec.key for spec in list_dynamic_benchmarks() if spec.key != "agentbench-os"],
         help="Benchmarks to setup",
     )
     parser.add_argument(

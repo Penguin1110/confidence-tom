@@ -1,4 +1,4 @@
-from confidence_tom.client import LLMClient
+from confidence_tom.infra.client import LLMClient
 
 
 def test_ollama_completion_kwargs_include_ollama_options() -> None:
