@@ -34,7 +34,7 @@ def _append_worker_overrides(cmd: list[str], prefix: str, worker: DictConfig) ->
         if value is None:
             continue
         if key in {"backend", "local_model_name"}:
-            cmd.append(f"+{prefix}.{key}={value}")
+            cmd.append(f"++{prefix}.{key}={value}")
         else:
             cmd.append(f"{prefix}.{key}={value}")
 
