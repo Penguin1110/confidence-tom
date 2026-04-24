@@ -24,12 +24,12 @@ small_workers:
     max_tokens: 12288
     backend: "local"
     local_model_name: "Qwen/Qwen3-14B"
-  - model: "google/gemma-3-4b-it"
-    label: "HF-gemma-3-4b-it"
+  - model: "google/gemma-4-E4B-it"
+    label: "HF-gemma-4-E4B-it"
     family: "gemma"
     max_tokens: 8192
     backend: "local"
-    local_model_name: "google/gemma-3-4b-it"
+    local_model_name: "google/gemma-4-E4B-it"
   - model: "mistralai/Ministral-8B-Instruct-2410"
     label: "HF-Ministral-8B-Instruct-2410"
     family: "mistral"
