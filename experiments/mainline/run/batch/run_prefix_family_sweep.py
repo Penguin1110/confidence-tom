@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import json
 import shlex
 import subprocess
 from pathlib import Path
 
 import hydra
-from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
+
+from confidence_tom.infra.paths import output_root, project_root
 
 
 def _sanitize_label(text: str) -> str:
@@ -53,7 +55,9 @@ def _dataset_override_args(benchmark: str, limit: int) -> list[str]:
     config_name="prefix_family_sweep",
 )
 def main(cfg: DictConfig) -> None:
-    root = Path(to_absolute_path("."))
+    root = project_root()
+    results_dir = output_root() / "results"
+    results_dir.mkdir(parents=True, exist_ok=True)
     runner = (
         root / "experiments" / "mainline" / "run" / "core" / "run_prefix_oracle_gain_mapping.py"
     )
@@ -74,7 +78,9 @@ def main(cfg: DictConfig) -> None:
     for small in cfg.small_workers:
         for large in cfg.large_workers:
             run_name = f"{run_name_prefix}{small.family}_to_{large.family}_{limit}"
-            output_dir = root / "outputs" / "results" / run_name
+            output_dir = results_dir / run_name
+            output_dir.mkdir(parents=True, exist_ok=True)
+            status_path = output_dir / "_run_status.json"
             result_path = (
                 output_dir
                 / f"{_sanitize_label(str(small.label))}_to_{_sanitize_label(str(large.label))}.json"
@@ -82,6 +88,20 @@ def main(cfg: DictConfig) -> None:
             if result_path.exists() and not bool(cfg.launcher.get("overwrite_output_dir", False)):
                 print(f"[skip] {run_name} final result already exists: {result_path}")
                 continue
+
+            status_payload = {
+                "run_name": run_name,
+                "benchmark": benchmark,
+                "small_model": str(small.model),
+                "large_model": str(large.model),
+                "stage": "prepare",
+                "status": "running",
+                "output_dir": str(output_dir),
+            }
+            status_path.write_text(
+                json.dumps(status_payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
 
             cmd = [
                 "uv",
@@ -112,12 +132,32 @@ def main(cfg: DictConfig) -> None:
             try:
                 subprocess.run(cmd, cwd=root, check=True)
             except subprocess.CalledProcessError as exc:
+                status_payload["status"] = "failed"
+                status_payload["stage"] = "prepare"
+                status_payload["returncode"] = int(exc.returncode)
+                status_path.write_text(
+                    json.dumps(status_payload, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
                 print(f"[error] run failed: {run_name} returncode={exc.returncode}")
                 if continue_on_error:
                     continue
                 raise
 
+            status_payload["status"] = "completed"
+            status_payload["stage"] = "prepare"
+            status_path.write_text(
+                json.dumps(status_payload, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+
             if run_analysis:
+                status_payload["status"] = "running"
+                status_payload["stage"] = "analyze"
+                status_path.write_text(
+                    json.dumps(status_payload, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
                 analysis_cmd = [
                     "uv",
                     "run",
@@ -134,9 +174,23 @@ def main(cfg: DictConfig) -> None:
                 try:
                     subprocess.run(analysis_cmd, cwd=root, check=True)
                 except subprocess.CalledProcessError as exc:
+                    status_payload["status"] = "failed"
+                    status_payload["stage"] = "analyze"
+                    status_payload["returncode"] = int(exc.returncode)
+                    status_path.write_text(
+                        json.dumps(status_payload, ensure_ascii=False, indent=2),
+                        encoding="utf-8",
+                    )
                     print(f"[error] analyze failed: {run_name} returncode={exc.returncode}")
                     if not continue_on_error:
                         raise
+                else:
+                    status_payload["status"] = "completed"
+                    status_payload["stage"] = "analyze"
+                    status_path.write_text(
+                        json.dumps(status_payload, ensure_ascii=False, indent=2),
+                        encoding="utf-8",
+                    )
 
 
 if __name__ == "__main__":
