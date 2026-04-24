@@ -136,6 +136,10 @@ def _normalize_prefix_surface(text: str) -> str:
 
 
 def _family_from_run_name(run_name: str) -> str:
+    if run_name.startswith("reentry_"):
+        parts = run_name.split("_")
+        if len(parts) >= 3:
+            return parts[2]
     if run_name.startswith("livebench_"):
         return run_name.split("_")[1]
     return run_name.split("_")[0]
@@ -263,7 +267,7 @@ def _load_taxonomy_categories() -> dict[tuple[str, str, str], str]:
         key = (
             str(record.get("benchmark", "")),
             str(record.get("task_id", "")),
-            str(record.get("family", "")),
+            str(record.get("family", "")).lower(),
         )
         categories[key] = str(record.get("category", ""))
     return categories
@@ -731,7 +735,9 @@ async def amain(args: argparse.Namespace) -> None:
         pending = [
             row
             for row in pending
-            if taxonomy.get((str(row["benchmark"]), str(row["task_id"]), str(row["small_family"])))
+            if taxonomy.get(
+                (str(row["benchmark"]), str(row["task_id"]), str(row["small_family"]).lower())
+            )
             in wanted
         ]
 

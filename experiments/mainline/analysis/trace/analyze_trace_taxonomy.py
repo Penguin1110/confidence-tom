@@ -21,6 +21,17 @@ EARLY_FRACTION = 1.0 / 3.0
 MIN_STABLE_LOCAL_RATE = 0.5
 
 
+def _family_from_run_name(run_name: str) -> str:
+    if run_name.startswith("reentry_"):
+        parts = run_name.split("_")
+        if len(parts) >= 3:
+            return parts[2].lower()
+    if run_name.startswith("livebench_"):
+        parts = run_name.split("_")
+        return parts[1].lower() if len(parts) > 1 else ""
+    return run_name.split("_")[0].lower()
+
+
 @dataclass(frozen=True)
 class TaskRecord:
     run_name: str
@@ -99,11 +110,9 @@ def _load_records() -> list[TaskRecord]:
 
             records.append(
                 TaskRecord(
-                    run_name=str(task.get("small_model", path.stem)),
+                    run_name=path.parent.name,
                     benchmark=str(task.get("benchmark", "")),
-                    family=str(task.get("small_model", "")).split("/")[0]
-                    if task.get("small_model")
-                    else "",
+                    family=_family_from_run_name(path.parent.name),
                     task_id=str(task.get("task_id", "")),
                     full_correct=full_correct,
                     step_count=step_count,

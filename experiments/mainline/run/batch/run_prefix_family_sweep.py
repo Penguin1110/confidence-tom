@@ -39,6 +39,12 @@ def _append_worker_overrides(cmd: list[str], prefix: str, worker: DictConfig) ->
             cmd.append(f"{prefix}.{key}={value}")
 
 
+def _worker_value(worker: DictConfig | dict[str, object], key: str) -> object:
+    if isinstance(worker, dict):
+        return worker[key]
+    return worker[key]
+
+
 def _dataset_override_args(benchmark: str, limit: int) -> list[str]:
     if benchmark == "olympiadbench":
         return [f"dataset.olympiadbench={limit}"]
@@ -58,11 +64,20 @@ def main(cfg: DictConfig) -> None:
     root = project_root()
     results_dir = output_root() / "results"
     results_dir.mkdir(parents=True, exist_ok=True)
-    runner = (
-        root / "experiments" / "mainline" / "run" / "core" / "run_prefix_oracle_gain_mapping.py"
-    )
+    prepare_mode = str(cfg.launcher.get("prepare_mode", "prefix_oracle_gain")).strip().lower()
+    if prepare_mode == "small_only_reentry":
+        runner = (
+            root / "experiments" / "mainline" / "run" / "core" / "run_prefix_reentry_prepare.py"
+        )
+    else:
+        runner = (
+            root / "experiments" / "mainline" / "run" / "core" / "run_prefix_oracle_gain_mapping.py"
+        )
     analyzer = (
         root / "experiments" / "mainline" / "analysis" / "prefix" / "analyze_prefix_oracle_gain.py"
+    )
+    taxonomy_analyzer = (
+        root / "experiments" / "mainline" / "analysis" / "trace" / "analyze_trace_taxonomy.py"
     )
 
     benchmark = str(cfg.dataset.benchmark)
@@ -76,14 +91,34 @@ def main(cfg: DictConfig) -> None:
     timeouts = cfg.get("timeouts")
 
     for small in cfg.small_workers:
-        for large in cfg.large_workers:
-            run_name = f"{run_name_prefix}{small.family}_to_{large.family}_{limit}"
+        large_workers = cfg.large_workers
+        if prepare_mode == "small_only_reentry":
+            large_workers = [
+                {
+                    "model": "reentry/none",
+                    "label": "REENTRY_PREPARE",
+                    "family": "reentry_prepare",
+                    "max_tokens": 1,
+                }
+            ]
+        for large in large_workers:
+            small_family = str(_worker_value(small, "family"))
+            large_family = str(_worker_value(large, "family"))
+            small_label = str(_worker_value(small, "label"))
+            large_label = str(_worker_value(large, "label"))
+            small_model = str(_worker_value(small, "model"))
+            large_model = str(_worker_value(large, "model"))
+            small_max_tokens = int(_worker_value(small, "max_tokens"))
+            large_max_tokens = int(_worker_value(large, "max_tokens"))
+            run_name = f"{run_name_prefix}{small_family}_to_{large_family}_{limit}"
+            if prepare_mode == "small_only_reentry":
+                run_name = f"{run_name_prefix}{small_family}_{limit}"
             output_dir = results_dir / run_name
             output_dir.mkdir(parents=True, exist_ok=True)
             status_path = output_dir / "_run_status.json"
             result_path = (
                 output_dir
-                / f"{_sanitize_label(str(small.label))}_to_{_sanitize_label(str(large.label))}.json"
+                / f"{_sanitize_label(small_label)}_to_{_sanitize_label(large_label)}.json"
             )
             if result_path.exists() and not bool(cfg.launcher.get("overwrite_output_dir", False)):
                 print(f"[skip] {run_name} final result already exists: {result_path}")
@@ -92,8 +127,8 @@ def main(cfg: DictConfig) -> None:
             status_payload = {
                 "run_name": run_name,
                 "benchmark": benchmark,
-                "small_model": str(small.model),
-                "large_model": str(large.model),
+                "small_model": small_model,
+                "large_model": large_model,
                 "stage": "prepare",
                 "status": "running",
                 "output_dir": str(output_dir),
@@ -114,19 +149,20 @@ def main(cfg: DictConfig) -> None:
                 f"execution.task_concurrency={task_concurrency}",
                 f"execution.retry_attempts={retry_attempts}",
                 f"execution.retry_backoff_sec={retry_backoff_sec}",
-                f"small_worker.model={small.model}",
-                f"small_worker.label={small.label}",
-                f"small_worker.max_tokens={int(small.max_tokens)}",
-                f"large_worker.model={large.model}",
-                f"large_worker.label={large.label}",
-                f"large_worker.max_tokens={int(large.max_tokens)}",
+                f"small_worker.model={small_model}",
+                f"small_worker.label={small_label}",
+                f"small_worker.max_tokens={small_max_tokens}",
+                f"large_worker.model={large_model}",
+                f"large_worker.label={large_label}",
+                f"large_worker.max_tokens={large_max_tokens}",
             ]
             if timeouts is not None:
                 for key, value in timeouts.items():
                     cmd.append(f"timeouts.{key}={value}")
             cmd.extend(_dataset_override_args(benchmark, limit))
             _append_worker_overrides(cmd, "small_worker", small)
-            _append_worker_overrides(cmd, "large_worker", large)
+            if prepare_mode != "small_only_reentry":
+                _append_worker_overrides(cmd, "large_worker", large)
             print("\n[run]")
             print(" ".join(shlex.quote(part) for part in cmd))
             try:
@@ -191,6 +227,12 @@ def main(cfg: DictConfig) -> None:
                         json.dumps(status_payload, ensure_ascii=False, indent=2),
                         encoding="utf-8",
                     )
+
+    if bool(cfg.launcher.get("run_taxonomy", prepare_mode == "small_only_reentry")):
+        taxonomy_cmd = ["uv", "run", "python", str(taxonomy_analyzer)]
+        print("\n[taxonomy]")
+        print(" ".join(shlex.quote(part) for part in taxonomy_cmd))
+        subprocess.run(taxonomy_cmd, cwd=root, check=True)
 
 
 if __name__ == "__main__":

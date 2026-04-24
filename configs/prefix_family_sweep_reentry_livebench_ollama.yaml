@@ -123,6 +123,8 @@ large_workers:
 
 launcher:
   run_analysis: true
+  prepare_mode: "small_only_reentry"
+  run_taxonomy: true
   overwrite_output_dir: false
   continue_on_error: true
   run_name_prefix: "reentry_livebench_"
