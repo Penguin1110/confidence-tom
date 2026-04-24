@@ -710,8 +710,7 @@ def main(cfg: DictConfig) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     benchmark_name = str(cfg.dataset.benchmark)
-    if benchmark_name == "olympiadbench":
-        questions = load_static_questions(benchmark_name, cfg.dataset)
+    questions = load_static_questions(benchmark_name, cfg.dataset)
 
     out_path = output_dir / (
         f"{_sanitize_label(str(cfg.small_worker.label))}_to_"

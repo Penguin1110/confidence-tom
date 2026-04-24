@@ -14,7 +14,13 @@ from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
+from confidence_tom.data.scale_dataset import (
+    load_aime_2024,
+    load_gpqa_diamond,
+    load_livebench_reasoning,
+    load_math500,
+    load_olympiadbench,
+)
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 
 
@@ -109,6 +115,18 @@ def _load_tasks(cfg: DictConfig) -> dict[str, StaticTask]:
             cfg.dataset.get("livebench_reasoning", cfg.dataset.get("livebench", 0))
         )
         questions = load_livebench_reasoning(num_samples=livebench_count)
+    elif benchmark_name == "aime_2024":
+        questions = load_aime_2024(
+            num_samples=int(cfg.dataset.get("aime_2024", cfg.dataset.get("limit", 0)))
+        )
+    elif benchmark_name == "math500":
+        questions = load_math500(
+            num_samples=int(cfg.dataset.get("math500", cfg.dataset.get("limit", 0)))
+        )
+    elif benchmark_name == "gpqa_diamond":
+        questions = load_gpqa_diamond(
+            num_samples=int(cfg.dataset.get("gpqa_diamond", cfg.dataset.get("limit", 0)))
+        )
     else:
         raise ValueError(f"Unsupported benchmark for analysis: {benchmark_name}")
     return {q.id: q for q in questions}

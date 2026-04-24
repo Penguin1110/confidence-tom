@@ -6,7 +6,13 @@ from typing import Any, Optional, cast
 from omegaconf import DictConfig
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
+from confidence_tom.data.scale_dataset import (
+    load_aime_2024,
+    load_gpqa_diamond,
+    load_livebench_reasoning,
+    load_math500,
+    load_olympiadbench,
+)
 from confidence_tom.infra.client import LLMClient
 from confidence_tom.intervention import ModelPricing
 
@@ -17,7 +23,7 @@ def client_kwargs_from_cfg(worker_cfg: DictConfig) -> dict[str, Any]:
         "temperature": float(worker_cfg.get("temperature", 0.0)),
         "max_tokens": int(worker_cfg.get("max_tokens", 2048)),
         "reasoning_effort": worker_cfg.get("reasoning_effort"),
-        "backend": str(worker_cfg.get("backend", "openrouter")),
+        "backend": str(worker_cfg.get("backend", "local")),
         "local_model_name": worker_cfg.get("local_model_name"),
         "top_p": worker_cfg.get("top_p"),
         "top_k": worker_cfg.get("top_k"),
@@ -61,6 +67,14 @@ def load_static_questions(benchmark_name: str, dataset_cfg: DictConfig) -> list[
             dataset_cfg.get("livebench_reasoning", dataset_cfg.get("livebench", 0))
         )
         questions = load_livebench_reasoning(num_samples=livebench_count)
+    elif benchmark_name == "aime_2024":
+        questions = load_aime_2024(num_samples=int(dataset_cfg.get("aime_2024", dataset_cfg.limit)))
+    elif benchmark_name == "math500":
+        questions = load_math500(num_samples=int(dataset_cfg.get("math500", dataset_cfg.limit)))
+    elif benchmark_name == "gpqa_diamond":
+        questions = load_gpqa_diamond(
+            num_samples=int(dataset_cfg.get("gpqa_diamond", dataset_cfg.limit))
+        )
     else:
         raise ValueError(f"Unsupported benchmark: {benchmark_name}")
 

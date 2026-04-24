@@ -17,7 +17,13 @@ except ImportError:  # pragma: no cover - Windows fallback
     fcntl = None
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
+from confidence_tom.data.scale_dataset import (
+    load_aime_2024,
+    load_gpqa_diamond,
+    load_livebench_reasoning,
+    load_math500,
+    load_olympiadbench,
+)
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.infra.client import LLMClient
 from confidence_tom.infra.paths import project_root, results_root
@@ -52,6 +58,18 @@ OLLAMA_LOCAL_MODEL_BY_FAMILY = {
     "llama": "llama3.1:8b",
     "meta-llama": "llama3.1:8b",
     "google": "gemma3:4b",
+    "gemma": "gemma3:4b",
+    "olmo": "olmo-3.1:32b",
+}
+LOCAL_MODEL_BY_FAMILY = {
+    "qwen": "Qwen/Qwen3-14B",
+    "mistral": "mistralai/Ministral-8B-Instruct-2410",
+    "mistralai": "mistralai/Ministral-8B-Instruct-2410",
+    "llama": "meta-llama/Llama-3.1-8B-Instruct",
+    "meta-llama": "meta-llama/Llama-3.1-8B-Instruct",
+    "google": "google/gemma-3-4b-it",
+    "gemma": "google/gemma-3-4b-it",
+    "olmo": "allenai/OLMo-2-13B-Instruct",
 }
 
 FULL_TRACE_SYSTEM_PROMPT = """You are a careful reasoning assistant.
@@ -126,6 +144,12 @@ def _family_from_run_name(run_name: str) -> str:
 def _benchmark_from_task_id(task_id: str) -> str:
     if task_id.startswith("livebench_reasoning_"):
         return "livebench_reasoning"
+    if task_id.startswith("aime_2024_"):
+        return "aime_2024"
+    if task_id.startswith("math500_"):
+        return "math500"
+    if task_id.startswith("gpqa_diamond_"):
+        return "gpqa_diamond"
     return "olympiadbench"
 
 
@@ -171,6 +195,12 @@ def _load_task_map(benchmark: str) -> dict[str, StaticTask]:
         tasks = load_olympiadbench(num_samples=50)
     elif benchmark == "livebench_reasoning":
         tasks = load_livebench_reasoning(num_samples=30)
+    elif benchmark == "aime_2024":
+        tasks = load_aime_2024(num_samples=30)
+    elif benchmark == "math500":
+        tasks = load_math500(num_samples=50)
+    elif benchmark == "gpqa_diamond":
+        tasks = load_gpqa_diamond(num_samples=40)
     else:
         raise ValueError(f"Unsupported benchmark: {benchmark}")
     return {task.id: task for task in tasks}
@@ -239,10 +269,37 @@ def _load_taxonomy_categories() -> dict[tuple[str, str, str], str]:
     return categories
 
 
-def _resolve_ollama_local_model_name(small_family: str, explicit: str | None) -> str | None:
+def _parse_family_model_map(entries: list[str] | None) -> dict[str, str]:
+    mapping: dict[str, str] = {}
+    for raw in entries or []:
+        item = raw.strip()
+        if not item:
+            continue
+        family, sep, model_name = item.partition("=")
+        if not sep or not family.strip() or not model_name.strip():
+            raise ValueError(
+                f"Invalid --small-local-model-map entry: {raw!r}. Expected FAMILY=MODEL."
+            )
+        mapping[family.strip().lower()] = model_name.strip()
+    return mapping
+
+
+def _resolve_local_model_name(
+    small_family: str,
+    explicit: str | None,
+    backend: str,
+    family_model_map: dict[str, str],
+) -> str | None:
     if explicit:
         return explicit
-    return OLLAMA_LOCAL_MODEL_BY_FAMILY.get(small_family)
+    normalized_family = small_family.lower()
+    if normalized_family in family_model_map:
+        return family_model_map[normalized_family]
+    if backend == "ollama":
+        return OLLAMA_LOCAL_MODEL_BY_FAMILY.get(normalized_family)
+    if backend == "local":
+        return LOCAL_MODEL_BY_FAMILY.get(normalized_family)
+    return None
 
 
 def _row_key(row: dict[str, Any]) -> tuple[str, str]:
@@ -492,18 +549,22 @@ async def _process_one(
     reentry_temperature: float,
     small_backend: str,
     small_local_model_name: str | None,
+    small_local_model_map: dict[str, str],
 ) -> dict[str, Any]:
     task = task_map[str(row["task_id"])]
     evaluator = build_static_evaluator(task)
     model_name = str(row["small_model"])
     small_family = str(row.get("small_family", ""))
-    resolved_local_model_name = _resolve_ollama_local_model_name(
-        small_family, small_local_model_name
+    resolved_local_model_name = _resolve_local_model_name(
+        small_family,
+        small_local_model_name,
+        small_backend,
+        small_local_model_map,
     )
-    if small_backend == "ollama" and not resolved_local_model_name:
+    if small_backend in {"ollama", "local"} and not resolved_local_model_name:
         raise ValueError(
-            f"Missing Ollama local model mapping for small_family={small_family!r} "
-            f"(row small_model={model_name!r})."
+            f"Missing local model mapping for small_family={small_family!r}, "
+            f"backend={small_backend!r} (row small_model={model_name!r})."
         )
     client_key = f"{model_name}|{small_backend}|{small_local_model_name or ''}"
     client = client_cache.setdefault(
@@ -636,11 +697,33 @@ async def amain(args: argparse.Namespace) -> None:
             "Pass --run-name or create outputs/results/<run_name>."
         )
 
+    wanted_prefixes = [prefix.strip() for prefix in args.run_name_prefix if prefix.strip()]
+    if wanted_prefixes:
+        run_names = [
+            run_name
+            for run_name in run_names
+            if any(run_name.startswith(prefix) for prefix in wanted_prefixes)
+        ]
+
+    if not run_names:
+        raise FileNotFoundError(
+            "No result runs matched the requested re-entry filters. "
+            "Adjust --run-name / --run-name-prefix."
+        )
+
     existing_rows = _dedupe_rows(out_rows)
     done = {_row_key(row) for row in existing_rows if "error" not in row}
     pending = [
         row for row in _load_prefix_rows(run_names, args.max_rows) if _row_key(row) not in done
     ]
+
+    if args.benchmark:
+        wanted_benchmarks = {item.strip() for item in args.benchmark if item.strip()}
+        pending = [row for row in pending if str(row["benchmark"]) in wanted_benchmarks]
+
+    if args.small_family:
+        wanted_families = {item.strip().lower() for item in args.small_family if item.strip()}
+        pending = [row for row in pending if str(row["small_family"]).lower() in wanted_families]
 
     if args.category:
         taxonomy = _load_taxonomy_categories()
@@ -652,12 +735,11 @@ async def amain(args: argparse.Namespace) -> None:
             in wanted
         ]
 
-    task_maps = {
-        "olympiadbench": _load_task_map("olympiadbench"),
-        "livebench_reasoning": _load_task_map("livebench_reasoning"),
-    }
+    needed_benchmarks = {str(row["benchmark"]) for row in pending}
+    task_maps = {benchmark: _load_task_map(benchmark) for benchmark in sorted(needed_benchmarks)}
     client_cache: dict[str, LLMClient] = {}
     sem = asyncio.Semaphore(args.concurrency)
+    small_local_model_map = _parse_family_model_map(args.small_local_model_map)
 
     async def worker(row: dict[str, Any]) -> dict[str, Any]:
         async with sem:
@@ -670,6 +752,7 @@ async def amain(args: argparse.Namespace) -> None:
                 reentry_temperature=args.reentry_temperature,
                 small_backend=args.small_backend,
                 small_local_model_name=args.small_local_model_name,
+                small_local_model_map=small_local_model_map,
             )
 
     with out_rows.open("a", encoding="utf-8") as f:
@@ -703,6 +786,24 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", default=str(DEFAULT_OUT_DIR))
     parser.add_argument("--run-name", action="append", default=[])
     parser.add_argument(
+        "--run-name-prefix",
+        action="append",
+        default=[],
+        help="Filter discovered runs by prefix (repeatable).",
+    )
+    parser.add_argument(
+        "--benchmark",
+        action="append",
+        default=[],
+        help="Filter rows by benchmark name (repeatable).",
+    )
+    parser.add_argument(
+        "--small-family",
+        action="append",
+        default=[],
+        help="Filter rows by small-model family (repeatable).",
+    )
+    parser.add_argument(
         "--category",
         action="append",
         default=[],
@@ -714,9 +815,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--full-rerun-temperature", type=float, default=0.0)
     parser.add_argument("--reentry-temperature", type=float, default=0.0)
     parser.add_argument(
-        "--small-backend", default="openrouter", choices=["openrouter", "ollama", "local"]
+        "--small-backend", default="local", choices=["ollama", "local"]
     )
     parser.add_argument("--small-local-model-name", default=None)
+    parser.add_argument(
+        "--small-local-model-map",
+        action="append",
+        default=[],
+        help="Per-family local model override in FAMILY=MODEL form (repeatable).",
+    )
     return parser
 
 

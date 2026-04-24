@@ -4,6 +4,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
+    TOKENIZERS_PARALLELISM=false \
     CONFIDENCE_TOM_OUTPUT_ROOT=/workspace/outputs \
     HF_HOME=/workspace/.cache/huggingface \
     TRANSFORMERS_CACHE=/workspace/.cache/huggingface
@@ -26,8 +27,9 @@ COPY experiments ./experiments
 COPY src ./src
 COPY tests ./tests
 COPY tools ./tools
+COPY docs ./docs
 
 RUN uv sync --frozen --no-dev --group local-inference
 
 ENTRYPOINT ["uv", "run", "python"]
-CMD ["experiments/mainline/run/core/run_prefix_oracle_gain_mapping.py", "--help"]
+CMD ["experiments/mainline/run/batch/run_reentry_mainline.py", "--help"]

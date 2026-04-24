@@ -37,6 +37,16 @@ def _append_worker_overrides(cmd: list[str], prefix: str, worker: DictConfig) ->
             cmd.append(f"{prefix}.{key}={value}")
 
 
+def _dataset_override_args(benchmark: str, limit: int) -> list[str]:
+    if benchmark == "olympiadbench":
+        return [f"dataset.olympiadbench={limit}"]
+    if benchmark == "livebench_reasoning":
+        return [f"dataset.livebench={limit}", f"dataset.livebench_reasoning={limit}"]
+    if benchmark in {"aime_2024", "math500", "gpqa_diamond"}:
+        return [f"dataset.{benchmark}={limit}"]
+    raise ValueError(f"Unsupported benchmark for family sweep: {benchmark}")
+
+
 @hydra.main(
     version_base=None,
     config_path="../../../../configs",
@@ -94,13 +104,7 @@ def main(cfg: DictConfig) -> None:
             if timeouts is not None:
                 for key, value in timeouts.items():
                     cmd.append(f"timeouts.{key}={value}")
-            if benchmark == "olympiadbench":
-                cmd.append(f"dataset.olympiadbench={limit}")
-            elif benchmark == "livebench_reasoning":
-                cmd.append(f"dataset.livebench={limit}")
-                cmd.append(f"dataset.livebench_reasoning={limit}")
-            else:
-                raise ValueError(f"Unsupported benchmark for family sweep run: {benchmark}")
+            cmd.extend(_dataset_override_args(benchmark, limit))
             _append_worker_overrides(cmd, "small_worker", small)
             _append_worker_overrides(cmd, "large_worker", large)
             print("\n[run]")
@@ -124,14 +128,7 @@ def main(cfg: DictConfig) -> None:
                     f"analysis.summary_json={output_dir / 'summary.json'}",
                     f"analysis.per_prefix_rows_csv={output_dir / 'per_prefix_rows.csv'}",
                 ]
-                if benchmark == "olympiadbench":
-                    analysis_cmd.append(f"dataset.olympiadbench={limit}")
-                elif benchmark == "livebench_reasoning":
-                    analysis_cmd.append(f"dataset.livebench_reasoning={limit}")
-                else:
-                    raise ValueError(
-                        f"Unsupported benchmark for family sweep analysis: {benchmark}"
-                    )
+                analysis_cmd.extend(_dataset_override_args(benchmark, limit))
                 print("\n[analyze]")
                 print(" ".join(shlex.quote(part) for part in analysis_cmd))
                 try:

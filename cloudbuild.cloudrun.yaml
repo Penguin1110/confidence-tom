@@ -1,7 +1,7 @@
 substitutions:
   _REGION: us-central1
   _REPO: confidence-tom
-  _IMAGE: mainline
+  _IMAGE: reentry-mainline
   _TAG: latest
 
 steps:

@@ -1,0 +1,64 @@
+name: "prefix_family_sweep_reentry_math500_ollama"
+base_config: "prefix_oracle_gain_mapping"
+
+dataset:
+  benchmark: "math500"
+  math500: 50
+  limit: 50
+
+execution:
+  task_concurrency: 1
+  retry_attempts: 3
+  retry_backoff_sec: 2.0
+
+timeouts:
+  full_trace_sec: 1800
+  small_worker_sec: 1800
+  large_worker_sec: 900
+  task_sec: 14400
+
+small_workers:
+  - model: "Qwen/Qwen3-14B"
+    label: "HF-Qwen3-14B"
+    family: "qwen"
+    max_tokens: 12288
+    backend: "local"
+    local_model_name: "Qwen/Qwen3-14B"
+  - model: "google/gemma-3-4b-it"
+    label: "HF-gemma-3-4b-it"
+    family: "gemma"
+    max_tokens: 8192
+    backend: "local"
+    local_model_name: "google/gemma-3-4b-it"
+  - model: "mistralai/Ministral-8B-Instruct-2410"
+    label: "HF-Ministral-8B-Instruct-2410"
+    family: "mistral"
+    max_tokens: 12288
+    backend: "local"
+    local_model_name: "mistralai/Ministral-8B-Instruct-2410"
+  - model: "allenai/olmo-2-13b-instruct"
+    label: "HF-olmo-2-13b-instruct"
+    family: "olmo"
+    max_tokens: 12288
+    backend: "local"
+    local_model_name: "allenai/olmo-2-13b-instruct"
+
+large_workers:
+  - model: "Qwen/Qwen2.5-14B-Instruct"
+    label: "HF-Qwen2.5-14B"
+    family: "local_qwen"
+    max_tokens: 16384
+    backend: "local"
+    local_model_name: "Qwen/Qwen2.5-14B-Instruct"
+  - model: "mistralai/Ministral-8B-Instruct-2410"
+    label: "HF-Ministral-8B"
+    family: "local_mistral"
+    max_tokens: 16384
+    backend: "local"
+    local_model_name: "mistralai/Ministral-8B-Instruct-2410"
+
+launcher:
+  run_analysis: true
+  overwrite_output_dir: false
+  continue_on_error: true
+  run_name_prefix: "reentry_math500_"
