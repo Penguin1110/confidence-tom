@@ -140,3 +140,42 @@ def test_family_sweep_run_name_includes_shard_suffix_for_reentry_prepare() -> No
         start_index=20,
     )
     assert run_name == "reentry_livebench_qwen3_s020_1"
+
+
+def test_reentry_controls_expand_segments_when_prefix_steps_missing() -> None:
+    spec = importlib.util.spec_from_file_location(
+        "run_prefix_reentry_controls",
+        ROOT / "experiments" / "mainline" / "run" / "core" / "run_prefix_reentry_controls.py",
+    )
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    rows = []
+    task = {
+        "task_id": "livebench_reasoning_demo_0000",
+        "small_model": "Qwen/Qwen3-14B",
+        "full_trace_answer": "demo",
+        "full_trace_correct": False,
+        "segments": [
+            {"index": 1, "text": "step one"},
+            {"index": 2, "text": "step two"},
+        ],
+        "prefix_oracle_steps": [],
+        "metadata": {"prepare_mode": "segments_only"},
+    }
+    result_json = ROOT / "tmp_reentry_controls_test.json"
+    result_json.write_text("[\n  " + __import__("json").dumps(task) + "\n]", encoding="utf-8")
+    try:
+        original_find = module._find_result_json
+        module._find_result_json = lambda run_name: result_json
+        rows = module._load_prefix_rows(["reentry_livebench_qwen3_s000_1"], None)
+    finally:
+        module._find_result_json = original_find
+        result_json.unlink(missing_ok=True)
+
+    assert len(rows) == 2
+    assert rows[0]["prefix_text"] == "step one"
+    assert rows[1]["prefix_text"] == "step one\n\nstep two"
+    assert rows[0]["prepare_mode"] == "segments_only"

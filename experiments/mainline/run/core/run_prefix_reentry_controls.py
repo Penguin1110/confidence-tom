@@ -231,7 +231,31 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
         for task in data:
             task_id = str(task["task_id"])
             benchmark = _benchmark_from_task_id(task_id)
-            for step in task.get("prefix_oracle_steps", []):
+            prefix_steps = task.get("prefix_oracle_steps", [])
+            if not prefix_steps:
+                segments = task.get("segments", [])
+                prefix_steps = []
+                for idx in range(1, len(segments) + 1):
+                    prefix_segments = segments[:idx]
+                    prefix_text = "\n\n".join(
+                        str(segment.get("text", "")).strip()
+                        for segment in prefix_segments
+                        if str(segment.get("text", "")).strip()
+                    ).strip()
+                    if not prefix_text:
+                        continue
+                    prefix_steps.append(
+                        {
+                            "prefix_id": f"{task_id}_reentry_p{idx}",
+                            "step_index": idx,
+                            "prefix_text": prefix_text,
+                            "small_continue_answer": "",
+                            "small_continue_correct": False,
+                            "small_continue_text": "",
+                            "delta_correctness": 0.0,
+                        }
+                    )
+            for step in prefix_steps:
                 prefix_text = str(step.get("prefix_text", "")).strip()
                 if not prefix_text:
                     continue
@@ -254,6 +278,9 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
                         "small_continue_text": str(step.get("small_continue_text", "")),
                         "delta_correctness": float(step.get("delta_correctness", 0.0)),
                         "positive_gain": int(float(step.get("delta_correctness", 0.0)) > 0.0),
+                        "prepare_mode": str(
+                            task.get("metadata", {}).get("prepare_mode", "oracle_steps")
+                        ),
                     }
                 )
     ordered = sorted(
