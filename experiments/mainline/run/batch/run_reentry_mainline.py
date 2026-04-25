@@ -39,7 +39,7 @@ def build_prepare_cmd(
     benchmarks = args.benchmark or preset.get("benchmarks", [])
     benchmark = str(benchmarks[0]) if benchmarks else ""
     if args.prepare_start_index is not None:
-        cmd += [f"dataset.start_index={int(args.prepare_start_index)}"]
+        cmd += [f"+dataset.start_index={int(args.prepare_start_index)}"]
     if args.prepare_limit is not None:
         limit = int(args.prepare_limit)
         cmd += [f"dataset.limit={limit}"]
