@@ -89,8 +89,16 @@ def main(cfg: DictConfig) -> None:
     run_name_prefix = str(cfg.launcher.get("run_name_prefix", ""))
     continue_on_error = bool(cfg.launcher.get("continue_on_error", False))
     timeouts = cfg.get("timeouts")
+    only_small_families = {
+        str(family).strip().lower()
+        for family in cfg.launcher.get("only_small_families", [])
+        if str(family).strip()
+    }
 
     for small in cfg.small_workers:
+        small_family = str(_worker_value(small, "family"))
+        if only_small_families and small_family.lower() not in only_small_families:
+            continue
         large_workers = cfg.large_workers
         if prepare_mode == "small_only_reentry":
             large_workers = [
@@ -102,7 +110,6 @@ def main(cfg: DictConfig) -> None:
                 }
             ]
         for large in large_workers:
-            small_family = str(_worker_value(small, "family"))
             large_family = str(_worker_value(large, "family"))
             small_label = str(_worker_value(small, "label"))
             large_label = str(_worker_value(large, "label"))
@@ -227,6 +234,18 @@ def main(cfg: DictConfig) -> None:
                         json.dumps(status_payload, ensure_ascii=False, indent=2),
                         encoding="utf-8",
                     )
+
+    if only_small_families:
+        configured_small_families = {
+            str(_worker_value(small, "family")).strip().lower() for small in cfg.small_workers
+        }
+        unmatched = sorted(only_small_families - configured_small_families)
+        if unmatched:
+            available = ", ".join(sorted(configured_small_families))
+            missing = ", ".join(unmatched)
+            raise ValueError(
+                f"Unknown small family filter(s): {missing}. Available families: {available}"
+            )
 
     if bool(cfg.launcher.get("run_taxonomy", prepare_mode == "small_only_reentry")):
         taxonomy_cmd = ["uv", "run", "python", str(taxonomy_analyzer)]

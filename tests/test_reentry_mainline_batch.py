@@ -62,15 +62,30 @@ def test_build_prepare_command_supports_prepare_shards() -> None:
     preset = module.load_presets(module.PRESET_PATH)["reentry_livebench_local"]
     args = Namespace(
         benchmark=[],
+        small_family=[],
         prepare_start_index=10,
         prepare_limit=5,
     )
     cmd = module.build_prepare_cmd(str(preset["family_sweep_config"]), preset, args)
     rendered = " ".join(cmd)
-    assert "dataset.start_index=10" in rendered
+    assert "+dataset.start_index=10" in rendered
     assert "dataset.limit=5" in rendered
     assert "dataset.livebench=5" in rendered
     assert "dataset.livebench_reasoning=5" in rendered
+
+
+def test_build_prepare_command_supports_small_family_filter() -> None:
+    module = _load_module()
+    preset = module.load_presets(module.PRESET_PATH)["reentry_livebench_local"]
+    args = Namespace(
+        benchmark=[],
+        small_family=["qwen3"],
+        prepare_start_index=None,
+        prepare_limit=None,
+    )
+    cmd = module.build_prepare_cmd(str(preset["family_sweep_config"]), preset, args)
+    rendered = " ".join(cmd)
+    assert "launcher.only_small_families=[qwen3]" in rendered
 
 
 def test_build_probe_command_includes_manifest_defaults() -> None:
