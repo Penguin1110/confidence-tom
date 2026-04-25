@@ -6,10 +6,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "experiments" / "mainline" / "run" / "batch" / "run_reentry_mainline.py"
+FAMILY_SWEEP_MODULE_PATH = (
+    ROOT / "experiments" / "mainline" / "run" / "batch" / "run_prefix_family_sweep.py"
+)
 
 
 def _load_module():
     spec = importlib.util.spec_from_file_location("run_reentry_mainline", MODULE_PATH)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_family_sweep_module():
+    spec = importlib.util.spec_from_file_location("run_prefix_family_sweep", FAMILY_SWEEP_MODULE_PATH)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -85,7 +97,7 @@ def test_build_prepare_command_supports_small_family_filter() -> None:
     )
     cmd = module.build_prepare_cmd(str(preset["family_sweep_config"]), preset, args)
     rendered = " ".join(cmd)
-    assert "launcher.only_small_families=[qwen3]" in rendered
+    assert "+launcher.only_small_families=[qwen3]" in rendered
 
 
 def test_build_probe_command_includes_manifest_defaults() -> None:
@@ -106,3 +118,16 @@ def test_build_probe_command_includes_manifest_defaults() -> None:
     assert "--backend transformers" in rendered
     assert "--local-model-map qwen=Qwen/Qwen3-14B" in rendered
     assert "--max-rows 3" in rendered
+
+
+def test_family_sweep_run_name_includes_shard_suffix_for_reentry_prepare() -> None:
+    module = _load_family_sweep_module()
+    run_name = module._run_name_for_config(
+        run_name_prefix="reentry_livebench_",
+        small_family="qwen3",
+        large_family="reentry_prepare",
+        limit=1,
+        prepare_mode="small_only_reentry",
+        start_index=20,
+    )
+    assert run_name == "reentry_livebench_qwen3_s020_1"

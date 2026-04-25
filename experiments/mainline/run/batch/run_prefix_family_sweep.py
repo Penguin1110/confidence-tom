@@ -55,6 +55,23 @@ def _dataset_override_args(benchmark: str, limit: int) -> list[str]:
     raise ValueError(f"Unsupported benchmark for family sweep: {benchmark}")
 
 
+def _run_name_for_config(
+    *,
+    run_name_prefix: str,
+    small_family: str,
+    large_family: str,
+    limit: int,
+    prepare_mode: str,
+    start_index: int | None,
+) -> str:
+    shard_suffix = ""
+    if start_index is not None:
+        shard_suffix = f"_s{start_index:03d}"
+    if prepare_mode == "small_only_reentry":
+        return f"{run_name_prefix}{small_family}{shard_suffix}_{limit}"
+    return f"{run_name_prefix}{small_family}_to_{large_family}{shard_suffix}_{limit}"
+
+
 @hydra.main(
     version_base=None,
     config_path="../../../../configs",
@@ -89,6 +106,8 @@ def main(cfg: DictConfig) -> None:
     run_name_prefix = str(cfg.launcher.get("run_name_prefix", ""))
     continue_on_error = bool(cfg.launcher.get("continue_on_error", False))
     timeouts = cfg.get("timeouts")
+    start_index_value = cfg.dataset.get("start_index")
+    start_index = int(start_index_value) if start_index_value is not None else None
     only_small_families = {
         str(family).strip().lower()
         for family in cfg.launcher.get("only_small_families", [])
@@ -117,9 +136,14 @@ def main(cfg: DictConfig) -> None:
             large_model = str(_worker_value(large, "model"))
             small_max_tokens = int(_worker_value(small, "max_tokens"))
             large_max_tokens = int(_worker_value(large, "max_tokens"))
-            run_name = f"{run_name_prefix}{small_family}_to_{large_family}_{limit}"
-            if prepare_mode == "small_only_reentry":
-                run_name = f"{run_name_prefix}{small_family}_{limit}"
+            run_name = _run_name_for_config(
+                run_name_prefix=run_name_prefix,
+                small_family=small_family,
+                large_family=large_family,
+                limit=limit,
+                prepare_mode=prepare_mode,
+                start_index=start_index,
+            )
             output_dir = results_dir / run_name
             output_dir.mkdir(parents=True, exist_ok=True)
             status_path = output_dir / "_run_status.json"

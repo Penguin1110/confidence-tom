@@ -38,7 +38,7 @@ def build_prepare_cmd(
     cmd = ["uv", "run", "python", str(FAMILY_SWEEP), "--config-name", config_name]
     if args.small_family:
         families = ",".join(str(family) for family in args.small_family)
-        cmd += [f"launcher.only_small_families=[{families}]"]
+        cmd += [f"+launcher.only_small_families=[{families}]"]
     benchmarks = args.benchmark or preset.get("benchmarks", [])
     benchmark = str(benchmarks[0]) if benchmarks else ""
     if args.prepare_start_index is not None:
