@@ -29,6 +29,8 @@ def test_build_reentry_command_includes_manifest_defaults() -> None:
     preset = module.load_presets(module.PRESET_PATH)["reentry_livebench_local"]
     args = Namespace(
         output_dir=None,
+        prepare_start_index=None,
+        prepare_limit=None,
         small_backend=None,
         small_local_model_name=None,
         small_local_model_map=[],
@@ -53,6 +55,22 @@ def test_build_reentry_command_includes_manifest_defaults() -> None:
     assert "--benchmark livebench_reasoning" in rendered
     assert "--small-local-model-map qwen=Qwen/Qwen3-14B" in rendered
     assert "--max-rows 5" in rendered
+
+
+def test_build_prepare_command_supports_prepare_shards() -> None:
+    module = _load_module()
+    preset = module.load_presets(module.PRESET_PATH)["reentry_livebench_local"]
+    args = Namespace(
+        benchmark=[],
+        prepare_start_index=10,
+        prepare_limit=5,
+    )
+    cmd = module.build_prepare_cmd(str(preset["family_sweep_config"]), preset, args)
+    rendered = " ".join(cmd)
+    assert "dataset.start_index=10" in rendered
+    assert "dataset.limit=5" in rendered
+    assert "dataset.livebench=5" in rendered
+    assert "dataset.livebench_reasoning=5" in rendered
 
 
 def test_build_probe_command_includes_manifest_defaults() -> None:

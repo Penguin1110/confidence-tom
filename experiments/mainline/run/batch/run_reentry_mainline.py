@@ -30,8 +30,26 @@ def load_presets(path: Path) -> dict[str, dict[str, Any]]:
     return {str(key): dict(value) for key, value in presets.items()}
 
 
-def build_prepare_cmd(config_name: str) -> list[str]:
-    return ["uv", "run", "python", str(FAMILY_SWEEP), "--config-name", config_name]
+def build_prepare_cmd(
+    config_name: str,
+    preset: dict[str, Any],
+    args: argparse.Namespace,
+) -> list[str]:
+    cmd = ["uv", "run", "python", str(FAMILY_SWEEP), "--config-name", config_name]
+    benchmarks = args.benchmark or preset.get("benchmarks", [])
+    benchmark = str(benchmarks[0]) if benchmarks else ""
+    if args.prepare_start_index is not None:
+        cmd += [f"dataset.start_index={int(args.prepare_start_index)}"]
+    if args.prepare_limit is not None:
+        limit = int(args.prepare_limit)
+        cmd += [f"dataset.limit={limit}"]
+        if benchmark == "livebench_reasoning":
+            cmd += [f"dataset.livebench={limit}", f"dataset.livebench_reasoning={limit}"]
+        elif benchmark in {"aime_2024", "math500", "gpqa_diamond"}:
+            cmd += [f"dataset.{benchmark}={limit}"]
+        elif benchmark == "olympiadbench":
+            cmd += [f"dataset.olympiadbench={limit}"]
+    return cmd
 
 
 def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.Namespace) -> list[str]:
@@ -133,6 +151,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="prepare runs family sweep, reentry runs controls, analyze recomputes summaries, probe extracts transformer representations.",
     )
     parser.add_argument("--output-dir", default=None)
+    parser.add_argument("--prepare-start-index", type=int, default=None)
+    parser.add_argument("--prepare-limit", type=int, default=None)
     parser.add_argument("--small-backend", default=None, choices=["ollama", "local"])
     parser.add_argument("--small-local-model-name", default=None)
     parser.add_argument("--small-local-model-map", action="append", default=[])
@@ -163,7 +183,10 @@ def main() -> None:
     preset = presets[args.preset]
 
     if args.phase in {"prepare", "both", "all"}:
-        run_cmd(build_prepare_cmd(str(preset["family_sweep_config"])), dry_run=args.dry_run)
+        run_cmd(
+            build_prepare_cmd(str(preset["family_sweep_config"]), preset, args),
+            dry_run=args.dry_run,
+        )
 
     if args.phase in {"reentry", "both", "all"}:
         run_cmd(build_reentry_cmd(args.preset, preset, args), dry_run=args.dry_run)

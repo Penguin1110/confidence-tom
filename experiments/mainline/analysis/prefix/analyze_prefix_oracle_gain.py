@@ -22,6 +22,7 @@ from confidence_tom.data.scale_dataset import (
     load_olympiadbench,
 )
 from confidence_tom.eval.static_evaluators import build_static_evaluator
+from experiments.mainline.run.core.common import load_static_questions
 
 
 def _load_rows(path: Path) -> list[dict[str, Any]]:
@@ -108,27 +109,7 @@ def _pearson(xs: list[float], ys: list[float]) -> float:
 
 def _load_tasks(cfg: DictConfig) -> dict[str, StaticTask]:
     benchmark_name = str(cfg.dataset.benchmark)
-    if benchmark_name == "olympiadbench":
-        questions = load_olympiadbench(num_samples=int(cfg.dataset.olympiadbench))
-    elif benchmark_name == "livebench_reasoning":
-        livebench_count = int(
-            cfg.dataset.get("livebench_reasoning", cfg.dataset.get("livebench", 0))
-        )
-        questions = load_livebench_reasoning(num_samples=livebench_count)
-    elif benchmark_name == "aime_2024":
-        questions = load_aime_2024(
-            num_samples=int(cfg.dataset.get("aime_2024", cfg.dataset.get("limit", 0)))
-        )
-    elif benchmark_name == "math500":
-        questions = load_math500(
-            num_samples=int(cfg.dataset.get("math500", cfg.dataset.get("limit", 0)))
-        )
-    elif benchmark_name == "gpqa_diamond":
-        questions = load_gpqa_diamond(
-            num_samples=int(cfg.dataset.get("gpqa_diamond", cfg.dataset.get("limit", 0)))
-        )
-    else:
-        raise ValueError(f"Unsupported benchmark for analysis: {benchmark_name}")
+    questions = load_static_questions(benchmark_name, cfg.dataset)
     return {q.id: q for q in questions}
 
 
