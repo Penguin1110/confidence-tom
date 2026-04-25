@@ -36,14 +36,18 @@ def test_mainline_and_compat_layout() -> None:
         ROOT / "docs" / "mainline" / "generated" / "analysis" / "routing",
         ROOT / "docs" / "mainline" / "generated" / "analysis" / "embedding",
         ROOT / "experiments" / "mainline" / "run" / "core" / "run_prefix_reentry_controls.py",
+        ROOT / "experiments" / "mainline" / "run" / "core" / "run_prefix_reentry_probe.py",
         ROOT / "experiments" / "mainline" / "run" / "core" / "run_prefix_oracle_gain_mapping.py",
         ROOT / "experiments" / "mainline" / "run" / "core" / "run_api_determinism_audit.py",
         ROOT / "experiments" / "mainline" / "run" / "batch" / "run_family_queue.py",
+        ROOT / "experiments" / "mainline" / "run" / "batch" / "run_reentry_mainline.py",
+        ROOT / "experiments" / "mainline" / "run" / "batch" / "reentry_presets.json",
         ROOT / "experiments" / "mainline" / "run" / "batch" / "run_small_only.py",
         ROOT / "experiments" / "mainline" / "analysis" / "prefix" / "analyze_prefix_diagnostics.py",
         ROOT / "experiments" / "mainline" / "analysis" / "maintenance" / "manage_prefix_results.py",
         ROOT / "docs" / "mainline" / "notes" / "reports" / "prefix_based_intervention_framework.md",
         ROOT / "docs" / "mainline" / "notes" / "reports" / "prefix_case_study_candidates.md",
+        ROOT / "docs" / "mainline" / "notes" / "reports" / "reentry_mainline_scale_plan.md",
         ROOT / "docs" / "mainline" / "notes" / "proposals" / "oracle_gain_fragility_proposal.md",
         ROOT
         / "docs"
@@ -60,6 +64,7 @@ def test_mainline_and_compat_layout() -> None:
         / "trace"
         / "trace_taxonomy_analysis.md",
         ROOT / "src" / "confidence_tom" / "infra" / "client.py",
+        ROOT / "src" / "confidence_tom" / "infra" / "representations.py",
         ROOT / "src" / "confidence_tom" / "data" / "task_models.py",
         ROOT / "src" / "confidence_tom" / "eval" / "static_evaluators.py",
         ROOT / "src" / "confidence_tom" / "eval" / "parsing.py",
@@ -122,7 +127,7 @@ def test_old_top_level_entrypoints_are_gone() -> None:
 
 def test_mainline_root_is_subdivided() -> None:
     mainline_root = ROOT / "experiments" / "mainline"
-    assert not any(mainline_root.glob("*.py"))
+    assert sorted(p.name for p in mainline_root.glob("*.py")) == ["__init__.py"]
     assert sorted(p.name for p in mainline_root.glob("*.md")) == ["README.md"]
 
     docs_mainline_root = ROOT / "docs" / "mainline"

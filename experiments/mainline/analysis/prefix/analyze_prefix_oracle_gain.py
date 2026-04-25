@@ -14,14 +14,21 @@ from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
+from confidence_tom.data.scale_dataset import (
+    load_aime_2024,
+    load_gpqa_diamond,
+    load_livebench_reasoning,
+    load_math500,
+    load_olympiadbench,
+)
 from confidence_tom.eval.static_evaluators import build_static_evaluator
+from experiments.mainline.run.core.common import load_static_questions
 
 
 def _load_rows(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding="utf-8"))
     return cast(list[dict[str, Any]], data) if isinstance(data, list) else []
 
 
@@ -102,15 +109,7 @@ def _pearson(xs: list[float], ys: list[float]) -> float:
 
 def _load_tasks(cfg: DictConfig) -> dict[str, StaticTask]:
     benchmark_name = str(cfg.dataset.benchmark)
-    if benchmark_name == "olympiadbench":
-        questions = load_olympiadbench(num_samples=int(cfg.dataset.olympiadbench))
-    elif benchmark_name == "livebench_reasoning":
-        livebench_count = int(
-            cfg.dataset.get("livebench_reasoning", cfg.dataset.get("livebench", 0))
-        )
-        questions = load_livebench_reasoning(num_samples=livebench_count)
-    else:
-        raise ValueError(f"Unsupported benchmark for analysis: {benchmark_name}")
+    questions = load_static_questions(benchmark_name, cfg.dataset)
     return {q.id: q for q in questions}
 
 
@@ -498,7 +497,9 @@ def main(cfg: DictConfig) -> None:
     # Persist outputs before verbose logging so partial runs still leave usable summaries.
     if summary_path:
         summary_path.parent.mkdir(parents=True, exist_ok=True)
-        summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2))
+        summary_path.write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
     if per_prefix_rows_csv and per_prefix_rows:
         per_prefix_rows_csv.parent.mkdir(parents=True, exist_ok=True)

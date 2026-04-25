@@ -1,0 +1,176 @@
+{
+  "presets": {
+    "reentry_livebench_local": {
+      "description": "LiveBench reasoning family sweep plus re-entry controls for the local-transformers matrix.",
+      "family_sweep_config": "prefix_family_sweep_reentry_livebench_ollama",
+      "run_name_prefixes": [
+        "reentry_livebench_"
+      ],
+      "benchmarks": [
+        "livebench_reasoning"
+      ],
+      "categories": [
+        "stable-success",
+        "late-success",
+        "fragile-success",
+        "persistent-failure"
+      ],
+      "reentry_output_dir": "outputs/results/_reentry_livebench_local_v1",
+      "small_backend": "local",
+      "small_local_model_map": [
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ],
+      "probe_output_dir": "outputs/results/_reentry_livebench_local_v1/probe",
+      "probe_backend": "transformers",
+      "probe_local_model_map": [
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ]
+    },
+    "reentry_olympiad_local": {
+      "description": "OlympiadBench family sweep plus re-entry controls for the local-transformers matrix.",
+      "family_sweep_config": "prefix_family_sweep_reentry_olympiad_ollama",
+      "run_name_prefixes": [
+        "reentry_olympiad_"
+      ],
+      "benchmarks": [
+        "olympiadbench"
+      ],
+      "categories": [
+        "stable-success",
+        "late-success",
+        "fragile-success",
+        "persistent-failure"
+      ],
+      "reentry_output_dir": "outputs/results/_reentry_olympiad_local_v1",
+      "small_backend": "local",
+      "small_local_model_map": [
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ],
+      "probe_output_dir": "outputs/results/_reentry_olympiad_local_v1/probe",
+      "probe_backend": "transformers",
+      "probe_local_model_map": [
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ]
+    },
+    "reentry_aime_local": {
+      "description": "AIME 2024 family sweep plus re-entry controls for the local-transformers matrix.",
+      "family_sweep_config": "prefix_family_sweep_reentry_aime_ollama",
+      "run_name_prefixes": [
+        "reentry_aime_"
+      ],
+      "benchmarks": [
+        "aime_2024"
+      ],
+      "categories": [
+        "stable-success",
+        "late-success",
+        "fragile-success",
+        "persistent-failure"
+      ],
+      "reentry_output_dir": "outputs/results/_reentry_aime_local_v1",
+      "small_backend": "local",
+      "small_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ],
+      "probe_output_dir": "outputs/results/_reentry_aime_local_v1/probe",
+      "probe_backend": "transformers",
+      "probe_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ]
+    },
+    "reentry_math500_local": {
+      "description": "MATH-500 family sweep plus re-entry controls for the local-transformers matrix.",
+      "family_sweep_config": "prefix_family_sweep_reentry_math500_ollama",
+      "run_name_prefixes": [
+        "reentry_math500_"
+      ],
+      "benchmarks": [
+        "math500"
+      ],
+      "categories": [
+        "stable-success",
+        "late-success",
+        "fragile-success",
+        "persistent-failure"
+      ],
+      "reentry_output_dir": "outputs/results/_reentry_math500_local_v1",
+      "small_backend": "local",
+      "small_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ],
+      "probe_output_dir": "outputs/results/_reentry_math500_local_v1/probe",
+      "probe_backend": "transformers",
+      "probe_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ]
+    },
+    "reentry_gpqa_local": {
+      "description": "GPQA Diamond family sweep plus re-entry controls for the local-transformers matrix.",
+      "family_sweep_config": "prefix_family_sweep_reentry_gpqa_ollama",
+      "run_name_prefixes": [
+        "reentry_gpqa_"
+      ],
+      "benchmarks": [
+        "gpqa_diamond"
+      ],
+      "categories": [
+        "stable-success",
+        "late-success",
+        "fragile-success",
+        "persistent-failure"
+      ],
+      "reentry_output_dir": "outputs/results/_reentry_gpqa_local_v1",
+      "small_backend": "local",
+      "small_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ],
+      "probe_output_dir": "outputs/results/_reentry_gpqa_local_v1/probe",
+      "probe_backend": "transformers",
+      "probe_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/olmo-2-13b-instruct"
+      ]
+    }
+  }
+}

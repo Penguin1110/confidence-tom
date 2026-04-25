@@ -1,0 +1,35 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    TOKENIZERS_PARALLELISM=false \
+    CONFIDENCE_TOM_OUTPUT_ROOT=/workspace/outputs \
+    HF_HOME=/workspace/.cache/huggingface \
+    TRANSFORMERS_CACHE=/workspace/.cache/huggingface
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        curl \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+COPY pyproject.toml uv.lock README.md ./
+COPY configs ./configs
+COPY experiments ./experiments
+COPY src ./src
+COPY tests ./tests
+COPY tools ./tools
+COPY docs ./docs
+
+RUN uv sync --frozen --no-dev --group local-inference
+
+ENTRYPOINT ["uv", "run", "python"]
+CMD ["experiments/mainline/run/batch/run_reentry_mainline.py", "--help"]

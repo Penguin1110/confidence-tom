@@ -21,6 +21,17 @@ EARLY_FRACTION = 1.0 / 3.0
 MIN_STABLE_LOCAL_RATE = 0.5
 
 
+def _family_from_run_name(run_name: str) -> str:
+    if run_name.startswith("reentry_"):
+        parts = run_name.split("_")
+        if len(parts) >= 3:
+            return parts[2].lower()
+    if run_name.startswith("livebench_"):
+        parts = run_name.split("_")
+        return parts[1].lower() if len(parts) > 1 else ""
+    return run_name.split("_")[0].lower()
+
+
 @dataclass(frozen=True)
 class TaskRecord:
     run_name: str
@@ -51,7 +62,7 @@ def _load_final_json_files() -> list[Path]:
         if not _is_final_result_file(path):
             continue
         try:
-            data = json.loads(path.read_text())
+            data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
             continue
         if (
@@ -71,7 +82,7 @@ def _mean_or_zero(values: list[float]) -> float:
 def _load_records() -> list[TaskRecord]:
     records: list[TaskRecord] = []
     for path in _load_final_json_files():
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
         for task in data:
             steps = task.get("prefix_oracle_steps", [])
             small_corrects = [bool(step.get("small_continue_correct")) for step in steps]
@@ -99,11 +110,9 @@ def _load_records() -> list[TaskRecord]:
 
             records.append(
                 TaskRecord(
-                    run_name=str(task.get("small_model", path.stem)),
+                    run_name=path.parent.name,
                     benchmark=str(task.get("benchmark", "")),
-                    family=str(task.get("small_model", "")).split("/")[0]
-                    if task.get("small_model")
-                    else "",
+                    family=_family_from_run_name(path.parent.name),
                     task_id=str(task.get("task_id", "")),
                     full_correct=full_correct,
                     step_count=step_count,

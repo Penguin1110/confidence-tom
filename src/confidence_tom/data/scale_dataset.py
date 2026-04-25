@@ -11,6 +11,9 @@ Supported benchmarks:
 - MuSR: official multiple-choice reasoning benchmark
 - OlympiadBench: open-ended olympiad math benchmark
 - LiveBench reasoning: open-ended reasoning tasks with task-specific scorers
+- AIME 2024: open-ended competition math benchmark
+- MATH-500: open-ended math benchmark subset
+- GPQA Diamond: hard multiple-choice science benchmark
 """
 
 import ast
@@ -867,6 +870,139 @@ def load_livebench_reasoning(
         )
 
     logger.info(f"  Loaded {len(questions)} LiveBench reasoning questions")
+    return questions
+
+
+def load_aime_2024(
+    num_samples: int = 30,
+    split: str = "train",
+) -> list[MCQuestion]:
+    """Load AIME 2024 as open-ended integer-answer tasks."""
+    logger.info(f"Loading AIME 2024 ({num_samples} questions)...")
+
+    dataset = load_dataset("HuggingFaceH4/aime_2024", split=split).shuffle(seed=_SEED)
+    questions: list[MCQuestion] = []
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+        problem = str(
+            item.get("problem") or item.get("question") or item.get("prompt") or ""
+        ).strip()
+        answer = str(item.get("answer") or item.get("final_answer") or "").strip()
+        if not problem or not answer:
+            continue
+        questions.append(
+            MCQuestion(
+                id=f"aime_2024_{i:04d}",
+                question=problem,
+                choices=[],
+                correct_answer="",
+                reference_answer=answer,
+                category="math_competition",
+                source="aime_2024",
+                answer_format="open_ended",
+                evaluator_name="math_exact",
+                external_difficulty="aime_2024",
+                metadata={"split": split},
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} AIME 2024 questions")
+    return questions
+
+
+def load_math500(
+    num_samples: int = 100,
+    split: str = "test",
+) -> list[MCQuestion]:
+    """Load MATH-500 as open-ended math tasks."""
+    logger.info(f"Loading MATH-500 ({num_samples} questions)...")
+
+    dataset = load_dataset("math-ai/math500", split=split).shuffle(seed=_SEED)
+    questions: list[MCQuestion] = []
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+        problem = str(item.get("problem") or item.get("question") or "").strip()
+        answer = str(item.get("answer") or item.get("final_answer") or "").strip()
+        if not problem or not answer:
+            continue
+        questions.append(
+            MCQuestion(
+                id=f"math500_{item.get('unique_id', i)}_{i:04d}",
+                question=problem,
+                choices=[],
+                correct_answer="",
+                reference_answer=answer,
+                category="math_hard",
+                source="math500",
+                answer_format="open_ended",
+                evaluator_name="math_exact",
+                external_difficulty=str(item.get("level", "unknown")),
+                metadata={
+                    "split": split,
+                    "subject": item.get("subject"),
+                    "level": item.get("level"),
+                    "unique_id": item.get("unique_id"),
+                },
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} MATH-500 questions")
+    return questions
+
+
+def load_gpqa_diamond(
+    num_samples: int = 100,
+    split: str = "train",
+) -> list[MCQuestion]:
+    """Load GPQA Diamond as standardized 4-choice MC tasks."""
+    logger.info(f"Loading GPQA Diamond ({num_samples} questions)...")
+
+    dataset = load_dataset("Idavidrein/gpqa", "gpqa_diamond", split=split).shuffle(seed=_SEED)
+    rng = random.Random(_SEED)
+    choice_labels = ["A", "B", "C", "D"]
+    questions: list[MCQuestion] = []
+
+    for i, item in enumerate(dataset):
+        if len(questions) >= num_samples:
+            break
+        correct_ans = str(item.get("Correct Answer", "")).strip()
+        distractors = [
+            str(item.get("Incorrect Answer 1", "")).strip(),
+            str(item.get("Incorrect Answer 2", "")).strip(),
+            str(item.get("Incorrect Answer 3", "")).strip(),
+        ]
+        question = str(item.get("Question", "")).strip()
+        if not question or not correct_ans or any(not d for d in distractors):
+            continue
+
+        all_options = [correct_ans] + distractors
+        rng.shuffle(all_options)
+        correct_idx = all_options.index(correct_ans)
+        formatted_choices = [f"{choice_labels[j]}) {all_options[j]}" for j in range(4)]
+
+        questions.append(
+            MCQuestion(
+                id=f"gpqa_diamond_{item.get('Record ID', i)}_{i:04d}",
+                question=question,
+                choices=formatted_choices,
+                correct_answer=choice_labels[correct_idx],
+                reference_answer=correct_ans,
+                category="science_hard",
+                source="gpqa_diamond",
+                answer_format="multiple_choice",
+                evaluator_name="mc_letter",
+                external_difficulty="gpqa_diamond",
+                metadata={
+                    "split": split,
+                    "record_id": item.get("Record ID"),
+                    "subcategory": item.get("Subdomain"),
+                },
+            )
+        )
+
+    logger.info(f"  Loaded {len(questions)} GPQA Diamond questions")
     return questions
 
 

@@ -90,7 +90,7 @@ class ResultStore:
         if not self.path.exists():
             return []
         try:
-            return cast(list[dict[str, Any]], json.loads(self.path.read_text()))
+            return cast(list[dict[str, Any]], json.loads(self.path.read_text(encoding="utf-8")))
         except Exception:
             return []
 
@@ -106,7 +106,7 @@ class ResultStore:
         else:
             self.rows[existing] = row
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(self.path)
 
 
@@ -123,14 +123,14 @@ class PartialTaskStore:
         if not path.exists():
             return None
         try:
-            return cast(dict[str, Any], json.loads(path.read_text()))
+            return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
         except Exception:
             return None
 
     def save(self, task_id: str, payload: dict[str, Any]) -> None:
         tmp = self.root / f"{task_id}.tmp"
         final = self.path_for(task_id)
-        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(final)
 
     def clear(self, task_id: str) -> None:
@@ -710,8 +710,7 @@ def main(cfg: DictConfig) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     benchmark_name = str(cfg.dataset.benchmark)
-    if benchmark_name == "olympiadbench":
-        questions = load_static_questions(benchmark_name, cfg.dataset)
+    questions = load_static_questions(benchmark_name, cfg.dataset)
 
     out_path = output_dir / (
         f"{_sanitize_label(str(cfg.small_worker.label))}_to_"
