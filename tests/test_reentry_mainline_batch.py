@@ -34,6 +34,13 @@ def test_reentry_presets_load() -> None:
     presets = module.load_presets(module.PRESET_PATH)
     assert "reentry_livebench_local" in presets
     assert "reentry_olympiad_local" in presets
+    livebench_maps = presets["reentry_livebench_local"]["small_local_model_map"]
+    assert "qwen3=Qwen/Qwen3-14B" in livebench_maps
+    assert "qwen25=Qwen/Qwen2.5-14B-Instruct" in livebench_maps
+    assert "gemma4=google/gemma-4-E4B-it" in livebench_maps
+    assert "gemma3=google/gemma-3-4b-it" in livebench_maps
+    assert "ministral=mistralai/Ministral-8B-Instruct-2410" in livebench_maps
+    assert "mistral7=mistralai/Mistral-7B-Instruct-v0.3" in livebench_maps
 
 
 def test_build_reentry_command_includes_manifest_defaults() -> None:
@@ -65,7 +72,8 @@ def test_build_reentry_command_includes_manifest_defaults() -> None:
     rendered = " ".join(cmd)
     assert "--run-name-prefix reentry_livebench_" in rendered
     assert "--benchmark livebench_reasoning" in rendered
-    assert "--small-local-model-map qwen=Qwen/Qwen3-14B" in rendered
+    assert "--small-local-model-map qwen3=Qwen/Qwen3-14B" in rendered
+    assert "--small-local-model-map qwen25=Qwen/Qwen2.5-14B-Instruct" in rendered
     assert "--max-rows 5" in rendered
 
 
@@ -116,7 +124,8 @@ def test_build_probe_command_includes_manifest_defaults() -> None:
     rendered = " ".join(cmd)
     assert "run_prefix_reentry_probe.py" in rendered
     assert "--backend transformers" in rendered
-    assert "--local-model-map qwen=Qwen/Qwen3-14B" in rendered
+    assert "--local-model-map qwen3=Qwen/Qwen3-14B" in rendered
+    assert "--local-model-map qwen25=Qwen/Qwen2.5-14B-Instruct" in rendered
     assert "--max-rows 3" in rendered
 
 

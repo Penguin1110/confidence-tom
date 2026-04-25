@@ -31,9 +31,15 @@ Final Answer: <answer>
 
 LOCAL_MODEL_BY_FAMILY = {
     "qwen": "Qwen/Qwen3-14B",
+    "qwen3": "Qwen/Qwen3-14B",
+    "qwen25": "Qwen/Qwen2.5-14B-Instruct",
     "gemma": "google/gemma-3-4b-it",
+    "gemma4": "google/gemma-4-E4B-it",
+    "gemma3": "google/gemma-3-4b-it",
     "mistral": "mistralai/Ministral-8B-Instruct-2410",
     "mistralai": "mistralai/Ministral-8B-Instruct-2410",
+    "ministral": "mistralai/Ministral-8B-Instruct-2410",
+    "mistral7": "mistralai/Mistral-7B-Instruct-v0.3",
     "olmo": "allenai/olmo-2-13b-instruct",
     "llama": "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama": "meta-llama/Llama-3.1-8B-Instruct",

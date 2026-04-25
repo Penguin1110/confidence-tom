@@ -18,17 +18,23 @@
       "reentry_output_dir": "outputs/results/_reentry_livebench_local_v1",
       "small_backend": "local",
       "small_local_model_map": [
-        "qwen=Qwen/Qwen3-14B",
-        "gemma=google/gemma-4-E4B-it",
-        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
         "olmo=allenai/olmo-2-13b-instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_livebench_local_v1/probe",
       "probe_backend": "transformers",
       "probe_local_model_map": [
-        "qwen=Qwen/Qwen3-14B",
-        "gemma=google/gemma-4-E4B-it",
-        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
         "olmo=allenai/olmo-2-13b-instruct"
       ]
     },
@@ -50,17 +56,23 @@
       "reentry_output_dir": "outputs/results/_reentry_olympiad_local_v1",
       "small_backend": "local",
       "small_local_model_map": [
-        "qwen=Qwen/Qwen3-14B",
-        "gemma=google/gemma-4-E4B-it",
-        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
         "olmo=allenai/olmo-2-13b-instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_olympiad_local_v1/probe",
       "probe_backend": "transformers",
       "probe_local_model_map": [
-        "qwen=Qwen/Qwen3-14B",
-        "gemma=google/gemma-4-E4B-it",
-        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "qwen3=Qwen/Qwen3-14B",
+        "qwen25=Qwen/Qwen2.5-14B-Instruct",
+        "gemma4=google/gemma-4-E4B-it",
+        "gemma3=google/gemma-3-4b-it",
+        "ministral=mistralai/Ministral-8B-Instruct-2410",
+        "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
         "olmo=allenai/olmo-2-13b-instruct"
       ]
     },

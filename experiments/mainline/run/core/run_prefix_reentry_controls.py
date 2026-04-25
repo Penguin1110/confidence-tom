@@ -53,22 +53,34 @@ DEFAULT_RUN_NAMES = [
 TAXONOMY_PATH = RESULTS_DIR / "_trace_taxonomy_v1" / "trace_taxonomy_summary.json"
 OLLAMA_LOCAL_MODEL_BY_FAMILY = {
     "qwen": "qwen3:14b",
+    "qwen3": "qwen3:14b",
+    "qwen25": "qwen2.5:14b",
     "mistral": "mistral-small3.2:24b",
     "mistralai": "mistral-small3.2:24b",
+    "ministral": "mistral-small3.2:24b",
+    "mistral7": "mistral:7b-instruct",
     "llama": "llama3.1:8b",
     "meta-llama": "llama3.1:8b",
     "google": "gemma3:4b",
     "gemma": "gemma3:4b",
+    "gemma4": "gemma3:4b",
+    "gemma3": "gemma3:4b",
     "olmo": "olmo-3.1:32b",
 }
 LOCAL_MODEL_BY_FAMILY = {
     "qwen": "Qwen/Qwen3-14B",
+    "qwen3": "Qwen/Qwen3-14B",
+    "qwen25": "Qwen/Qwen2.5-14B-Instruct",
     "mistral": "mistralai/Ministral-8B-Instruct-2410",
     "mistralai": "mistralai/Ministral-8B-Instruct-2410",
+    "ministral": "mistralai/Ministral-8B-Instruct-2410",
+    "mistral7": "mistralai/Mistral-7B-Instruct-v0.3",
     "llama": "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama": "meta-llama/Llama-3.1-8B-Instruct",
     "google": "google/gemma-3-4b-it",
     "gemma": "google/gemma-3-4b-it",
+    "gemma4": "google/gemma-4-E4B-it",
+    "gemma3": "google/gemma-3-4b-it",
     "olmo": "allenai/OLMo-2-13B-Instruct",
 }
 
