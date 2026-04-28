@@ -170,6 +170,12 @@ def _benchmark_from_task_id(task_id: str) -> str:
 
 
 def _find_result_json(run_name: str) -> Path:
+    excluded_names = {
+        "summary.json",
+        "dataset_meta.json",
+        "baseline_results.json",
+        "_run_status.json",
+    }
     searched_dirs: list[Path] = []
     for results_dir in RESULT_DIR_CANDIDATES:
         run_dir = results_dir / run_name
@@ -179,10 +185,12 @@ def _find_result_json(run_name: str) -> Path:
         candidates = [
             path
             for path in run_dir.glob("*.json")
-            if path.name not in {"summary.json", "dataset_meta.json", "baseline_results.json"}
+            if path.name not in excluded_names
         ]
         json_candidates: list[Path] = [
-            path for path in candidates if "per_prefix_rows" not in path.name
+            path
+            for path in candidates
+            if "per_prefix_rows" not in path.name and not path.name.startswith("_")
         ]
         if json_candidates:
             return json_candidates[0]

@@ -224,3 +224,31 @@ def test_reentry_controls_expand_segments_when_prefix_steps_missing() -> None:
     assert rows[0]["prefix_text"] == "step one"
     assert rows[1]["prefix_text"] == "step one\n\nstep two"
     assert rows[0]["prepare_mode"] == "segments_only"
+
+
+def test_reentry_controls_find_result_json_skips_run_metadata(tmp_path) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "run_prefix_reentry_controls",
+        ROOT / "experiments" / "mainline" / "run" / "core" / "run_prefix_reentry_controls.py",
+    )
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    run_dir = tmp_path / "reentry_livebench_qwen3_1"
+    run_dir.mkdir()
+    status_json = run_dir / "_run_status.json"
+    result_json = run_dir / "HF_Qwen3_14B_small_only.json"
+    status_json.write_text('{"status": "completed"}', encoding="utf-8")
+    result_json.write_text(
+        '[{"task_id": "livebench_reasoning_demo_0000", "prefix_oracle_steps": []}]',
+        encoding="utf-8",
+    )
+
+    original_candidates = module.RESULT_DIR_CANDIDATES
+    try:
+        module.RESULT_DIR_CANDIDATES = [tmp_path]
+        assert module._find_result_json("reentry_livebench_qwen3_1") == result_json
+    finally:
+        module.RESULT_DIR_CANDIDATES = original_candidates
