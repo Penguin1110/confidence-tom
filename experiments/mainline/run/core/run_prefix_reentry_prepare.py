@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
-import traceback
 from pathlib import Path
 from typing import Any
 
@@ -18,19 +17,15 @@ from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.intervention import (
     PrefixOracleGainStepResult,
     PrefixOracleGainTaskResult,
-    trace_to_cost,
 )
 from experiments.mainline.run.core.common import (
     client_kwargs_from_cfg as _client_kwargs_from_cfg,
     load_static_questions,
-    pricing_from_cfg as _pricing_from_cfg,
     sanitize_label as _sanitize_label,
 )
 from experiments.mainline.run.core.run_prefix_oracle_gain_mapping import (
     ResultStore,
     PartialTaskStore,
-    _SMALL_CONTINUE_SYSTEM_PROMPT,
-    _run_continue,
     _run_full_trace,
     _segment_full_trace,
 )
@@ -68,12 +63,8 @@ async def _map_task_small_only(task: Any, cfg: DictConfig) -> PrefixOracleGainTa
         full_answer = str(resume_payload.get("full_trace_answer") or "")
         parse_incomplete = bool(resume_payload.get("parse_incomplete", False))
         segments = list(resume_payload.get("segments", []))
-        oracle_steps = [
-            PrefixOracleGainStepResult.model_validate(step)
-            for step in resume_payload.get("prefix_oracle_steps", [])
-        ]
         full_trace_api = resume_payload.get("full_trace_api_trace")
-        logger.info("partial.resume task=%s completed_steps=%d", task.id, len(oracle_steps))
+        logger.info("partial.resume task=%s segments=%d", task.id, len(segments))
     else:
         full_text, full_answer, full_trace_api = await _run_full_trace(
             task,
@@ -119,82 +110,12 @@ async def _map_task_small_only(task: Any, cfg: DictConfig) -> PrefixOracleGainTa
             },
         )
 
-    small_pricing = _pricing_from_cfg(cfg, str(cfg.small_worker.model))
     full_eval = evaluator(full_answer, task) if full_answer else evaluator("", task)
-    start_step_index = len(oracle_steps) + 1
-
-    for step_index in range(start_step_index, len(segments) + 1):
-        prefix_segments = segments[:step_index]
-        prefix_text = "\n\n".join(segment.text for segment in prefix_segments if segment.text.strip())
-        prefix_id = f"{trace_id}_p{step_index}"
-        parent_prefix_id = f"{trace_id}_p{step_index - 1}" if step_index > 1 else ""
-        logger.info("prefix.step.small_only task=%s step=%d/%d", task.id, step_index, len(segments))
-
-        try:
-            small_text, small_answer, small_api = await _run_continue(
-                task=task,
-                client=small_client,
-                extract_client=extract_client,
-                system_prompt=_SMALL_CONTINUE_SYSTEM_PROMPT,
-                prefix_text=prefix_text,
-                timeout_sec=int(cfg.timeouts.small_worker_sec),
-                tag="small_continue_prefix",
-                retry_attempts=retry_attempts,
-                retry_backoff_sec=retry_backoff_sec,
-            )
-        except Exception:
-            logger.error(
-                "small_continue_prefix.error task=%s step=%d\n%s",
-                task.id,
-                step_index,
-                traceback.format_exc(),
-            )
-            small_text, small_answer, small_api = "", "", None
-
-        small_eval = evaluator(small_answer, task) if small_answer else evaluator("", task)
-        oracle_steps.append(
-            PrefixOracleGainStepResult(
-                prefix_id=prefix_id,
-                parent_prefix_id=parent_prefix_id,
-                step_index=step_index,
-                prefix_segments=prefix_segments,
-                prefix_text=prefix_text,
-                small_continue_answer=small_answer,
-                small_continue_correct=small_eval.is_correct,
-                large_takeover_answer="",
-                large_takeover_correct=False,
-                delta_correctness=0.0,
-                small_continue_cost=trace_to_cost(small_api, small_pricing),
-                large_takeover_cost=trace_to_cost(None, None),
-                small_continue_text=small_text,
-                large_takeover_text="",
-                small_continue_api_trace=small_api,
-                large_takeover_api_trace=None,
-            )
-        )
-
-        partial_store.save(
-            task.id,
-            {
-                "task_id": task.id,
-                "status": "prefix_step_done",
-                "completed_step_index": step_index,
-                "small_model": str(cfg.small_worker.model),
-                "large_model": str(cfg.large_worker.model),
-                "trace_id": trace_id,
-                "full_trace_text": full_text,
-                "full_trace_answer": full_answer,
-                "full_trace_correct": full_eval.is_correct,
-                "full_trace_api_trace": (
-                    full_trace_api.model_dump()
-                    if full_trace_api is not None and hasattr(full_trace_api, "model_dump")
-                    else full_trace_api
-                ),
-                "parse_incomplete": parse_incomplete,
-                "segments": [segment.model_dump() for segment in segments],
-                "prefix_oracle_steps": [step.model_dump() for step in oracle_steps],
-            },
-        )
+    logger.info(
+        "prepare.light task=%s segments=%d prepare_mode=segments_only",
+        task.id,
+        len(segments),
+    )
 
     return PrefixOracleGainTaskResult(
         task_id=task.id,
@@ -214,6 +135,7 @@ async def _map_task_small_only(task: Any, cfg: DictConfig) -> PrefixOracleGainTa
             "category": task.category,
             "external_difficulty": task.external_difficulty,
             "takeover_mode": "reentry_small_only_prepare",
+            "prepare_mode": "segments_only",
         },
     )
 

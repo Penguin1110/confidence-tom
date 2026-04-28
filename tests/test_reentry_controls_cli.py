@@ -48,3 +48,16 @@ def test_resolve_local_model_name_uses_backend_defaults_and_overrides() -> None:
         )
         == "qwen3.5:27b"
     )
+
+
+def test_slice_rows_by_task_selects_complete_tasks() -> None:
+    module = _load_module()
+    rows = [
+        {"run_name": "r", "benchmark": "b", "task_id": "t1", "prefix_id": "p1"},
+        {"run_name": "r", "benchmark": "b", "task_id": "t1", "prefix_id": "p2"},
+        {"run_name": "r", "benchmark": "b", "task_id": "t2", "prefix_id": "p3"},
+        {"run_name": "r", "benchmark": "b", "task_id": "t3", "prefix_id": "p4"},
+    ]
+    sliced = module._slice_rows_by_task(rows, 1, 1)
+    assert len(sliced) >= 1
+    assert len({row["task_id"] for row in sliced}) == 1

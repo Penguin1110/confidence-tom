@@ -62,6 +62,8 @@ def test_build_reentry_command_includes_manifest_defaults() -> None:
         benchmark=[],
         small_family=[],
         category=[],
+        task_start_index=3,
+        task_limit=2,
         max_rows=5,
         concurrency=2,
         max_tokens=1024,
@@ -74,7 +76,49 @@ def test_build_reentry_command_includes_manifest_defaults() -> None:
     assert "--benchmark livebench_reasoning" in rendered
     assert "--small-local-model-map qwen3=Qwen/Qwen3-14B" in rendered
     assert "--small-local-model-map qwen25=Qwen/Qwen2.5-14B-Instruct" in rendered
+    assert "--task-start-index 3" in rendered
+    assert "--task-limit 2" in rendered
     assert "--max-rows 5" in rendered
+
+
+def test_single_family_reentry_defaults_to_family_specific_output_dirs() -> None:
+    module = _load_module()
+    preset = module.load_presets(module.PRESET_PATH)["reentry_livebench_local"]
+    args = Namespace(
+        output_dir=None,
+        prepare_start_index=None,
+        prepare_limit=None,
+        small_backend=None,
+        small_local_model_name=None,
+        small_local_model_map=[],
+        probe_output_dir=None,
+        probe_backend=None,
+        probe_local_model_name=None,
+        probe_local_model_map=[],
+        selected_layer=-1,
+        run_name_prefix=[],
+        benchmark=[],
+        small_family=["qwen3"],
+        category=[],
+        task_start_index=None,
+        task_limit=None,
+        max_rows=None,
+        concurrency=2,
+        max_tokens=1024,
+        full_rerun_temperature=0.0,
+        reentry_temperature=0.0,
+    )
+    reentry_cmd = module.build_reentry_cmd("reentry_livebench_local", preset, args)
+    analyze_cmd = module.build_analyze_cmd(args, preset)
+    probe_cmd = module.build_probe_cmd(args, preset)
+
+    reentry_rendered = " ".join(reentry_cmd).replace("\\", "/")
+    analyze_rendered = " ".join(analyze_cmd).replace("\\", "/")
+    probe_rendered = " ".join(probe_cmd).replace("\\", "/")
+
+    assert "outputs/results/_reentry_livebench_local_v1_qwen3" in reentry_rendered
+    assert "prefix_reentry_controls_qwen3.md" in analyze_rendered
+    assert "outputs/results/_reentry_livebench_local_v1_qwen3/probe" in probe_rendered
 
 
 def test_build_prepare_command_supports_prepare_shards() -> None:
@@ -119,6 +163,7 @@ def test_build_probe_command_includes_manifest_defaults() -> None:
         probe_local_model_map=[],
         selected_layer=-1,
         max_rows=3,
+        small_family=[],
     )
     cmd = module.build_probe_cmd(args, preset)
     rendered = " ".join(cmd)

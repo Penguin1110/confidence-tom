@@ -296,6 +296,34 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
     return ordered
 
 
+def _slice_rows_by_task(
+    rows: list[dict[str, Any]],
+    task_start_index: int | None,
+    task_limit: int | None,
+) -> list[dict[str, Any]]:
+    if task_start_index is None and task_limit is None:
+        return rows
+
+    grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        key = (str(row["run_name"]), str(row["benchmark"]), str(row["task_id"]))
+        grouped[key].append(row)
+
+    ordered_keys = sorted(
+        grouped,
+        key=lambda item: _stable_score(item[0], item[1], item[2]),
+    )
+    start = max(0, int(task_start_index or 0))
+    end = len(ordered_keys) if task_limit is None else start + max(0, int(task_limit))
+    selected_keys = set(ordered_keys[start:end])
+
+    return [
+        row
+        for row in rows
+        if (str(row["run_name"]), str(row["benchmark"]), str(row["task_id"])) in selected_keys
+    ]
+
+
 def _load_taxonomy_categories() -> dict[tuple[str, str, str], str]:
     if not TAXONOMY_PATH.exists():
         return {}
@@ -756,9 +784,11 @@ async def amain(args: argparse.Namespace) -> None:
 
     existing_rows = _dedupe_rows(out_rows)
     done = {_row_key(row) for row in existing_rows if "error" not in row}
-    pending = [
-        row for row in _load_prefix_rows(run_names, args.max_rows) if _row_key(row) not in done
-    ]
+    all_rows = _load_prefix_rows(run_names, None)
+    all_rows = _slice_rows_by_task(all_rows, args.task_start_index, args.task_limit)
+    if args.max_rows is not None:
+        all_rows = all_rows[: args.max_rows]
+    pending = [row for row in all_rows if _row_key(row) not in done]
 
     if args.benchmark:
         wanted_benchmarks = {item.strip() for item in args.benchmark if item.strip()}
@@ -855,6 +885,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Filter rows by taxonomy category (repeatable).",
     )
     parser.add_argument("--max-rows", type=int, default=None)
+    parser.add_argument(
+        "--task-start-index",
+        type=int,
+        default=None,
+        help="Start index into the ordered task list for re-entry processing.",
+    )
+    parser.add_argument(
+        "--task-limit",
+        type=int,
+        default=None,
+        help="Maximum number of tasks to process for re-entry after task-start-index.",
+    )
     parser.add_argument("--concurrency", type=int, default=4)
     parser.add_argument("--max-tokens", type=int, default=2048)
     parser.add_argument("--full-rerun-temperature", type=float, default=0.0)

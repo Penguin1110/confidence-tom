@@ -4,10 +4,14 @@ import csv
 import json
 import math
 import re
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from statistics import mean
 from typing import Any, cast
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 import hydra
 from hydra.utils import to_absolute_path
@@ -22,7 +26,6 @@ from confidence_tom.data.scale_dataset import (
     load_olympiadbench,
 )
 from confidence_tom.eval.static_evaluators import build_static_evaluator
-from experiments.mainline.run.core.common import load_static_questions
 
 
 def _load_rows(path: Path) -> list[dict[str, Any]]:
@@ -109,7 +112,23 @@ def _pearson(xs: list[float], ys: list[float]) -> float:
 
 def _load_tasks(cfg: DictConfig) -> dict[str, StaticTask]:
     benchmark_name = str(cfg.dataset.benchmark)
-    questions = load_static_questions(benchmark_name, cfg.dataset)
+    if benchmark_name == "olympiadbench":
+        requested = int(cfg.dataset.get("olympiadbench", cfg.dataset.get("limit", 50)))
+        questions = load_olympiadbench(num_samples=requested)
+    elif benchmark_name == "livebench_reasoning":
+        requested = int(cfg.dataset.get("livebench_reasoning", cfg.dataset.get("limit", 30)))
+        questions = load_livebench_reasoning(num_samples=requested)
+    elif benchmark_name == "aime_2024":
+        requested = int(cfg.dataset.get("aime_2024", cfg.dataset.get("limit", 30)))
+        questions = load_aime_2024(num_samples=requested)
+    elif benchmark_name == "math500":
+        requested = int(cfg.dataset.get("math500", cfg.dataset.get("limit", 50)))
+        questions = load_math500(num_samples=requested)
+    elif benchmark_name == "gpqa_diamond":
+        requested = int(cfg.dataset.get("gpqa_diamond", cfg.dataset.get("limit", 40)))
+        questions = load_gpqa_diamond(num_samples=requested)
+    else:
+        raise ValueError(f"Unsupported benchmark: {benchmark_name}")
     return {q.id: q for q in questions}
 
 

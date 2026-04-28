@@ -30,6 +30,34 @@ def load_presets(path: Path) -> dict[str, dict[str, Any]]:
     return {str(key): dict(value) for key, value in presets.items()}
 
 
+def _single_family_suffix(args: argparse.Namespace) -> str | None:
+    families = [
+        str(family).strip()
+        for family in getattr(args, "small_family", []) or []
+        if str(family).strip()
+    ]
+    if len(families) != 1:
+        return None
+    return families[0]
+
+
+def _resolve_reentry_output_dir(preset: dict[str, Any], args: argparse.Namespace) -> str:
+    if args.output_dir:
+        return str(args.output_dir)
+    base = str(preset["reentry_output_dir"])
+    family = _single_family_suffix(args)
+    if not family:
+        return base
+    return f"{base}_{family}"
+
+
+def _resolve_summary_md_path(args: argparse.Namespace) -> Path:
+    family = _single_family_suffix(args)
+    if not family:
+        return DEFAULT_SUMMARY_MD
+    return DEFAULT_SUMMARY_MD.with_name(f"{DEFAULT_SUMMARY_MD.stem}_{family}{DEFAULT_SUMMARY_MD.suffix}")
+
+
 def build_prepare_cmd(
     config_name: str,
     preset: dict[str, Any],
@@ -56,7 +84,7 @@ def build_prepare_cmd(
 
 
 def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.Namespace) -> list[str]:
-    output_dir = str(args.output_dir or preset["reentry_output_dir"])
+    output_dir = _resolve_reentry_output_dir(preset, args)
     cmd = [
         "uv",
         "run",
@@ -83,6 +111,10 @@ def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.N
         cmd += ["--category", str(category)]
     for family in args.small_family:
         cmd += ["--small-family", str(family)]
+    if args.task_start_index is not None:
+        cmd += ["--task-start-index", str(args.task_start_index)]
+    if args.task_limit is not None:
+        cmd += ["--task-limit", str(args.task_limit)]
     if args.max_rows is not None:
         cmd += ["--max-rows", str(args.max_rows)]
     if args.small_local_model_name:
@@ -93,7 +125,7 @@ def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.N
 
 
 def build_analyze_cmd(args: argparse.Namespace, preset: dict[str, Any]) -> list[str]:
-    output_dir = Path(str(args.output_dir or preset["reentry_output_dir"]))
+    output_dir = Path(_resolve_reentry_output_dir(preset, args))
     return [
         "uv",
         "run",
@@ -104,13 +136,18 @@ def build_analyze_cmd(args: argparse.Namespace, preset: dict[str, Any]) -> list[
         "--summary-json",
         str(output_dir / "reentry_summary.json"),
         "--summary-md",
-        str(DEFAULT_SUMMARY_MD),
+        str(_resolve_summary_md_path(args)),
     ]
 
 
 def build_probe_cmd(args: argparse.Namespace, preset: dict[str, Any]) -> list[str]:
-    reentry_output_dir = Path(str(args.output_dir or preset["reentry_output_dir"]))
-    probe_output_dir = str(args.probe_output_dir or preset.get("probe_output_dir") or reentry_output_dir)
+    reentry_output_dir = Path(_resolve_reentry_output_dir(preset, args))
+    if args.probe_output_dir:
+        probe_output_dir = str(args.probe_output_dir)
+    elif preset.get("probe_output_dir") and not _single_family_suffix(args):
+        probe_output_dir = str(preset["probe_output_dir"])
+    else:
+        probe_output_dir = str(reentry_output_dir / "probe")
     cmd = [
         "uv",
         "run",
@@ -156,6 +193,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--prepare-start-index", type=int, default=None)
     parser.add_argument("--prepare-limit", type=int, default=None)
+    parser.add_argument("--task-start-index", type=int, default=None)
+    parser.add_argument("--task-limit", type=int, default=None)
     parser.add_argument("--small-backend", default=None, choices=["ollama", "local"])
     parser.add_argument("--small-local-model-name", default=None)
     parser.add_argument("--small-local-model-map", action="append", default=[])
