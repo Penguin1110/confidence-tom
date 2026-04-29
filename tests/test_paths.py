@@ -34,6 +34,7 @@ def test_output_root_defaults_to_outputs_and_supports_env_override(
     paths.logs_root.cache_clear()
 
     monkeypatch.setenv("CONFIDENCE_TOM_OUTPUT_ROOT", "/tmp/confidence-tom-out")
-    assert paths.output_root() == Path("/tmp/confidence-tom-out")
-    assert paths.results_root() == Path("/tmp/confidence-tom-out") / "results"
-    assert paths.logs_root() == Path("/tmp/confidence-tom-out") / "logs"
+    expected_root = Path("/tmp/confidence-tom-out").resolve()
+    assert paths.output_root() == expected_root
+    assert paths.results_root() == expected_root / "results"
+    assert paths.logs_root() == expected_root / "logs"

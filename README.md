@@ -78,7 +78,9 @@ uv run pre-commit install
 
 ### Mainline rerun / analysis
 ```bash
-uv run python experiments/mainline/run/core/run_prefix_reentry_controls.py --category fragile-success --small-backend ollama
+uv run python experiments/mainline/run/core/run_prefix_reentry_controls.py --category fragile-success --small-backend local --small-local-model-name Qwen/Qwen3-14B
+uv run python experiments/mainline/run/batch/run_reentry_mainline.py --preset reentry_livebench_local --phase all --dry-run
+uv run python experiments/mainline/run/core/run_prefix_reentry_probe.py --rows outputs/results/_reentry_livebench_local_v1/reentry_rows.jsonl --output-dir outputs/results/_reentry_livebench_local_v1/probe --local-model-map qwen=Qwen/Qwen3-14B
 uv run python experiments/mainline/run/core/run_prefix_oracle_gain_mapping.py --help
 uv run python experiments/mainline/analysis/trace/analyze_trace_taxonomy.py
 ```

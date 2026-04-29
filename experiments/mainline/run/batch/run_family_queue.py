@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 LOG_DIR = ROOT / "outputs" / "logs"
 JOB_DIR = ROOT / "outputs" / "jobs"
 SWEEP_RUNNER = ROOT / "experiments" / "mainline" / "run" / "batch" / "run_prefix_family_sweep.py"
+REENTRY_RUNNER = ROOT / "experiments" / "mainline" / "run" / "batch" / "run_reentry_mainline.py"
 
 
 def _job_paths(job_name: str) -> tuple[Path, Path]:
@@ -59,6 +60,13 @@ def _sweep_command(config_name: str, run_name_prefix: str) -> str:
 
 def _queue_command(config_name: str) -> list[str]:
     return ["uv", "run", "python", str(SWEEP_RUNNER), "--config-name", config_name]
+
+
+def _reentry_command(preset: str, phase: str, dry_run: bool) -> list[str]:
+    cmd = ["uv", "run", "python", str(REENTRY_RUNNER), "--preset", preset, "--phase", phase]
+    if dry_run:
+        cmd.append("--dry-run")
+    return cmd
 
 
 def _start_job(job_name: str, command: str) -> None:
@@ -183,6 +191,27 @@ def _run_wait_queue(args: argparse.Namespace) -> None:
                 raise SystemExit(result.returncode)
 
 
+def _run_reentry_mode(args: argparse.Namespace) -> None:
+    cmd = _reentry_command(args.preset, args.phase, args.dry_run)
+    if args.mode == "run":
+        print("$", " ".join(shlex.quote(part) for part in cmd))
+        result = subprocess.run(cmd, cwd=ROOT, check=False)
+        if result.returncode != 0:
+            raise SystemExit(result.returncode)
+        return
+
+    job_name = args.job_name or f"reentry_{args.preset}"
+    command = " ".join(shlex.quote(part) for part in cmd)
+    if args.mode == "start":
+        _start_job(job_name, command)
+    elif args.mode == "status":
+        _status_job(job_name)
+    elif args.mode == "tail":
+        _tail_job(job_name, args.tail_lines)
+    elif args.mode == "stop":
+        _stop_job(job_name, force=args.force)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Unified queue launcher for batch family sweep workflows."
@@ -222,9 +251,27 @@ def main() -> None:
         ],
     )
 
+    reentry_parser = subparsers.add_parser(
+        "reentry",
+        help="Manage large-scale re-entry mainline runs via run_reentry_mainline.py presets.",
+    )
+    reentry_parser.add_argument("--preset", default="reentry_livebench_local")
+    reentry_parser.add_argument(
+        "--phase", choices=["prepare", "reentry", "analyze", "probe", "both", "all"], default="both"
+    )
+    reentry_parser.add_argument(
+        "--mode", choices=["run", "start", "status", "tail", "stop"], default="run"
+    )
+    reentry_parser.add_argument("--job-name", default=None)
+    reentry_parser.add_argument("--tail-lines", type=int, default=80)
+    reentry_parser.add_argument("--force", action="store_true")
+    reentry_parser.add_argument("--dry-run", action="store_true")
+
     args = parser.parse_args()
     if args.command == "jobs":
         _run_job_mode(args)
+    elif args.command == "reentry":
+        _run_reentry_mode(args)
     else:
         _run_wait_queue(args)
 

@@ -1,0 +1,129 @@
+name: "prefix_family_sweep_reentry_olympiad_ollama"
+base_config: "prefix_oracle_gain_mapping"
+
+dataset:
+  benchmark: "olympiadbench"
+  olympiadbench: 50
+  limit: 50
+
+execution:
+  task_concurrency: 1
+  retry_attempts: 3
+  retry_backoff_sec: 2.0
+
+timeouts:
+  full_trace_sec: 1800
+  small_worker_sec: 1800
+  large_worker_sec: 900
+  task_sec: 14400
+
+small_workers:
+  - model: "Qwen/Qwen3-14B"
+    label: "HF-Qwen3-14B"
+    family: "qwen3"
+    max_tokens: 12288
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "Qwen/Qwen3-14B"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 32768
+    num_predict: 3072
+    enable_thinking: false
+  - model: "Qwen/Qwen2.5-14B-Instruct"
+    label: "HF-Qwen2.5-14B"
+    family: "qwen25"
+    max_tokens: 12288
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "Qwen/Qwen2.5-14B-Instruct"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 32768
+    num_predict: 3072
+  - model: "google/gemma-4-E4B-it"
+    label: "HF-gemma-4-E4B-it"
+    family: "gemma4"
+    max_tokens: 8192
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "google/gemma-4-E4B-it"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 24576
+    num_predict: 3072
+  - model: "google/gemma-3-4b-it"
+    label: "HF-gemma-3-4b-it"
+    family: "gemma3"
+    max_tokens: 8192
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "google/gemma-3-4b-it"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 24576
+    num_predict: 3072
+  - model: "mistralai/Ministral-8B-Instruct-2410"
+    label: "HF-Ministral-8B-Instruct-2410"
+    family: "ministral"
+    max_tokens: 8192
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "mistralai/Ministral-8B-Instruct-2410"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 16384
+    num_predict: 3072
+  - model: "mistralai/Mistral-7B-Instruct-v0.3"
+    label: "HF-Mistral-7B-Instruct-v0.3"
+    family: "mistral7"
+    max_tokens: 12288
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "mistralai/Mistral-7B-Instruct-v0.3"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 24576
+    num_predict: 3072
+  - model: "allenai/olmo-2-13b-instruct"
+    label: "HF-olmo-2-13b-instruct"
+    family: "olmo"
+    max_tokens: 12288
+    reasoning_effort: null
+    backend: "local"
+    local_model_name: "allenai/olmo-2-13b-instruct"
+    top_p: null
+    top_k: null
+    seed: 42
+    num_ctx: 24576
+    num_predict: 3072
+
+large_workers:
+  - model: "Qwen/Qwen2.5-14B-Instruct"
+    label: "HF-Qwen2.5-14B"
+    family: "local_qwen"
+    max_tokens: 16384
+    backend: "local"
+    local_model_name: "Qwen/Qwen2.5-14B-Instruct"
+    reasoning_effort: null
+  - model: "mistralai/Ministral-8B-Instruct-2410"
+    label: "HF-Ministral-8B"
+    family: "local_mistral"
+    max_tokens: 16384
+    backend: "local"
+    local_model_name: "mistralai/Ministral-8B-Instruct-2410"
+    reasoning_effort: null
+
+launcher:
+  run_analysis: true
+  prepare_mode: "small_only_reentry"
+  run_taxonomy: true
+  overwrite_output_dir: false
+  continue_on_error: true
+  run_name_prefix: "reentry_olympiad_"

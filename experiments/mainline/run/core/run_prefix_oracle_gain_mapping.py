@@ -90,7 +90,7 @@ class ResultStore:
         if not self.path.exists():
             return []
         try:
-            return cast(list[dict[str, Any]], json.loads(self.path.read_text()))
+            return cast(list[dict[str, Any]], json.loads(self.path.read_text(encoding="utf-8")))
         except Exception:
             return []
 
@@ -106,7 +106,7 @@ class ResultStore:
         else:
             self.rows[existing] = row
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(self.path)
 
 
@@ -123,20 +123,95 @@ class PartialTaskStore:
         if not path.exists():
             return None
         try:
-            return cast(dict[str, Any], json.loads(path.read_text()))
+            return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
         except Exception:
             return None
 
     def save(self, task_id: str, payload: dict[str, Any]) -> None:
         tmp = self.root / f"{task_id}.tmp"
         final = self.path_for(task_id)
-        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(final)
 
     def clear(self, task_id: str) -> None:
         path = self.path_for(task_id)
         if path.exists():
             path.unlink()
+
+
+def _quantile(sorted_values: list[float], q: float) -> float:
+    if not sorted_values:
+        return 0.0
+    if len(sorted_values) == 1:
+        return float(sorted_values[0])
+    pos = (len(sorted_values) - 1) * q
+    lo = int(pos)
+    hi = min(lo + 1, len(sorted_values) - 1)
+    frac = pos - lo
+    return float(sorted_values[lo] * (1.0 - frac) + sorted_values[hi] * frac)
+
+
+def _segment_count(row: dict[str, Any]) -> int:
+    return sum(1 for segment in row.get("segments", []) if str(segment.get("text", "")).strip())
+
+
+def annotate_segment_count_outliers(path: Path) -> None:
+    """Add robust segment-count outlier metadata to a completed prepare result file."""
+    if not path.exists():
+        return
+    try:
+        rows = cast(list[dict[str, Any]], json.loads(path.read_text(encoding="utf-8")))
+    except Exception:
+        return
+    if not rows:
+        return
+
+    counts = [_segment_count(row) for row in rows]
+    sorted_counts = sorted(float(value) for value in counts)
+    q1 = _quantile(sorted_counts, 0.25)
+    median = _quantile(sorted_counts, 0.50)
+    q3 = _quantile(sorted_counts, 0.75)
+    iqr = q3 - q1
+    if iqr > 0:
+        method = "iqr_1.5"
+        upper_fence = q3 + 1.5 * iqr
+    else:
+        deviations = sorted(abs(float(value) - median) for value in counts)
+        mad = _quantile(deviations, 0.50)
+        method = "mad_3.5" if mad > 0 else "max_equals_median"
+        upper_fence = median + (3.5 * 1.4826 * mad if mad > 0 else 0.0)
+
+    stats = {
+        "method": method,
+        "n": len(counts),
+        "q1": q1,
+        "median": median,
+        "q3": q3,
+        "iqr": iqr,
+        "upper_fence": upper_fence,
+        "max": max(counts),
+    }
+
+    changed = False
+    for row, count in zip(rows, counts):
+        metadata = row.setdefault("metadata", {})
+        if not isinstance(metadata, dict):
+            metadata = {}
+            row["metadata"] = metadata
+        is_outlier = bool(float(count) > upper_fence)
+        updates = {
+            "segment_count": count,
+            "segment_count_outlier": is_outlier,
+            "segment_count_outlier_stats": stats,
+        }
+        if any(metadata.get(key) != value for key, value in updates.items()):
+            metadata.update(updates)
+            changed = True
+
+    if changed:
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.replace(path)
 
 
 def _extract_final_answer(text: str) -> str:
@@ -710,8 +785,7 @@ def main(cfg: DictConfig) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     benchmark_name = str(cfg.dataset.benchmark)
-    if benchmark_name == "olympiadbench":
-        questions = load_static_questions(benchmark_name, cfg.dataset)
+    questions = load_static_questions(benchmark_name, cfg.dataset)
 
     out_path = output_dir / (
         f"{_sanitize_label(str(cfg.small_worker.label))}_to_"
@@ -756,6 +830,7 @@ def main(cfg: DictConfig) -> None:
             await asyncio.gather(*pending)
 
     asyncio.run(_run_all())
+    annotate_segment_count_outliers(out_path)
 
 
 if __name__ == "__main__":
