@@ -26,6 +26,7 @@ from experiments.mainline.run.core.common import (
 from experiments.mainline.run.core.run_prefix_oracle_gain_mapping import (
     ResultStore,
     PartialTaskStore,
+    annotate_segment_count_outliers,
     _run_full_trace,
     _segment_full_trace,
 )
@@ -176,6 +177,7 @@ def main(cfg: DictConfig) -> None:
         await asyncio.gather(*[_run_one(i, task) for i, task in enumerate(questions, start=1)])
 
     asyncio.run(_amain())
+    annotate_segment_count_outliers(result_path)
     print(f"Wrote {result_path}")
 
 

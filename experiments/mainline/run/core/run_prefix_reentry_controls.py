@@ -267,6 +267,9 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
                 prefix_text = str(step.get("prefix_text", "")).strip()
                 if not prefix_text:
                     continue
+                metadata = task.get("metadata", {})
+                if not isinstance(metadata, dict):
+                    metadata = {}
                 rows.append(
                     {
                         "run_name": run_name,
@@ -287,7 +290,11 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
                         "delta_correctness": float(step.get("delta_correctness", 0.0)),
                         "positive_gain": int(float(step.get("delta_correctness", 0.0)) > 0.0),
                         "prepare_mode": str(
-                            task.get("metadata", {}).get("prepare_mode", "oracle_steps")
+                            metadata.get("prepare_mode", "oracle_steps")
+                        ),
+                        "segment_count": int(metadata.get("segment_count", len(segments))),
+                        "segment_count_outlier": int(
+                            bool(metadata.get("segment_count_outlier", False))
                         ),
                     }
                 )
