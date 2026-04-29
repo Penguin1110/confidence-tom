@@ -28,6 +28,9 @@ from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.infra.client import LLMClient
 from confidence_tom.infra.paths import project_root, results_root
 from confidence_tom.intervention.voi import trace_to_cost
+from experiments.mainline.run.core.run_prefix_oracle_gain_mapping import (
+    annotate_segment_count_outliers,
+)
 
 ROOT = project_root()
 RESULTS_DIR = results_root()
@@ -234,6 +237,7 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
     rows: list[dict[str, Any]] = []
     for run_name in run_names:
         result_json = _find_result_json(run_name)
+        annotate_segment_count_outliers(result_json)
         data = json.loads(result_json.read_text(encoding="utf-8"))
         small_family = _family_from_run_name(run_name)
         for task in data:
@@ -825,6 +829,9 @@ async def amain(args: argparse.Namespace) -> None:
             in wanted
         ]
 
+    if args.exclude_segment_count_outliers:
+        pending = [row for row in pending if int(row.get("segment_count_outlier", 0)) == 0]
+
     needed_benchmarks = {str(row["benchmark"]) for row in pending}
     task_maps = {benchmark: _load_task_map(benchmark) for benchmark in sorted(needed_benchmarks)}
     client_cache: dict[str, LLMClient] = {}
@@ -925,6 +932,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         default=[],
         help="Per-family local model override in FAMILY=MODEL form (repeatable).",
+    )
+    parser.add_argument(
+        "--exclude-segment-count-outliers",
+        action="store_true",
+        help="Skip prepare tasks whose segment count is a robust high outlier within its run.",
     )
     return parser
 
