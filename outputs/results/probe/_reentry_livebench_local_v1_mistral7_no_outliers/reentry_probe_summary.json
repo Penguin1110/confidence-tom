@@ -1,0 +1,11 @@
+{
+  "rows": 202,
+  "backend": "transformers",
+  "selected_layer": -1,
+  "models": [
+    "mistralai/Mistral-7B-Instruct-v0.3"
+  ],
+  "benchmarks": [
+    "livebench_reasoning"
+  ]
+}

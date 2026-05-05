@@ -1,0 +1,30 @@
+{
+  "rows": 1,
+  "full_rerun_match_rate": 0.0,
+  "reentry_match_rate": 0.0,
+  "reentry_repeat_match_rate": 1.0,
+  "marker_boundary_match_rate": 0.0,
+  "fenced_boundary_match_rate": 0.0,
+  "full_trace_success_given_reentry_match": null,
+  "full_trace_success_given_reentry_mismatch": 1.0,
+  "positive_takeover_given_reentry_match": null,
+  "positive_takeover_given_reentry_mismatch": 0.0,
+  "by_benchmark": {
+    "livebench_reasoning": {
+      "rows": 1,
+      "reentry_match_rate": 0.0,
+      "full_rerun_match_rate": 0.0,
+      "positive_takeover_given_reentry_match": 0.0,
+      "positive_takeover_given_reentry_mismatch": 0.0
+    }
+  },
+  "by_small_family": {
+    "qwen3": {
+      "rows": 1,
+      "reentry_match_rate": 0.0,
+      "full_rerun_match_rate": 0.0,
+      "positive_takeover_given_reentry_match": 0.0,
+      "positive_takeover_given_reentry_mismatch": 0.0
+    }
+  }
+}

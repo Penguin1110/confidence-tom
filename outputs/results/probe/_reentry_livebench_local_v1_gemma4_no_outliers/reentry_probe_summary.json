@@ -1,0 +1,11 @@
+{
+  "rows": 401,
+  "backend": "transformers",
+  "selected_layer": -1,
+  "models": [
+    "google/gemma-4-E4B-it"
+  ],
+  "benchmarks": [
+    "livebench_reasoning"
+  ]
+}

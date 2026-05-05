@@ -1,0 +1,10 @@
+{
+  "run_name": "reentry_livebench_gemma3_30",
+  "benchmark": "livebench_reasoning",
+  "small_model": "google/gemma-3-4b-it",
+  "large_model": "reentry/none",
+  "stage": "prepare",
+  "status": "failed",
+  "output_dir": "/home/george15672/confidence-tom/outputs/results/reentry_livebench_gemma3_30",
+  "returncode": 1
+}

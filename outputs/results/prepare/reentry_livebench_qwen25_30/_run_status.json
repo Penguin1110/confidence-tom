@@ -1,0 +1,9 @@
+{
+  "run_name": "reentry_livebench_qwen25_30",
+  "benchmark": "livebench_reasoning",
+  "small_model": "Qwen/Qwen2.5-14B-Instruct",
+  "large_model": "reentry/none",
+  "stage": "analyze",
+  "status": "completed",
+  "output_dir": "/home/george15672/confidence-tom/outputs/results/reentry_livebench_qwen25_30"
+}

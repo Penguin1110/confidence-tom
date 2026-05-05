@@ -1,0 +1,9 @@
+{
+  "run_name": "reentry_livebench_gemma4_30",
+  "benchmark": "livebench_reasoning",
+  "small_model": "google/gemma-4-E4B-it",
+  "large_model": "reentry/none",
+  "stage": "analyze",
+  "status": "completed",
+  "output_dir": "/home/george15672/confidence-tom/outputs/results/reentry_livebench_gemma4_30"
+}

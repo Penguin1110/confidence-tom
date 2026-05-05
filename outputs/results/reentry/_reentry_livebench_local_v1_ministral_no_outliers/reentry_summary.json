@@ -1,0 +1,30 @@
+{
+  "rows": 190,
+  "full_rerun_match_rate": 0.24736842105263157,
+  "reentry_match_rate": 0.0,
+  "reentry_repeat_match_rate": 1.0,
+  "marker_boundary_match_rate": 0.5263157894736842,
+  "fenced_boundary_match_rate": 0.47368421052631576,
+  "full_trace_success_given_reentry_match": null,
+  "full_trace_success_given_reentry_mismatch": 0.12105263157894737,
+  "positive_takeover_given_reentry_match": null,
+  "positive_takeover_given_reentry_mismatch": 0.0,
+  "by_benchmark": {
+    "livebench_reasoning": {
+      "rows": 190,
+      "reentry_match_rate": 0.0,
+      "full_rerun_match_rate": 0.24736842105263157,
+      "positive_takeover_given_reentry_match": 0.0,
+      "positive_takeover_given_reentry_mismatch": 0.0
+    }
+  },
+  "by_small_family": {
+    "ministral": {
+      "rows": 190,
+      "reentry_match_rate": 0.0,
+      "full_rerun_match_rate": 0.24736842105263157,
+      "positive_takeover_given_reentry_match": 0.0,
+      "positive_takeover_given_reentry_mismatch": 0.0
+    }
+  }
+}

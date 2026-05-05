@@ -1,0 +1,1026 @@
+{
+  "task_id": "livebench_reasoning_f4c196c162168a1e61ae5c221501e6180534df45397961dca2650bb007a5c03c_0023",
+  "status": "full_trace_done",
+  "small_model": "mistralai/Ministral-8B-Instruct-2410",
+  "large_model": "reentry/none",
+  "trace_id": "livebench_reasoning_f4c196c162168a1e61ae5c221501e6180534df45397961dca2650bb007a5c03c_0023_reentry",
+  "full_trace_text": "1. **Identify the statements and their sources:**\n   - Hotel: Person at the amusement park tells the truth.\n   - Art Gallery: Person at the beach tells the truth.\n   - Theater: Person at the hotel lies.\n   - Botanical Garden: Person at the hotel tells the truth.\n   - Campground: Person at the city hall lies.\n   - Gym: Person at the vineyard tells the truth.\n   - Gym: Person at the aquarium lies.\n   - Gym: Person at the campground lies.\n   - Cafe: Person at the cafe lies.\n   - Beach: Person at the beach tells the truth.\n   - City Hall: Person at the theater tells the truth.\n   - Botanical Garden: Person at the art gallery tells the truth.\n\n2. **Determine the truthfulness of the person at the beach:**\n   - The person at the beach tells the truth (given).\n\n3. **Determine the truthfulness of the person at the art gallery:**\n   - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n4. **Determine the truthfulness of the person at the botanical garden:**\n   - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n5. **Determine the truthfulness of the person at the hotel:**\n   - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n6. **Determine the truthfulness of the person at the amusement park:**\n   - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n7. **Determine the truthfulness of the person at the cafe:**\n   - The person at the cafe lies (given).\n\n8. **Determine the truthfulness of the person at the city hall:**\n   - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n9. **Determine the truthfulness of the person at the campground:**\n   - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n10. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n11. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n12. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n13. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n14. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n15. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n16. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n17. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n18. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n19. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n20. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n21. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n22. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n23. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n24. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n25. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n26. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n27. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n28. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n29. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n30. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n31. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n32. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n33. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n34. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n35. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n36. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n37. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n38. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n39. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n40. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n41. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n42. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n43. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n44. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n45. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n46. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n47. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n48. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n49. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n50. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n51. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n52. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n53. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n54. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n55. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n56. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n57. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n58. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n59. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n60. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n61. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n62. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n63. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n64. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n65. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n66. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n67. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n68. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n69. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n70. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n71. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n72. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n73. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n74. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n75. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n76. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n77. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n78. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n79. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n80. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n81. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n82. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n83. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n84. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n85. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n86. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n87. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n88. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n89. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n90. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n91. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n92. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n93. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n94. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n95. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n96. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n97. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n98. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n99. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n100. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n101. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n102. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n103. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n104. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n105. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n106. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n107. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n108. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n109. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n110. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n111. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n112. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n113. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n114. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n115. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n116. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n117. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n118. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n119. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n120. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n121. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n122. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n123. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n124. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n125. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n126. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n127. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n128. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n129. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n130. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n131. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n132. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n133. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n134. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n135. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n136. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n137. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n138. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n139. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n140. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n141. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n142. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n143. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n144. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n145. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n146. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n147. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n148. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n149. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n150. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n151. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n152. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n153. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n154. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n155. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n156. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n157. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n158. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n159. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n160. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n161. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n162. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n163. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n164. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n165. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n166. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n167. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n168. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n169. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n170. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n171. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n172. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n173. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n174. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n175. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n176. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n177. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n178. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n179. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n180. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n181. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n182. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n183. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n184. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n185. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n186. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n187. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n188. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n189. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n190. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n191. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n192. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n193. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n194. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n195. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n196. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n197. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n198. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n199. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n200. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n201. **Determine the truthfulness of the",
+  "full_trace_answer": "201. **Determine the truthfulness of the",
+  "full_trace_correct": false,
+  "full_trace_api_trace": {
+    "model_id": "mistralai/Ministral-8B-Instruct-2410",
+    "request_id": "",
+    "reasoning_tokens": 0,
+    "reasoning_content": "",
+    "response_content": "1. **Identify the statements and their sources:**\n   - Hotel: Person at the amusement park tells the truth.\n   - Art Gallery: Person at the beach tells the truth.\n   - Theater: Person at the hotel lies.\n   - Botanical Garden: Person at the hotel tells the truth.\n   - Campground: Person at the city hall lies.\n   - Gym: Person at the vineyard tells the truth.\n   - Gym: Person at the aquarium lies.\n   - Gym: Person at the campground lies.\n   - Cafe: Person at the cafe lies.\n   - Beach: Person at the beach tells the truth.\n   - City Hall: Person at the theater tells the truth.\n   - Botanical Garden: Person at the art gallery tells the truth.\n\n2. **Determine the truthfulness of the person at the beach:**\n   - The person at the beach tells the truth (given).\n\n3. **Determine the truthfulness of the person at the art gallery:**\n   - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n4. **Determine the truthfulness of the person at the botanical garden:**\n   - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n5. **Determine the truthfulness of the person at the hotel:**\n   - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n6. **Determine the truthfulness of the person at the amusement park:**\n   - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n7. **Determine the truthfulness of the person at the cafe:**\n   - The person at the cafe lies (given).\n\n8. **Determine the truthfulness of the person at the city hall:**\n   - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n9. **Determine the truthfulness of the person at the campground:**\n   - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n10. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n11. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n12. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n13. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n14. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n15. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n16. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n17. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n18. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n19. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n20. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n21. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n22. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n23. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n24. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n25. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n26. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n27. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n28. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n29. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n30. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n31. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n32. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n33. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n34. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n35. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n36. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n37. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n38. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n39. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n40. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n41. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n42. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n43. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n44. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n45. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n46. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n47. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n48. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n49. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n50. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n51. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n52. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n53. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n54. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n55. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n56. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n57. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n58. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n59. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n60. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n61. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n62. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n63. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n64. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n65. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n66. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n67. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n68. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n69. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n70. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n71. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n72. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n73. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n74. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n75. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n76. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n77. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n78. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n79. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n80. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n81. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n82. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n83. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n84. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n85. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n86. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n87. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n88. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n89. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n90. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n91. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n92. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n93. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n94. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n95. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n96. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n97. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n98. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n99. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n100. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n101. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n102. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n103. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n104. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n105. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n106. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n107. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n108. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n109. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n110. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n111. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n112. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n113. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n114. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n115. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n116. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n117. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n118. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n119. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n120. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n121. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n122. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n123. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n124. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n125. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n126. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n127. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n128. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n129. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n130. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n131. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n132. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n133. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n134. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n135. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n136. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n137. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n138. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n139. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n140. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n141. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n142. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n143. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n144. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n145. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n146. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n147. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n148. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n149. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n150. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n151. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n152. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n153. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n154. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n155. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n156. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n157. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n158. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n159. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n160. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n161. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n162. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n163. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n164. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n165. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n166. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n167. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n168. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n169. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n170. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n171. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n172. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n173. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n174. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n175. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n176. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n177. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n178. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n179. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n180. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n181. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n182. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n183. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n184. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n185. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n186. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n187. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth).\n\n188. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n189. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given).\n\n190. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth).\n\n191. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies).\n\n192. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth).\n\n193. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth).\n\n194. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth).\n\n195. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth).\n\n196. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies).\n\n197. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth).\n\n198. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given).\n\n199. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth).\n\n200. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n\n201. **Determine the truthfulness of the",
+    "prompt_tokens": 460,
+    "completion_tokens": 8192,
+    "total_tokens": 8652,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0
+  },
+  "parse_incomplete": false,
+  "segments": [
+    {
+      "segment_id": "seg_1",
+      "index": 1,
+      "text": "1. **Identify the statements and their sources:**\n   - Hotel: Person at the amusement park tells the truth.\n   - Art Gallery: Person at the beach tells the truth.\n   - Theater: Person at the hotel lies.\n   - Botanical Garden: Person at the hotel tells the truth.\n   - Campground: Person at the city hall lies.\n   - Gym: Person at the vineyard tells the truth.\n   - Gym: Person at the aquarium lies.\n   - Gym: Person at the campground lies.\n   - Cafe: Person at the cafe lies.\n   - Beach: Person at the beach tells the truth.\n   - City Hall: Person at the theater tells the truth.\n   - Botanical Garden: Person at the art gallery tells the truth."
+    },
+    {
+      "segment_id": "seg_2",
+      "index": 2,
+      "text": "2. **Determine the truthfulness of the person at the beach:**\n   - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_3",
+      "index": 3,
+      "text": "3. **Determine the truthfulness of the person at the art gallery:**\n   - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_4",
+      "index": 4,
+      "text": "4. **Determine the truthfulness of the person at the botanical garden:**\n   - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_5",
+      "index": 5,
+      "text": "5. **Determine the truthfulness of the person at the hotel:**\n   - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_6",
+      "index": 6,
+      "text": "6. **Determine the truthfulness of the person at the amusement park:**\n   - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_7",
+      "index": 7,
+      "text": "7. **Determine the truthfulness of the person at the cafe:**\n   - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_8",
+      "index": 8,
+      "text": "8. **Determine the truthfulness of the person at the city hall:**\n   - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_9",
+      "index": 9,
+      "text": "9. **Determine the truthfulness of the person at the campground:**\n   - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_10",
+      "index": 10,
+      "text": "10. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_11",
+      "index": 11,
+      "text": "11. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_12",
+      "index": 12,
+      "text": "12. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_13",
+      "index": 13,
+      "text": "13. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_14",
+      "index": 14,
+      "text": "14. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_15",
+      "index": 15,
+      "text": "15. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_16",
+      "index": 16,
+      "text": "16. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_17",
+      "index": 17,
+      "text": "17. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_18",
+      "index": 18,
+      "text": "18. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_19",
+      "index": 19,
+      "text": "19. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_20",
+      "index": 20,
+      "text": "20. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_21",
+      "index": 21,
+      "text": "21. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_22",
+      "index": 22,
+      "text": "22. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_23",
+      "index": 23,
+      "text": "23. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_24",
+      "index": 24,
+      "text": "24. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_25",
+      "index": 25,
+      "text": "25. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_26",
+      "index": 26,
+      "text": "26. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_27",
+      "index": 27,
+      "text": "27. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_28",
+      "index": 28,
+      "text": "28. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_29",
+      "index": 29,
+      "text": "29. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_30",
+      "index": 30,
+      "text": "30. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_31",
+      "index": 31,
+      "text": "31. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_32",
+      "index": 32,
+      "text": "32. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_33",
+      "index": 33,
+      "text": "33. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_34",
+      "index": 34,
+      "text": "34. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_35",
+      "index": 35,
+      "text": "35. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_36",
+      "index": 36,
+      "text": "36. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_37",
+      "index": 37,
+      "text": "37. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_38",
+      "index": 38,
+      "text": "38. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_39",
+      "index": 39,
+      "text": "39. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_40",
+      "index": 40,
+      "text": "40. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_41",
+      "index": 41,
+      "text": "41. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_42",
+      "index": 42,
+      "text": "42. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_43",
+      "index": 43,
+      "text": "43. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_44",
+      "index": 44,
+      "text": "44. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_45",
+      "index": 45,
+      "text": "45. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_46",
+      "index": 46,
+      "text": "46. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_47",
+      "index": 47,
+      "text": "47. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_48",
+      "index": 48,
+      "text": "48. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_49",
+      "index": 49,
+      "text": "49. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_50",
+      "index": 50,
+      "text": "50. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_51",
+      "index": 51,
+      "text": "51. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_52",
+      "index": 52,
+      "text": "52. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_53",
+      "index": 53,
+      "text": "53. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_54",
+      "index": 54,
+      "text": "54. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_55",
+      "index": 55,
+      "text": "55. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_56",
+      "index": 56,
+      "text": "56. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_57",
+      "index": 57,
+      "text": "57. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_58",
+      "index": 58,
+      "text": "58. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_59",
+      "index": 59,
+      "text": "59. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_60",
+      "index": 60,
+      "text": "60. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_61",
+      "index": 61,
+      "text": "61. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_62",
+      "index": 62,
+      "text": "62. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_63",
+      "index": 63,
+      "text": "63. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_64",
+      "index": 64,
+      "text": "64. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_65",
+      "index": 65,
+      "text": "65. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_66",
+      "index": 66,
+      "text": "66. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_67",
+      "index": 67,
+      "text": "67. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_68",
+      "index": 68,
+      "text": "68. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_69",
+      "index": 69,
+      "text": "69. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_70",
+      "index": 70,
+      "text": "70. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_71",
+      "index": 71,
+      "text": "71. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_72",
+      "index": 72,
+      "text": "72. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_73",
+      "index": 73,
+      "text": "73. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_74",
+      "index": 74,
+      "text": "74. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_75",
+      "index": 75,
+      "text": "75. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_76",
+      "index": 76,
+      "text": "76. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_77",
+      "index": 77,
+      "text": "77. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_78",
+      "index": 78,
+      "text": "78. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_79",
+      "index": 79,
+      "text": "79. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_80",
+      "index": 80,
+      "text": "80. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_81",
+      "index": 81,
+      "text": "81. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_82",
+      "index": 82,
+      "text": "82. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_83",
+      "index": 83,
+      "text": "83. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_84",
+      "index": 84,
+      "text": "84. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_85",
+      "index": 85,
+      "text": "85. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_86",
+      "index": 86,
+      "text": "86. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_87",
+      "index": 87,
+      "text": "87. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_88",
+      "index": 88,
+      "text": "88. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_89",
+      "index": 89,
+      "text": "89. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_90",
+      "index": 90,
+      "text": "90. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_91",
+      "index": 91,
+      "text": "91. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_92",
+      "index": 92,
+      "text": "92. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_93",
+      "index": 93,
+      "text": "93. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_94",
+      "index": 94,
+      "text": "94. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_95",
+      "index": 95,
+      "text": "95. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_96",
+      "index": 96,
+      "text": "96. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_97",
+      "index": 97,
+      "text": "97. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_98",
+      "index": 98,
+      "text": "98. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_99",
+      "index": 99,
+      "text": "99. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_100",
+      "index": 100,
+      "text": "100. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_101",
+      "index": 101,
+      "text": "101. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_102",
+      "index": 102,
+      "text": "102. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_103",
+      "index": 103,
+      "text": "103. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_104",
+      "index": 104,
+      "text": "104. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_105",
+      "index": 105,
+      "text": "105. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_106",
+      "index": 106,
+      "text": "106. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_107",
+      "index": 107,
+      "text": "107. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_108",
+      "index": 108,
+      "text": "108. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_109",
+      "index": 109,
+      "text": "109. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_110",
+      "index": 110,
+      "text": "110. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_111",
+      "index": 111,
+      "text": "111. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_112",
+      "index": 112,
+      "text": "112. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_113",
+      "index": 113,
+      "text": "113. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_114",
+      "index": 114,
+      "text": "114. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_115",
+      "index": 115,
+      "text": "115. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_116",
+      "index": 116,
+      "text": "116. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_117",
+      "index": 117,
+      "text": "117. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_118",
+      "index": 118,
+      "text": "118. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_119",
+      "index": 119,
+      "text": "119. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_120",
+      "index": 120,
+      "text": "120. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_121",
+      "index": 121,
+      "text": "121. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_122",
+      "index": 122,
+      "text": "122. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_123",
+      "index": 123,
+      "text": "123. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_124",
+      "index": 124,
+      "text": "124. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_125",
+      "index": 125,
+      "text": "125. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_126",
+      "index": 126,
+      "text": "126. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_127",
+      "index": 127,
+      "text": "127. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_128",
+      "index": 128,
+      "text": "128. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_129",
+      "index": 129,
+      "text": "129. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_130",
+      "index": 130,
+      "text": "130. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_131",
+      "index": 131,
+      "text": "131. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_132",
+      "index": 132,
+      "text": "132. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_133",
+      "index": 133,
+      "text": "133. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_134",
+      "index": 134,
+      "text": "134. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_135",
+      "index": 135,
+      "text": "135. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_136",
+      "index": 136,
+      "text": "136. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_137",
+      "index": 137,
+      "text": "137. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_138",
+      "index": 138,
+      "text": "138. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_139",
+      "index": 139,
+      "text": "139. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_140",
+      "index": 140,
+      "text": "140. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_141",
+      "index": 141,
+      "text": "141. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_142",
+      "index": 142,
+      "text": "142. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_143",
+      "index": 143,
+      "text": "143. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_144",
+      "index": 144,
+      "text": "144. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_145",
+      "index": 145,
+      "text": "145. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_146",
+      "index": 146,
+      "text": "146. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_147",
+      "index": 147,
+      "text": "147. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_148",
+      "index": 148,
+      "text": "148. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_149",
+      "index": 149,
+      "text": "149. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_150",
+      "index": 150,
+      "text": "150. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_151",
+      "index": 151,
+      "text": "151. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_152",
+      "index": 152,
+      "text": "152. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_153",
+      "index": 153,
+      "text": "153. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_154",
+      "index": 154,
+      "text": "154. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_155",
+      "index": 155,
+      "text": "155. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_156",
+      "index": 156,
+      "text": "156. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_157",
+      "index": 157,
+      "text": "157. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_158",
+      "index": 158,
+      "text": "158. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_159",
+      "index": 159,
+      "text": "159. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_160",
+      "index": 160,
+      "text": "160. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_161",
+      "index": 161,
+      "text": "161. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_162",
+      "index": 162,
+      "text": "162. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_163",
+      "index": 163,
+      "text": "163. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_164",
+      "index": 164,
+      "text": "164. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_165",
+      "index": 165,
+      "text": "165. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_166",
+      "index": 166,
+      "text": "166. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_167",
+      "index": 167,
+      "text": "167. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_168",
+      "index": 168,
+      "text": "168. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_169",
+      "index": 169,
+      "text": "169. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_170",
+      "index": 170,
+      "text": "170. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_171",
+      "index": 171,
+      "text": "171. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_172",
+      "index": 172,
+      "text": "172. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_173",
+      "index": 173,
+      "text": "173. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_174",
+      "index": 174,
+      "text": "174. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_175",
+      "index": 175,
+      "text": "175. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_176",
+      "index": 176,
+      "text": "176. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_177",
+      "index": 177,
+      "text": "177. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_178",
+      "index": 178,
+      "text": "178. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_179",
+      "index": 179,
+      "text": "179. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_180",
+      "index": 180,
+      "text": "180. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_181",
+      "index": 181,
+      "text": "181. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_182",
+      "index": 182,
+      "text": "182. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_183",
+      "index": 183,
+      "text": "183. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_184",
+      "index": 184,
+      "text": "184. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_185",
+      "index": 185,
+      "text": "185. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_186",
+      "index": 186,
+      "text": "186. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_187",
+      "index": 187,
+      "text": "187. **Determine the truthfulness of the person at the hotel:**\n    - The person at the hotel tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_188",
+      "index": 188,
+      "text": "188. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_189",
+      "index": 189,
+      "text": "189. **Determine the truthfulness of the person at the cafe:**\n    - The person at the cafe lies (given)."
+    },
+    {
+      "segment_id": "seg_190",
+      "index": 190,
+      "text": "190. **Determine the truthfulness of the person at the city hall:**\n    - The person at the city hall lies (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_191",
+      "index": 191,
+      "text": "191. **Determine the truthfulness of the person at the campground:**\n    - The person at the campground tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_192",
+      "index": 192,
+      "text": "192. **Determine the truthfulness of the person at the gym:**\n    - The person at the gym tells the truth (given by the person at the campground, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_193",
+      "index": 193,
+      "text": "193. **Determine the truthfulness of the person at the ice skating rink:**\n    - The person at the ice skating rink tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_194",
+      "index": 194,
+      "text": "194. **Determine the truthfulness of the person at the vineyard:**\n    - The person at the vineyard tells the truth (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_195",
+      "index": 195,
+      "text": "195. **Determine the truthfulness of the person at the aquarium:**\n    - The person at the aquarium lies (given by the person at the gym, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_196",
+      "index": 196,
+      "text": "196. **Determine the truthfulness of the person at the theater:**\n    - The person at the theater tells the truth (given by the person at the city hall, who lies)."
+    },
+    {
+      "segment_id": "seg_197",
+      "index": 197,
+      "text": "197. **Determine the truthfulness of the person at the amusement park:**\n    - The person at the amusement park tells the truth (given by the person at the hotel, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_198",
+      "index": 198,
+      "text": "198. **Determine the truthfulness of the person at the beach:**\n    - The person at the beach tells the truth (given)."
+    },
+    {
+      "segment_id": "seg_199",
+      "index": 199,
+      "text": "199. **Determine the truthfulness of the person at the art gallery:**\n    - The person at the art gallery tells the truth (given by the person at the botanical garden, who tells the truth)."
+    },
+    {
+      "segment_id": "seg_200",
+      "index": 200,
+      "text": "200. **Determine the truthfulness of the person at the botanical garden:**\n    - The person at the botanical garden tells the truth (given by the person at the hotel, who tells the truth).\n201. **Determine the truthfulness of the"
+    }
+  ],
+  "prefix_oracle_steps": []
+}

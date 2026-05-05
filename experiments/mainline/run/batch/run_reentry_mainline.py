@@ -117,6 +117,8 @@ def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.N
         cmd += ["--task-limit", str(args.task_limit)]
     if args.max_rows is not None:
         cmd += ["--max-rows", str(args.max_rows)]
+    if args.exclude_segment_count_outliers:
+        cmd += ["--exclude-segment-count-outliers"]
     if args.small_local_model_name:
         cmd += ["--small-local-model-name", str(args.small_local_model_name)]
     for item in args.small_local_model_map or preset.get("small_local_model_map", []):
@@ -212,6 +214,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-tokens", type=int, default=2048)
     parser.add_argument("--full-rerun-temperature", type=float, default=0.0)
     parser.add_argument("--reentry-temperature", type=float, default=0.0)
+    parser.add_argument(
+        "--exclude-segment-count-outliers",
+        action="store_true",
+        help="Skip prepare rows whose segment count is marked as a robust outlier.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     return parser
 

@@ -1,0 +1,9 @@
+{
+  "run_name": "reentry_livebench_ministral_30",
+  "benchmark": "livebench_reasoning",
+  "small_model": "mistralai/Ministral-8B-Instruct-2410",
+  "large_model": "reentry/none",
+  "stage": "analyze",
+  "status": "completed",
+  "output_dir": "/home/george15672/confidence-tom/outputs/results/reentry_livebench_ministral_30"
+}
