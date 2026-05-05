@@ -117,7 +117,7 @@ def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.N
         cmd += ["--task-limit", str(args.task_limit)]
     if args.max_rows is not None:
         cmd += ["--max-rows", str(args.max_rows)]
-    if args.exclude_segment_count_outliers:
+    if getattr(args, "exclude_segment_count_outliers", False):
         cmd += ["--exclude-segment-count-outliers"]
     if args.small_local_model_name:
         cmd += ["--small-local-model-name", str(args.small_local_model_name)]

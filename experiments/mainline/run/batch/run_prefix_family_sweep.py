@@ -147,10 +147,13 @@ def main(cfg: DictConfig) -> None:
             output_dir = results_dir / run_name
             output_dir.mkdir(parents=True, exist_ok=True)
             status_path = output_dir / "_run_status.json"
-            result_path = (
-                output_dir
-                / f"{_sanitize_label(small_label)}_to_{_sanitize_label(large_label)}.json"
-            )
+            if prepare_mode == "small_only_reentry":
+                result_path = output_dir / f"{_sanitize_label(small_label)}_small_only.json"
+            else:
+                result_path = (
+                    output_dir
+                    / f"{_sanitize_label(small_label)}_to_{_sanitize_label(large_label)}.json"
+                )
             if result_path.exists() and not bool(cfg.launcher.get("overwrite_output_dir", False)):
                 print(f"[skip] {run_name} final result already exists: {result_path}")
                 continue
