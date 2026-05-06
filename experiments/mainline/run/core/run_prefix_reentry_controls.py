@@ -88,7 +88,7 @@ LOCAL_MODEL_BY_FAMILY = {
     "gemma": "google/gemma-3-4b-it",
     "gemma4": "google/gemma-4-E4B-it",
     "gemma3": "google/gemma-3-4b-it",
-    "olmo": "allenai/OLMo-2-13B-Instruct",
+    "olmo": "allenai/OLMo-2-1124-13B-Instruct",
 }
 
 FULL_TRACE_SYSTEM_PROMPT = """You are a careful reasoning assistant.

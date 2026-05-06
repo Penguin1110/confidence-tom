@@ -24,7 +24,7 @@
         "gemma3=google/gemma-3-4b-it",
         "ministral=mistralai/Ministral-8B-Instruct-2410",
         "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_livebench_local_v1/probe",
       "probe_backend": "transformers",
@@ -35,7 +35,7 @@
         "gemma3=google/gemma-3-4b-it",
         "ministral=mistralai/Ministral-8B-Instruct-2410",
         "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ]
     },
     "reentry_olympiad_local": {
@@ -62,7 +62,7 @@
         "gemma3=google/gemma-3-4b-it",
         "ministral=mistralai/Ministral-8B-Instruct-2410",
         "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_olympiad_local_v1/probe",
       "probe_backend": "transformers",
@@ -73,7 +73,7 @@
         "gemma3=google/gemma-3-4b-it",
         "ministral=mistralai/Ministral-8B-Instruct-2410",
         "mistral7=mistralai/Mistral-7B-Instruct-v0.3",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ]
     },
     "reentry_aime_local": {
@@ -97,7 +97,7 @@
         "qwen=Qwen/Qwen3-14B",
         "gemma=google/gemma-4-E4B-it",
         "mistral=mistralai/Ministral-8B-Instruct-2410",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_aime_local_v1/probe",
       "probe_backend": "transformers",
@@ -105,7 +105,7 @@
         "qwen=Qwen/Qwen3-14B",
         "gemma=google/gemma-4-E4B-it",
         "mistral=mistralai/Ministral-8B-Instruct-2410",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ]
     },
     "reentry_math500_local": {
@@ -129,7 +129,7 @@
         "qwen=Qwen/Qwen3-14B",
         "gemma=google/gemma-4-E4B-it",
         "mistral=mistralai/Ministral-8B-Instruct-2410",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_math500_local_v1/probe",
       "probe_backend": "transformers",
@@ -137,7 +137,7 @@
         "qwen=Qwen/Qwen3-14B",
         "gemma=google/gemma-4-E4B-it",
         "mistral=mistralai/Ministral-8B-Instruct-2410",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ]
     },
     "reentry_gpqa_local": {
@@ -161,7 +161,7 @@
         "qwen=Qwen/Qwen3-14B",
         "gemma=google/gemma-4-E4B-it",
         "mistral=mistralai/Ministral-8B-Instruct-2410",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ],
       "probe_output_dir": "outputs/results/_reentry_gpqa_local_v1/probe",
       "probe_backend": "transformers",
@@ -169,7 +169,7 @@
         "qwen=Qwen/Qwen3-14B",
         "gemma=google/gemma-4-E4B-it",
         "mistral=mistralai/Ministral-8B-Instruct-2410",
-        "olmo=allenai/olmo-2-13b-instruct"
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ]
     }
   }

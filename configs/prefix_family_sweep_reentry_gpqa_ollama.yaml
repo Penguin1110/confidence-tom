@@ -36,12 +36,12 @@ small_workers:
     max_tokens: 12288
     backend: "local"
     local_model_name: "mistralai/Ministral-8B-Instruct-2410"
-  - model: "allenai/olmo-2-13b-instruct"
+  - model: "allenai/OLMo-2-1124-13B-Instruct"
     label: "HF-olmo-2-13b-instruct"
     family: "olmo"
     max_tokens: 12288
     backend: "local"
-    local_model_name: "allenai/olmo-2-13b-instruct"
+    local_model_name: "allenai/OLMo-2-1124-13B-Instruct"
 
 large_workers:
   - model: "Qwen/Qwen2.5-14B-Instruct"

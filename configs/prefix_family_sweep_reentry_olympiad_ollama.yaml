@@ -91,13 +91,13 @@ small_workers:
     seed: 42
     num_ctx: 24576
     num_predict: 3072
-  - model: "allenai/olmo-2-13b-instruct"
+  - model: "allenai/OLMo-2-1124-13B-Instruct"
     label: "HF-olmo-2-13b-instruct"
     family: "olmo"
     max_tokens: 12288
     reasoning_effort: null
     backend: "local"
-    local_model_name: "allenai/olmo-2-13b-instruct"
+    local_model_name: "allenai/OLMo-2-1124-13B-Instruct"
     top_p: null
     top_k: null
     seed: 42

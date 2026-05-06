@@ -40,7 +40,7 @@ LOCAL_MODEL_BY_FAMILY = {
     "mistralai": "mistralai/Ministral-8B-Instruct-2410",
     "ministral": "mistralai/Ministral-8B-Instruct-2410",
     "mistral7": "mistralai/Mistral-7B-Instruct-v0.3",
-    "olmo": "allenai/olmo-2-13b-instruct",
+    "olmo": "allenai/OLMo-2-1124-13B-Instruct",
     "llama": "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama": "meta-llama/Llama-3.1-8B-Instruct",
 }

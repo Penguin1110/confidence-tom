@@ -247,7 +247,7 @@ Transformer probe after re-entry:
 gcloud run jobs execute confidence-tom-reentry \
   --region "$REGION" \
   --wait \
-  --args=experiments/mainline/run/core/run_prefix_reentry_probe.py,--rows,/workspace/outputs/results/_reentry_livebench_local_v1/reentry_rows.jsonl,--output-dir,/workspace/outputs/results/_reentry_livebench_local_v1/probe,--backend,transformers,--local-model-map,qwen=Qwen/Qwen3-14B,--local-model-map,gemma=google/gemma-3-4b-it,--local-model-map,mistral=mistralai/Ministral-8B-Instruct-2410,--local-model-map,olmo=allenai/olmo-2-13b-instruct
+  --args=experiments/mainline/run/core/run_prefix_reentry_probe.py,--rows,/workspace/outputs/results/_reentry_livebench_local_v1/reentry_rows.jsonl,--output-dir,/workspace/outputs/results/_reentry_livebench_local_v1/probe,--backend,transformers,--local-model-map,qwen=Qwen/Qwen3-14B,--local-model-map,gemma=google/gemma-3-4b-it,--local-model-map,mistral=mistralai/Ministral-8B-Instruct-2410,--local-model-map,olmo=allenai/OLMo-2-1124-13B-Instruct
 ```
 
 Recommended production split:
