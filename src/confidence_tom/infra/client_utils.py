@@ -116,18 +116,26 @@ def resolve_local_model_name(model: str, local_model_name: str | None) -> str:
     return _LOCAL_MODEL_MAP.get(model, model)
 
 
-def local_prompt_text(messages: list[dict[str, Any]], tokenizer: Any) -> str:
+def local_prompt_text(
+    messages: list[dict[str, Any]],
+    tokenizer: Any,
+    enable_thinking: bool | None = None,
+) -> str:
     normalized = [normalize_chat_message(message) for message in messages]
     if hasattr(tokenizer, "apply_chat_template"):
+        base_kwargs: dict[str, Any] = {"tokenize": False, "add_generation_prompt": True}
+        if enable_thinking is not None:
+            try:
+                return cast(
+                    str,
+                    tokenizer.apply_chat_template(
+                        normalized, **base_kwargs, enable_thinking=enable_thinking
+                    ),
+                )
+            except Exception:
+                pass  # tokenizer doesn't support enable_thinking, retry without
         try:
-            return cast(
-                str,
-                tokenizer.apply_chat_template(
-                    normalized,
-                    tokenize=False,
-                    add_generation_prompt=True,
-                ),
-            )
+            return cast(str, tokenizer.apply_chat_template(normalized, **base_kwargs))
         except Exception:
             pass
 

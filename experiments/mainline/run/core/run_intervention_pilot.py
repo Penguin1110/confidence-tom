@@ -115,7 +115,7 @@ class OutcomeStore:
         if not self.path.exists():
             return []
         try:
-            return cast(list[dict[str, Any]], json.loads(self.path.read_text()))
+            return cast(list[dict[str, Any]], json.loads(self.path.read_text(encoding="utf-8")))
         except Exception:
             return []
 
@@ -131,7 +131,7 @@ class OutcomeStore:
         else:
             self.rows[existing] = row
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2))
+        tmp.write_text(json.dumps(self.rows, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(self.path)
 
 

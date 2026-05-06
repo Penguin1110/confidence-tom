@@ -38,13 +38,15 @@ def main() -> None:
     parser.add_argument("--max-tokens", type=int, default=2048)
     parser.add_argument("--full-rerun-temperature", type=float, default=0.0)
     parser.add_argument("--reentry-temperature", type=float, default=0.0)
-    parser.add_argument(
-        "--small-backend", choices=["openrouter", "ollama", "local"], default="openrouter"
-    )
+    parser.add_argument("--small-backend", choices=["ollama", "local"], default="local")
     parser.add_argument("--small-local-model-name", default=None)
     parser.add_argument("--skip-sync", action="store_true")
     parser.add_argument("--run-name", action="append", default=[])
+    parser.add_argument("--run-name-prefix", action="append", default=[])
+    parser.add_argument("--benchmark", action="append", default=[])
+    parser.add_argument("--small-family", action="append", default=[])
     parser.add_argument("--category", action="append", default=[])
+    parser.add_argument("--small-local-model-map", action="append", default=[])
     parser.add_argument("--remote-timeout", type=int, default=7200)
     parser.add_argument("--tail-lines", type=int, default=60)
     args = parser.parse_args()
@@ -109,6 +111,21 @@ def main() -> None:
             else ""
         )
         + (
+            (" ".join(f"--run-name-prefix {shlex.quote(name)}" for name in args.run_name_prefix) + " ")
+            if args.run_name_prefix
+            else ""
+        )
+        + (
+            (" ".join(f"--benchmark {shlex.quote(name)}" for name in args.benchmark) + " ")
+            if args.benchmark
+            else ""
+        )
+        + (
+            (" ".join(f"--small-family {shlex.quote(name)}" for name in args.small_family) + " ")
+            if args.small_family
+            else ""
+        )
+        + (
             (" ".join(f"--category {shlex.quote(cat)}" for cat in args.category) + " ")
             if args.category
             else ""
@@ -125,6 +142,14 @@ def main() -> None:
             else ""
         ),
     ]
+    if args.small_local_model_map:
+        remote_cmd[-1] += (
+            " ".join(
+                f"--small-local-model-map {shlex.quote(item)}"
+                for item in args.small_local_model_map
+            )
+            + " "
+        )
     subcommand = "run-bg" if args.mode == "start" else "run"
     cmd = [
         "uv",

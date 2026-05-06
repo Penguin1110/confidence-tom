@@ -36,9 +36,10 @@ def local_generate_text(
     messages: list[dict[str, Any]],
     max_tokens: int,
     temperature: float,
+    enable_thinking: bool | None = None,
 ) -> tuple[str, ApiTrace]:
     torch, tokenizer, model = load_local_stack(model_name, trust_remote_code)
-    prompt_text = local_prompt_text(messages, tokenizer)
+    prompt_text = local_prompt_text(messages, tokenizer, enable_thinking=enable_thinking)
     encoded = tokenizer(prompt_text, return_tensors="pt")
     encoded = {k: v.to(model.device) for k, v in encoded.items()}
     prompt_len = int(encoded["input_ids"].shape[-1])

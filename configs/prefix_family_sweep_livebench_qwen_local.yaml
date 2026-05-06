@@ -19,7 +19,7 @@ timeouts:
   task_sec: 10800
 
 small_workers:
-  - model: "qwen/qwen3-14b:nitro"
+  - model: "Qwen/Qwen3-14B"
     label: "Qwen-3-14B-Local"
     family: "qwen"
     max_tokens: 12288
@@ -28,15 +28,19 @@ small_workers:
     local_model_name: "Qwen/Qwen3-14B"
 
 large_workers:
-  - model: "openai/gpt-5.4"
-    label: "GPT-5.4"
-    family: "openai"
+  - model: "Qwen/Qwen2.5-14B-Instruct"
+    label: "HF-Qwen2.5-14B"
+    family: "local_qwen"
     max_tokens: 16384
+    backend: "local"
+    local_model_name: "Qwen/Qwen2.5-14B-Instruct"
     reasoning_effort: null
-  - model: "anthropic/claude-opus-4.6"
-    label: "Claude-Opus-4.6"
-    family: "anthropic"
+  - model: "mistralai/Ministral-8B-Instruct-2410"
+    label: "HF-Ministral-8B"
+    family: "local_mistral"
     max_tokens: 16384
+    backend: "local"
+    local_model_name: "mistralai/Ministral-8B-Instruct-2410"
     reasoning_effort: null
 
 launcher:

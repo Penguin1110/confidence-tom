@@ -168,6 +168,7 @@ class LLMClient:
             messages=messages,
             max_tokens=max_tokens if max_tokens is not None else self.max_tokens,
             temperature=temperature if temperature is not None else self.temperature,
+            enable_thinking=self.enable_thinking,
         )
 
     def generate_parsed(

@@ -146,7 +146,7 @@ MODEL_PRESETS: dict[str, dict[str, str | int]] = {
         "num_predict": 3072,
     },
     "olmo31_32b": {
-        "small_model": "allenai/olmo-2-13b-instruct",
+        "small_model": "allenai/OLMo-2-1124-13B-Instruct",
         "small_label": "Ollama-olmo-3.1:32b",
         "small_local_model_name": "olmo-3.1:32b",
         "small_max_tokens": 12288,

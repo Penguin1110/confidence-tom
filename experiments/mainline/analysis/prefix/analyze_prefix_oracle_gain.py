@@ -4,24 +4,34 @@ import csv
 import json
 import math
 import re
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from statistics import mean
 from typing import Any, cast
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 import hydra
 from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
 from confidence_tom.data.dataset_models import StaticTask
-from confidence_tom.data.scale_dataset import load_livebench_reasoning, load_olympiadbench
+from confidence_tom.data.scale_dataset import (
+    load_aime_2024,
+    load_gpqa_diamond,
+    load_livebench_reasoning,
+    load_math500,
+    load_olympiadbench,
+)
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 
 
 def _load_rows(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding="utf-8"))
     return cast(list[dict[str, Any]], data) if isinstance(data, list) else []
 
 
@@ -103,14 +113,22 @@ def _pearson(xs: list[float], ys: list[float]) -> float:
 def _load_tasks(cfg: DictConfig) -> dict[str, StaticTask]:
     benchmark_name = str(cfg.dataset.benchmark)
     if benchmark_name == "olympiadbench":
-        questions = load_olympiadbench(num_samples=int(cfg.dataset.olympiadbench))
+        requested = int(cfg.dataset.get("olympiadbench", cfg.dataset.get("limit", 50)))
+        questions = load_olympiadbench(num_samples=requested)
     elif benchmark_name == "livebench_reasoning":
-        livebench_count = int(
-            cfg.dataset.get("livebench_reasoning", cfg.dataset.get("livebench", 0))
-        )
-        questions = load_livebench_reasoning(num_samples=livebench_count)
+        requested = int(cfg.dataset.get("livebench_reasoning", cfg.dataset.get("limit", 30)))
+        questions = load_livebench_reasoning(num_samples=requested)
+    elif benchmark_name == "aime_2024":
+        requested = int(cfg.dataset.get("aime_2024", cfg.dataset.get("limit", 30)))
+        questions = load_aime_2024(num_samples=requested)
+    elif benchmark_name == "math500":
+        requested = int(cfg.dataset.get("math500", cfg.dataset.get("limit", 50)))
+        questions = load_math500(num_samples=requested)
+    elif benchmark_name == "gpqa_diamond":
+        requested = int(cfg.dataset.get("gpqa_diamond", cfg.dataset.get("limit", 40)))
+        questions = load_gpqa_diamond(num_samples=requested)
     else:
-        raise ValueError(f"Unsupported benchmark for analysis: {benchmark_name}")
+        raise ValueError(f"Unsupported benchmark: {benchmark_name}")
     return {q.id: q for q in questions}
 
 
@@ -498,7 +516,9 @@ def main(cfg: DictConfig) -> None:
     # Persist outputs before verbose logging so partial runs still leave usable summaries.
     if summary_path:
         summary_path.parent.mkdir(parents=True, exist_ok=True)
-        summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2))
+        summary_path.write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
     if per_prefix_rows_csv and per_prefix_rows:
         per_prefix_rows_csv.parent.mkdir(parents=True, exist_ok=True)

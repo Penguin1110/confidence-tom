@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
+from fractions import Fraction
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Callable, Protocol, cast
@@ -37,6 +38,8 @@ def build_static_evaluator(task: StaticTask) -> StaticEvaluator:
         return evaluate_olympiadbench
     if name == "livebench_reasoning":
         return evaluate_livebench_reasoning
+    if name == "math_exact":
+        return evaluate_math_exact
     if name == "exact_match":
         return evaluate_exact_match
     raise ValueError(f"No static evaluator for '{name}'")
@@ -76,6 +79,20 @@ def evaluate_exact_match(prediction: str, task: StaticTask) -> EvaluationResult:
         extracted_answer=prediction.strip(),
         evaluator_name=task.evaluator_name,
         metadata={"reference_answer": task.reference_answer or task.correct_answer},
+    )
+
+
+def evaluate_math_exact(prediction: str, task: StaticTask) -> EvaluationResult:
+    reference = task.reference_answer or task.correct_answer
+    normalized_pred = _normalize_text_answer(_normalize_math_prediction(prediction, reference))
+    normalized_ref = _normalize_text_answer(_normalize_math_prediction(reference, reference))
+    is_correct = bool(normalized_pred) and _math_answers_equivalent(normalized_pred, normalized_ref)
+    return EvaluationResult(
+        is_correct=is_correct,
+        score=1.0 if is_correct else 0.0,
+        extracted_answer=prediction.strip(),
+        evaluator_name=task.evaluator_name,
+        metadata={"reference_answer": reference},
     )
 
 
@@ -225,6 +242,83 @@ def _normalize_olympiadbench_prediction(prediction: str, reference: str) -> str:
             text = ", ".join(sorted(pred_parts, key=_sortable_math_key))
 
     return text
+
+
+def _normalize_math_prediction(prediction: str, reference: str) -> str:
+    text = _normalize_olympiadbench_prediction(prediction, reference)
+    if not text:
+        return text
+
+    text = _strip_math_wrappers(text)
+    text = re.sub(r"^\s*answer\s*[:=\-]\s*", "", text, flags=re.IGNORECASE)
+    text = text.replace(r"\left", "").replace(r"\right", "")
+    text = text.replace(r"\dfrac", r"\frac").replace(r"\tfrac", r"\frac")
+    text = re.sub(r"\\sqrt\s*([A-Za-z0-9(])", r"\\sqrt{\1}", text)
+    text = re.sub(r"\\frac\s*([A-Za-z0-9\-]+)\s*([A-Za-z0-9\-]+)", r"\\frac{\1}{\2}", text)
+    text = re.sub(r"\\frac\{([^{}]+)\}\{([^{}]+)\}", r"\1/\2", text)
+    text = text.replace("{", "").replace("}", "")
+    text = text.replace(" ", "")
+
+    # Normalize common numeric surface forms.
+    text = re.sub(r"(?<=\d),(?=\d{3}(?:\D|$))", "", text)
+    if re.fullmatch(r"-?\d+\.0+", text):
+        text = text.split(".")[0]
+    return text
+
+
+def _strip_math_wrappers(text: str) -> str:
+    cleaned = text.strip().strip("$")
+    changed = True
+    while changed and cleaned:
+        changed = False
+        for pattern in (
+            r"^\\text\{(.+)\}$",
+            r"^\\mathrm\{(.+)\}$",
+            r"^\\boxed\{(.+)\}$",
+            r"^\\fbox\{(.+)\}$",
+            r"^\((.+)\)$" if "," not in cleaned else r"^\Z",
+        ):
+            match = re.match(pattern, cleaned, flags=re.DOTALL)
+            if match:
+                cleaned = match.group(1).strip()
+                changed = True
+    return cleaned
+
+
+def _math_answers_equivalent(normalized_pred: str, normalized_ref: str) -> bool:
+    if normalized_pred == normalized_ref:
+        return True
+
+    pred_scalar = _parse_simple_math_scalar(normalized_pred)
+    ref_scalar = _parse_simple_math_scalar(normalized_ref)
+    return pred_scalar is not None and ref_scalar is not None and pred_scalar == ref_scalar
+
+
+def _parse_simple_math_scalar(text: str) -> Fraction | None:
+    cleaned = text.strip()
+    if not cleaned:
+        return None
+
+    if cleaned.startswith("+"):
+        cleaned = cleaned[1:]
+
+    if re.fullmatch(r"-?\d+", cleaned):
+        return Fraction(int(cleaned), 1)
+
+    if re.fullmatch(r"-?\d+\.\d+", cleaned):
+        try:
+            return Fraction(cleaned)
+        except ValueError:
+            return None
+
+    if re.fullmatch(r"-?\d+/-?\d+", cleaned):
+        try:
+            numerator, denominator = cleaned.split("/", 1)
+            return Fraction(int(numerator), int(denominator))
+        except (ValueError, ZeroDivisionError):
+            return None
+
+    return None
 
 
 def _strip_box_wrappers(text: str) -> str:

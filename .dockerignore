@@ -1,0 +1,16 @@
+.git
+.github
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.venv
+.venvs
+__pycache__
+*.py[cod]
+*.log
+.env
+outputs
+results
+logs
+external
+observer_presentation.txt

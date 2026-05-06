@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 from typing import Any, cast
 
-from confidence_tom.infra.paths import project_root
+from confidence_tom.infra.paths import project_root, results_root
 
 ROOT = project_root()
-DEFAULT_DIR = ROOT / "outputs" / "results" / "_prefix_reentry_controls_v1"
+DEFAULT_DIR = results_root() / "_prefix_reentry_controls_v1"
 DEFAULT_ROWS = DEFAULT_DIR / "reentry_rows.jsonl"
 DEFAULT_SUMMARY = DEFAULT_DIR / "reentry_summary.json"
 DEFAULT_MD = (
@@ -180,10 +180,14 @@ def main() -> None:
 
     rows = _load_rows(Path(args.rows))
     summary = summarize(rows)
-    Path(args.summary_json).write_text(
+    summary_json_path = Path(args.summary_json)
+    summary_md_path = Path(args.summary_md)
+    summary_json_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_md_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_json_path.write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    Path(args.summary_md).write_text(to_markdown(summary), encoding="utf-8")
+    summary_md_path.write_text(to_markdown(summary), encoding="utf-8")
     print(f"Wrote summary JSON to {args.summary_json}")
     print(f"Wrote summary MD to {args.summary_md}")
 
