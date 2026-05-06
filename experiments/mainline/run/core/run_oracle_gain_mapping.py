@@ -139,6 +139,8 @@ class PartialTaskStore:
     def save(self, task_id: str, payload: dict[str, Any]) -> None:
         tmp = self.root / f"{task_id}.tmp"
         final = self.root / f"{task_id}.json"
+        tmp.parent.mkdir(parents=True, exist_ok=True)
+        final.parent.mkdir(parents=True, exist_ok=True)
         tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(final)
 
