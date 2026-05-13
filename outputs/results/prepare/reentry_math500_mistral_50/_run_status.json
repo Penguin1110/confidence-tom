@@ -1,0 +1,9 @@
+{
+  "run_name": "reentry_math500_mistral_50",
+  "benchmark": "math500",
+  "small_model": "mistralai/Ministral-8B-Instruct-2410",
+  "large_model": "reentry/none",
+  "stage": "analyze",
+  "status": "completed",
+  "output_dir": "/home/george15672/confidence-tom/outputs/results/reentry_math500_mistral_50"
+}

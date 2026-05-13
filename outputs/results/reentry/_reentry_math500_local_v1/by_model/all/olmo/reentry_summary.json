@@ -1,0 +1,92 @@
+{
+  "accuracy": {
+    "full_rerun_correct": {
+      "count": 1,
+      "rate": 0.013333
+    },
+    "full_trace_correct": {
+      "count": 8,
+      "rate": 0.106667
+    },
+    "reentry_exact_correct": {
+      "count": 23,
+      "rate": 0.306667
+    },
+    "reentry_fenced_correct": {
+      "count": 21,
+      "rate": 0.28
+    },
+    "reentry_marker_correct": {
+      "count": 24,
+      "rate": 0.32
+    },
+    "reentry_repeat_correct": {
+      "count": 23,
+      "rate": 0.306667
+    }
+  },
+  "outlier_rows": 0,
+  "prefix_tokens_observed": {
+    "avg": 146.027,
+    "max": 458,
+    "min": 0
+  },
+  "rows": 75,
+  "run_names": [
+    "reentry_math500_olmo_50"
+  ],
+  "segment_count": {
+    "max": 10,
+    "min": 2
+  },
+  "small_family": "olmo",
+  "small_models": [
+    "allenai/OLMo-2-1124-13B-Instruct"
+  ],
+  "stability": {
+    "reentry_fenced_matches_exact": {
+      "count": 29,
+      "rate": 0.386667
+    },
+    "reentry_marker_matches_exact": {
+      "count": 35,
+      "rate": 0.466667
+    },
+    "reentry_repeat_matches_first": {
+      "count": 69,
+      "rate": 0.92
+    }
+  },
+  "step_index": {
+    "counts": {
+      "1": 11,
+      "2": 15,
+      "3": 13,
+      "4": 13,
+      "5": 11,
+      "6": 5,
+      "7": 4,
+      "8": 2,
+      "10": 1
+    },
+    "max": 10,
+    "min": 1
+  },
+  "transition_vs_full_rerun": {
+    "both_correct": 1,
+    "both_wrong": 52,
+    "damage": {
+      "count": 0,
+      "denominator": 1,
+      "rate": 0.0
+    },
+    "net_gain": 22,
+    "rescue": {
+      "count": 22,
+      "denominator": 74,
+      "rate": 0.297297
+    }
+  },
+  "unique_prefixes": 75,
+  "unique_tasks": 35
+}

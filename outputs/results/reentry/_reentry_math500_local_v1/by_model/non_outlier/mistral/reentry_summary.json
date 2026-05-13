@@ -1,0 +1,91 @@
+{
+  "accuracy": {
+    "full_rerun_correct": {
+      "count": 37,
+      "rate": 0.389474
+    },
+    "full_trace_correct": {
+      "count": 26,
+      "rate": 0.273684
+    },
+    "reentry_exact_correct": {
+      "count": 36,
+      "rate": 0.378947
+    },
+    "reentry_fenced_correct": {
+      "count": 38,
+      "rate": 0.4
+    },
+    "reentry_marker_correct": {
+      "count": 35,
+      "rate": 0.368421
+    },
+    "reentry_repeat_correct": {
+      "count": 36,
+      "rate": 0.378947
+    }
+  },
+  "outlier_rows": 0,
+  "prefix_tokens_observed": {
+    "avg": 122.6,
+    "max": 398,
+    "min": 11
+  },
+  "rows": 95,
+  "run_names": [
+    "reentry_math500_mistral_50"
+  ],
+  "segment_count": {
+    "max": 9,
+    "min": 3
+  },
+  "small_family": "mistral",
+  "small_models": [
+    "mistralai/Ministral-8B-Instruct-2410"
+  ],
+  "stability": {
+    "reentry_fenced_matches_exact": {
+      "count": 69,
+      "rate": 0.726316
+    },
+    "reentry_marker_matches_exact": {
+      "count": 75,
+      "rate": 0.789474
+    },
+    "reentry_repeat_matches_first": {
+      "count": 95,
+      "rate": 1.0
+    }
+  },
+  "step_index": {
+    "counts": {
+      "1": 16,
+      "2": 19,
+      "3": 19,
+      "4": 19,
+      "5": 12,
+      "6": 6,
+      "7": 2,
+      "8": 2
+    },
+    "max": 8,
+    "min": 1
+  },
+  "transition_vs_full_rerun": {
+    "both_correct": 28,
+    "both_wrong": 50,
+    "damage": {
+      "count": 9,
+      "denominator": 37,
+      "rate": 0.243243
+    },
+    "net_gain": -1,
+    "rescue": {
+      "count": 8,
+      "denominator": 58,
+      "rate": 0.137931
+    }
+  },
+  "unique_prefixes": 95,
+  "unique_tasks": 43
+}

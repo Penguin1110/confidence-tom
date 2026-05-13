@@ -1,0 +1,1283 @@
+{
+  "sets": {
+    "all": {
+      "models": {
+        "gemma": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 30,
+              "rate": 0.379747
+            },
+            "full_trace_correct": {
+              "count": 53,
+              "rate": 0.670886
+            },
+            "reentry_exact_correct": {
+              "count": 63,
+              "rate": 0.797468
+            },
+            "reentry_fenced_correct": {
+              "count": 59,
+              "rate": 0.746835
+            },
+            "reentry_marker_correct": {
+              "count": 61,
+              "rate": 0.772152
+            },
+            "reentry_repeat_correct": {
+              "count": 63,
+              "rate": 0.797468
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 279.177,
+            "max": 2003,
+            "min": 19
+          },
+          "rows": 79,
+          "run_names": [
+            "reentry_math500_gemma_50"
+          ],
+          "segment_count": {
+            "max": 8,
+            "min": 3
+          },
+          "small_family": "gemma",
+          "small_models": [
+            "google/gemma-4-E4B-it"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 63,
+              "rate": 0.797468
+            },
+            "reentry_marker_matches_exact": {
+              "count": 63,
+              "rate": 0.797468
+            },
+            "reentry_repeat_matches_first": {
+              "count": 79,
+              "rate": 1.0
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 16,
+              "2": 16,
+              "3": 14,
+              "4": 10,
+              "5": 10,
+              "6": 10,
+              "7": 3
+            },
+            "max": 7,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 28,
+            "both_wrong": 14,
+            "damage": {
+              "count": 2,
+              "denominator": 30,
+              "rate": 0.066667
+            },
+            "net_gain": 33,
+            "rescue": {
+              "count": 35,
+              "denominator": 49,
+              "rate": 0.714286
+            }
+          },
+          "unique_prefixes": 79,
+          "unique_tasks": 39
+        },
+        "mistral": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 37,
+              "rate": 0.389474
+            },
+            "full_trace_correct": {
+              "count": 26,
+              "rate": 0.273684
+            },
+            "reentry_exact_correct": {
+              "count": 36,
+              "rate": 0.378947
+            },
+            "reentry_fenced_correct": {
+              "count": 38,
+              "rate": 0.4
+            },
+            "reentry_marker_correct": {
+              "count": 35,
+              "rate": 0.368421
+            },
+            "reentry_repeat_correct": {
+              "count": 36,
+              "rate": 0.378947
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 122.6,
+            "max": 398,
+            "min": 11
+          },
+          "rows": 95,
+          "run_names": [
+            "reentry_math500_mistral_50"
+          ],
+          "segment_count": {
+            "max": 9,
+            "min": 3
+          },
+          "small_family": "mistral",
+          "small_models": [
+            "mistralai/Ministral-8B-Instruct-2410"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 69,
+              "rate": 0.726316
+            },
+            "reentry_marker_matches_exact": {
+              "count": 75,
+              "rate": 0.789474
+            },
+            "reentry_repeat_matches_first": {
+              "count": 95,
+              "rate": 1.0
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 16,
+              "2": 19,
+              "3": 19,
+              "4": 19,
+              "5": 12,
+              "6": 6,
+              "7": 2,
+              "8": 2
+            },
+            "max": 8,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 28,
+            "both_wrong": 50,
+            "damage": {
+              "count": 9,
+              "denominator": 37,
+              "rate": 0.243243
+            },
+            "net_gain": -1,
+            "rescue": {
+              "count": 8,
+              "denominator": 58,
+              "rate": 0.137931
+            }
+          },
+          "unique_prefixes": 95,
+          "unique_tasks": 43
+        },
+        "olmo": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 1,
+              "rate": 0.013333
+            },
+            "full_trace_correct": {
+              "count": 8,
+              "rate": 0.106667
+            },
+            "reentry_exact_correct": {
+              "count": 23,
+              "rate": 0.306667
+            },
+            "reentry_fenced_correct": {
+              "count": 21,
+              "rate": 0.28
+            },
+            "reentry_marker_correct": {
+              "count": 24,
+              "rate": 0.32
+            },
+            "reentry_repeat_correct": {
+              "count": 23,
+              "rate": 0.306667
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 146.027,
+            "max": 458,
+            "min": 0
+          },
+          "rows": 75,
+          "run_names": [
+            "reentry_math500_olmo_50"
+          ],
+          "segment_count": {
+            "max": 10,
+            "min": 2
+          },
+          "small_family": "olmo",
+          "small_models": [
+            "allenai/OLMo-2-1124-13B-Instruct"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 29,
+              "rate": 0.386667
+            },
+            "reentry_marker_matches_exact": {
+              "count": 35,
+              "rate": 0.466667
+            },
+            "reentry_repeat_matches_first": {
+              "count": 69,
+              "rate": 0.92
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 11,
+              "2": 15,
+              "3": 13,
+              "4": 13,
+              "5": 11,
+              "6": 5,
+              "7": 4,
+              "8": 2,
+              "10": 1
+            },
+            "max": 10,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 1,
+            "both_wrong": 52,
+            "damage": {
+              "count": 0,
+              "denominator": 1,
+              "rate": 0.0
+            },
+            "net_gain": 22,
+            "rescue": {
+              "count": 22,
+              "denominator": 74,
+              "rate": 0.297297
+            }
+          },
+          "unique_prefixes": 75,
+          "unique_tasks": 35
+        },
+        "qwen": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 63,
+              "rate": 0.165354
+            },
+            "full_trace_correct": {
+              "count": 232,
+              "rate": 0.608924
+            },
+            "reentry_exact_correct": {
+              "count": 204,
+              "rate": 0.535433
+            },
+            "reentry_fenced_correct": {
+              "count": 195,
+              "rate": 0.511811
+            },
+            "reentry_marker_correct": {
+              "count": 201,
+              "rate": 0.527559
+            },
+            "reentry_repeat_correct": {
+              "count": 204,
+              "rate": 0.535433
+            }
+          },
+          "outlier_rows": 179,
+          "prefix_tokens_observed": {
+            "avg": 1567.927,
+            "max": 5753,
+            "min": 16
+          },
+          "rows": 381,
+          "run_names": [
+            "reentry_math500_qwen_50"
+          ],
+          "segment_count": {
+            "max": 229,
+            "min": 2
+          },
+          "small_family": "qwen",
+          "small_models": [
+            "Qwen/Qwen3-14B"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 174,
+              "rate": 0.456693
+            },
+            "reentry_marker_matches_exact": {
+              "count": 169,
+              "rate": 0.44357
+            },
+            "reentry_repeat_matches_first": {
+              "count": 381,
+              "rate": 1.0
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 15,
+              "2": 19,
+              "3": 10,
+              "4": 17,
+              "5": 11,
+              "6": 1,
+              "7": 7,
+              "8": 7,
+              "9": 4,
+              "10": 6,
+              "11": 3,
+              "12": 5,
+              "13": 6,
+              "14": 5,
+              "15": 4,
+              "16": 1,
+              "17": 5,
+              "18": 7,
+              "19": 5,
+              "20": 6,
+              "21": 8,
+              "22": 7,
+              "23": 6,
+              "24": 4,
+              "25": 5,
+              "26": 3,
+              "27": 6,
+              "28": 6,
+              "29": 4,
+              "30": 2,
+              "31": 3,
+              "32": 5,
+              "33": 3,
+              "34": 3,
+              "35": 1,
+              "36": 3,
+              "37": 4,
+              "38": 4,
+              "39": 3,
+              "40": 2,
+              "41": 2,
+              "42": 3,
+              "43": 5,
+              "44": 3,
+              "45": 1,
+              "46": 1,
+              "47": 1,
+              "48": 3,
+              "49": 2,
+              "50": 2,
+              "51": 3,
+              "52": 2,
+              "53": 3,
+              "54": 3,
+              "55": 2,
+              "57": 2,
+              "58": 3,
+              "60": 1,
+              "61": 2,
+              "62": 2,
+              "63": 1,
+              "65": 2,
+              "66": 1,
+              "67": 3,
+              "68": 2,
+              "69": 2,
+              "70": 1,
+              "72": 3,
+              "73": 1,
+              "74": 2,
+              "75": 1,
+              "78": 2,
+              "79": 2,
+              "82": 1,
+              "83": 1,
+              "84": 1,
+              "85": 1,
+              "86": 2,
+              "88": 1,
+              "89": 2,
+              "90": 2,
+              "91": 1,
+              "93": 2,
+              "94": 1,
+              "95": 1,
+              "96": 1,
+              "97": 1,
+              "99": 1,
+              "100": 1,
+              "102": 2,
+              "103": 2,
+              "104": 1,
+              "105": 1,
+              "108": 2,
+              "110": 1,
+              "111": 2,
+              "112": 2,
+              "113": 1,
+              "114": 2,
+              "122": 2,
+              "123": 1,
+              "125": 1,
+              "127": 1,
+              "128": 2,
+              "130": 1,
+              "132": 1,
+              "134": 1,
+              "135": 1,
+              "136": 1,
+              "138": 1,
+              "140": 1,
+              "141": 1,
+              "142": 2,
+              "143": 1,
+              "145": 1,
+              "146": 1,
+              "147": 1,
+              "151": 1,
+              "152": 1,
+              "153": 1,
+              "154": 1,
+              "158": 1,
+              "159": 1,
+              "168": 1,
+              "170": 1,
+              "172": 1,
+              "176": 1,
+              "177": 1,
+              "178": 1,
+              "180": 1,
+              "185": 1,
+              "190": 1,
+              "191": 1,
+              "193": 1,
+              "195": 1,
+              "196": 1,
+              "201": 1,
+              "202": 1,
+              "204": 1,
+              "205": 1,
+              "207": 1,
+              "209": 1,
+              "213": 1,
+              "217": 1,
+              "223": 1,
+              "224": 1
+            },
+            "max": 224,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 63,
+            "both_wrong": 177,
+            "damage": {
+              "count": 0,
+              "denominator": 63,
+              "rate": 0.0
+            },
+            "net_gain": 141,
+            "rescue": {
+              "count": 141,
+              "denominator": 318,
+              "rate": 0.443396
+            }
+          },
+          "unique_prefixes": 381,
+          "unique_tasks": 42
+        }
+      },
+      "overall": {
+        "accuracy": {
+          "full_rerun_correct": {
+            "count": 131,
+            "rate": 0.207937
+          },
+          "full_trace_correct": {
+            "count": 319,
+            "rate": 0.506349
+          },
+          "reentry_exact_correct": {
+            "count": 326,
+            "rate": 0.51746
+          },
+          "reentry_fenced_correct": {
+            "count": 313,
+            "rate": 0.496825
+          },
+          "reentry_marker_correct": {
+            "count": 321,
+            "rate": 0.509524
+          },
+          "reentry_repeat_correct": {
+            "count": 326,
+            "rate": 0.51746
+          }
+        },
+        "outlier_rows": 179,
+        "prefix_tokens_observed": {
+          "avg": 1019.102,
+          "max": 5753,
+          "min": 0
+        },
+        "rows": 630,
+        "segment_count": {
+          "max": 229,
+          "min": 2
+        },
+        "stability": {
+          "reentry_fenced_matches_exact": {
+            "count": 335,
+            "rate": 0.531746
+          },
+          "reentry_marker_matches_exact": {
+            "count": 342,
+            "rate": 0.542857
+          },
+          "reentry_repeat_matches_first": {
+            "count": 624,
+            "rate": 0.990476
+          }
+        },
+        "step_index": {
+          "counts": {
+            "1": 58,
+            "2": 69,
+            "3": 56,
+            "4": 59,
+            "5": 44,
+            "6": 22,
+            "7": 16,
+            "8": 11,
+            "9": 4,
+            "10": 7,
+            "11": 3,
+            "12": 5,
+            "13": 6,
+            "14": 5,
+            "15": 4,
+            "16": 1,
+            "17": 5,
+            "18": 7,
+            "19": 5,
+            "20": 6,
+            "21": 8,
+            "22": 7,
+            "23": 6,
+            "24": 4,
+            "25": 5,
+            "26": 3,
+            "27": 6,
+            "28": 6,
+            "29": 4,
+            "30": 2,
+            "31": 3,
+            "32": 5,
+            "33": 3,
+            "34": 3,
+            "35": 1,
+            "36": 3,
+            "37": 4,
+            "38": 4,
+            "39": 3,
+            "40": 2,
+            "41": 2,
+            "42": 3,
+            "43": 5,
+            "44": 3,
+            "45": 1,
+            "46": 1,
+            "47": 1,
+            "48": 3,
+            "49": 2,
+            "50": 2,
+            "51": 3,
+            "52": 2,
+            "53": 3,
+            "54": 3,
+            "55": 2,
+            "57": 2,
+            "58": 3,
+            "60": 1,
+            "61": 2,
+            "62": 2,
+            "63": 1,
+            "65": 2,
+            "66": 1,
+            "67": 3,
+            "68": 2,
+            "69": 2,
+            "70": 1,
+            "72": 3,
+            "73": 1,
+            "74": 2,
+            "75": 1,
+            "78": 2,
+            "79": 2,
+            "82": 1,
+            "83": 1,
+            "84": 1,
+            "85": 1,
+            "86": 2,
+            "88": 1,
+            "89": 2,
+            "90": 2,
+            "91": 1,
+            "93": 2,
+            "94": 1,
+            "95": 1,
+            "96": 1,
+            "97": 1,
+            "99": 1,
+            "100": 1,
+            "102": 2,
+            "103": 2,
+            "104": 1,
+            "105": 1,
+            "108": 2,
+            "110": 1,
+            "111": 2,
+            "112": 2,
+            "113": 1,
+            "114": 2,
+            "122": 2,
+            "123": 1,
+            "125": 1,
+            "127": 1,
+            "128": 2,
+            "130": 1,
+            "132": 1,
+            "134": 1,
+            "135": 1,
+            "136": 1,
+            "138": 1,
+            "140": 1,
+            "141": 1,
+            "142": 2,
+            "143": 1,
+            "145": 1,
+            "146": 1,
+            "147": 1,
+            "151": 1,
+            "152": 1,
+            "153": 1,
+            "154": 1,
+            "158": 1,
+            "159": 1,
+            "168": 1,
+            "170": 1,
+            "172": 1,
+            "176": 1,
+            "177": 1,
+            "178": 1,
+            "180": 1,
+            "185": 1,
+            "190": 1,
+            "191": 1,
+            "193": 1,
+            "195": 1,
+            "196": 1,
+            "201": 1,
+            "202": 1,
+            "204": 1,
+            "205": 1,
+            "207": 1,
+            "209": 1,
+            "213": 1,
+            "217": 1,
+            "223": 1,
+            "224": 1
+          },
+          "max": 224,
+          "min": 1
+        },
+        "transition_vs_full_rerun": {
+          "both_correct": 120,
+          "both_wrong": 293,
+          "damage": {
+            "count": 11,
+            "denominator": 131,
+            "rate": 0.083969
+          },
+          "net_gain": 195,
+          "rescue": {
+            "count": 206,
+            "denominator": 499,
+            "rate": 0.412826
+          }
+        },
+        "unique_prefixes": 518,
+        "unique_tasks": 50
+      }
+    },
+    "non_outlier": {
+      "models": {
+        "gemma": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 30,
+              "rate": 0.379747
+            },
+            "full_trace_correct": {
+              "count": 53,
+              "rate": 0.670886
+            },
+            "reentry_exact_correct": {
+              "count": 63,
+              "rate": 0.797468
+            },
+            "reentry_fenced_correct": {
+              "count": 59,
+              "rate": 0.746835
+            },
+            "reentry_marker_correct": {
+              "count": 61,
+              "rate": 0.772152
+            },
+            "reentry_repeat_correct": {
+              "count": 63,
+              "rate": 0.797468
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 279.177,
+            "max": 2003,
+            "min": 19
+          },
+          "rows": 79,
+          "run_names": [
+            "reentry_math500_gemma_50"
+          ],
+          "segment_count": {
+            "max": 8,
+            "min": 3
+          },
+          "small_family": "gemma",
+          "small_models": [
+            "google/gemma-4-E4B-it"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 63,
+              "rate": 0.797468
+            },
+            "reentry_marker_matches_exact": {
+              "count": 63,
+              "rate": 0.797468
+            },
+            "reentry_repeat_matches_first": {
+              "count": 79,
+              "rate": 1.0
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 16,
+              "2": 16,
+              "3": 14,
+              "4": 10,
+              "5": 10,
+              "6": 10,
+              "7": 3
+            },
+            "max": 7,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 28,
+            "both_wrong": 14,
+            "damage": {
+              "count": 2,
+              "denominator": 30,
+              "rate": 0.066667
+            },
+            "net_gain": 33,
+            "rescue": {
+              "count": 35,
+              "denominator": 49,
+              "rate": 0.714286
+            }
+          },
+          "unique_prefixes": 79,
+          "unique_tasks": 39
+        },
+        "mistral": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 37,
+              "rate": 0.389474
+            },
+            "full_trace_correct": {
+              "count": 26,
+              "rate": 0.273684
+            },
+            "reentry_exact_correct": {
+              "count": 36,
+              "rate": 0.378947
+            },
+            "reentry_fenced_correct": {
+              "count": 38,
+              "rate": 0.4
+            },
+            "reentry_marker_correct": {
+              "count": 35,
+              "rate": 0.368421
+            },
+            "reentry_repeat_correct": {
+              "count": 36,
+              "rate": 0.378947
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 122.6,
+            "max": 398,
+            "min": 11
+          },
+          "rows": 95,
+          "run_names": [
+            "reentry_math500_mistral_50"
+          ],
+          "segment_count": {
+            "max": 9,
+            "min": 3
+          },
+          "small_family": "mistral",
+          "small_models": [
+            "mistralai/Ministral-8B-Instruct-2410"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 69,
+              "rate": 0.726316
+            },
+            "reentry_marker_matches_exact": {
+              "count": 75,
+              "rate": 0.789474
+            },
+            "reentry_repeat_matches_first": {
+              "count": 95,
+              "rate": 1.0
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 16,
+              "2": 19,
+              "3": 19,
+              "4": 19,
+              "5": 12,
+              "6": 6,
+              "7": 2,
+              "8": 2
+            },
+            "max": 8,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 28,
+            "both_wrong": 50,
+            "damage": {
+              "count": 9,
+              "denominator": 37,
+              "rate": 0.243243
+            },
+            "net_gain": -1,
+            "rescue": {
+              "count": 8,
+              "denominator": 58,
+              "rate": 0.137931
+            }
+          },
+          "unique_prefixes": 95,
+          "unique_tasks": 43
+        },
+        "olmo": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 1,
+              "rate": 0.013333
+            },
+            "full_trace_correct": {
+              "count": 8,
+              "rate": 0.106667
+            },
+            "reentry_exact_correct": {
+              "count": 23,
+              "rate": 0.306667
+            },
+            "reentry_fenced_correct": {
+              "count": 21,
+              "rate": 0.28
+            },
+            "reentry_marker_correct": {
+              "count": 24,
+              "rate": 0.32
+            },
+            "reentry_repeat_correct": {
+              "count": 23,
+              "rate": 0.306667
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 146.027,
+            "max": 458,
+            "min": 0
+          },
+          "rows": 75,
+          "run_names": [
+            "reentry_math500_olmo_50"
+          ],
+          "segment_count": {
+            "max": 10,
+            "min": 2
+          },
+          "small_family": "olmo",
+          "small_models": [
+            "allenai/OLMo-2-1124-13B-Instruct"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 29,
+              "rate": 0.386667
+            },
+            "reentry_marker_matches_exact": {
+              "count": 35,
+              "rate": 0.466667
+            },
+            "reentry_repeat_matches_first": {
+              "count": 69,
+              "rate": 0.92
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 11,
+              "2": 15,
+              "3": 13,
+              "4": 13,
+              "5": 11,
+              "6": 5,
+              "7": 4,
+              "8": 2,
+              "10": 1
+            },
+            "max": 10,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 1,
+            "both_wrong": 52,
+            "damage": {
+              "count": 0,
+              "denominator": 1,
+              "rate": 0.0
+            },
+            "net_gain": 22,
+            "rescue": {
+              "count": 22,
+              "denominator": 74,
+              "rate": 0.297297
+            }
+          },
+          "unique_prefixes": 75,
+          "unique_tasks": 35
+        },
+        "qwen": {
+          "accuracy": {
+            "full_rerun_correct": {
+              "count": 63,
+              "rate": 0.311881
+            },
+            "full_trace_correct": {
+              "count": 197,
+              "rate": 0.975248
+            },
+            "reentry_exact_correct": {
+              "count": 176,
+              "rate": 0.871287
+            },
+            "reentry_fenced_correct": {
+              "count": 170,
+              "rate": 0.841584
+            },
+            "reentry_marker_correct": {
+              "count": 175,
+              "rate": 0.866337
+            },
+            "reentry_repeat_correct": {
+              "count": 176,
+              "rate": 0.871287
+            }
+          },
+          "outlier_rows": 0,
+          "prefix_tokens_observed": {
+            "avg": 776.272,
+            "max": 3501,
+            "min": 16
+          },
+          "rows": 202,
+          "run_names": [
+            "reentry_math500_qwen_50"
+          ],
+          "segment_count": {
+            "max": 68,
+            "min": 2
+          },
+          "small_family": "qwen",
+          "small_models": [
+            "Qwen/Qwen3-14B"
+          ],
+          "stability": {
+            "reentry_fenced_matches_exact": {
+              "count": 146,
+              "rate": 0.722772
+            },
+            "reentry_marker_matches_exact": {
+              "count": 141,
+              "rate": 0.69802
+            },
+            "reentry_repeat_matches_first": {
+              "count": 202,
+              "rate": 1.0
+            }
+          },
+          "step_index": {
+            "counts": {
+              "1": 14,
+              "2": 18,
+              "3": 8,
+              "4": 16,
+              "5": 10,
+              "6": 1,
+              "7": 6,
+              "8": 3,
+              "9": 4,
+              "10": 4,
+              "11": 2,
+              "12": 5,
+              "13": 4,
+              "14": 5,
+              "15": 2,
+              "16": 1,
+              "17": 5,
+              "18": 5,
+              "19": 3,
+              "20": 5,
+              "21": 6,
+              "22": 6,
+              "23": 4,
+              "24": 3,
+              "25": 4,
+              "26": 2,
+              "27": 3,
+              "28": 6,
+              "29": 3,
+              "30": 2,
+              "31": 2,
+              "32": 4,
+              "33": 2,
+              "34": 2,
+              "36": 2,
+              "37": 3,
+              "38": 2,
+              "39": 1,
+              "40": 1,
+              "41": 1,
+              "42": 2,
+              "43": 2,
+              "44": 1,
+              "45": 1,
+              "46": 1,
+              "47": 1,
+              "48": 2,
+              "50": 1,
+              "51": 2,
+              "53": 2,
+              "54": 1,
+              "55": 1,
+              "57": 1,
+              "58": 1,
+              "61": 1,
+              "67": 1,
+              "68": 1
+            },
+            "max": 68,
+            "min": 1
+          },
+          "transition_vs_full_rerun": {
+            "both_correct": 63,
+            "both_wrong": 26,
+            "damage": {
+              "count": 0,
+              "denominator": 63,
+              "rate": 0.0
+            },
+            "net_gain": 113,
+            "rescue": {
+              "count": 113,
+              "denominator": 139,
+              "rate": 0.81295
+            }
+          },
+          "unique_prefixes": 202,
+          "unique_tasks": 37
+        }
+      },
+      "overall": {
+        "accuracy": {
+          "full_rerun_correct": {
+            "count": 131,
+            "rate": 0.290466
+          },
+          "full_trace_correct": {
+            "count": 284,
+            "rate": 0.629712
+          },
+          "reentry_exact_correct": {
+            "count": 298,
+            "rate": 0.660754
+          },
+          "reentry_fenced_correct": {
+            "count": 288,
+            "rate": 0.638581
+          },
+          "reentry_marker_correct": {
+            "count": 295,
+            "rate": 0.654102
+          },
+          "reentry_repeat_correct": {
+            "count": 298,
+            "rate": 0.660754
+          }
+        },
+        "outlier_rows": 0,
+        "prefix_tokens_observed": {
+          "avg": 446.698,
+          "max": 3501,
+          "min": 0
+        },
+        "rows": 451,
+        "segment_count": {
+          "max": 68,
+          "min": 2
+        },
+        "stability": {
+          "reentry_fenced_matches_exact": {
+            "count": 307,
+            "rate": 0.68071
+          },
+          "reentry_marker_matches_exact": {
+            "count": 314,
+            "rate": 0.696231
+          },
+          "reentry_repeat_matches_first": {
+            "count": 445,
+            "rate": 0.986696
+          }
+        },
+        "step_index": {
+          "counts": {
+            "1": 57,
+            "2": 68,
+            "3": 54,
+            "4": 58,
+            "5": 43,
+            "6": 22,
+            "7": 15,
+            "8": 7,
+            "9": 4,
+            "10": 5,
+            "11": 2,
+            "12": 5,
+            "13": 4,
+            "14": 5,
+            "15": 2,
+            "16": 1,
+            "17": 5,
+            "18": 5,
+            "19": 3,
+            "20": 5,
+            "21": 6,
+            "22": 6,
+            "23": 4,
+            "24": 3,
+            "25": 4,
+            "26": 2,
+            "27": 3,
+            "28": 6,
+            "29": 3,
+            "30": 2,
+            "31": 2,
+            "32": 4,
+            "33": 2,
+            "34": 2,
+            "36": 2,
+            "37": 3,
+            "38": 2,
+            "39": 1,
+            "40": 1,
+            "41": 1,
+            "42": 2,
+            "43": 2,
+            "44": 1,
+            "45": 1,
+            "46": 1,
+            "47": 1,
+            "48": 2,
+            "50": 1,
+            "51": 2,
+            "53": 2,
+            "54": 1,
+            "55": 1,
+            "57": 1,
+            "58": 1,
+            "61": 1,
+            "67": 1,
+            "68": 1
+          },
+          "max": 68,
+          "min": 1
+        },
+        "transition_vs_full_rerun": {
+          "both_correct": 120,
+          "both_wrong": 142,
+          "damage": {
+            "count": 11,
+            "denominator": 131,
+            "rate": 0.083969
+          },
+          "net_gain": 167,
+          "rescue": {
+            "count": 178,
+            "denominator": 320,
+            "rate": 0.55625
+          }
+        },
+        "unique_prefixes": 347,
+        "unique_tasks": 50
+      }
+    }
+  },
+  "source": "outputs\\results\\reentry\\_reentry_math500_local_v1\\reentry_rows.jsonl"
+}

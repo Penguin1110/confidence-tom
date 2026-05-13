@@ -1,0 +1,90 @@
+{
+  "accuracy": {
+    "full_rerun_correct": {
+      "count": 30,
+      "rate": 0.379747
+    },
+    "full_trace_correct": {
+      "count": 53,
+      "rate": 0.670886
+    },
+    "reentry_exact_correct": {
+      "count": 63,
+      "rate": 0.797468
+    },
+    "reentry_fenced_correct": {
+      "count": 59,
+      "rate": 0.746835
+    },
+    "reentry_marker_correct": {
+      "count": 61,
+      "rate": 0.772152
+    },
+    "reentry_repeat_correct": {
+      "count": 63,
+      "rate": 0.797468
+    }
+  },
+  "outlier_rows": 0,
+  "prefix_tokens_observed": {
+    "avg": 279.177,
+    "max": 2003,
+    "min": 19
+  },
+  "rows": 79,
+  "run_names": [
+    "reentry_math500_gemma_50"
+  ],
+  "segment_count": {
+    "max": 8,
+    "min": 3
+  },
+  "small_family": "gemma",
+  "small_models": [
+    "google/gemma-4-E4B-it"
+  ],
+  "stability": {
+    "reentry_fenced_matches_exact": {
+      "count": 63,
+      "rate": 0.797468
+    },
+    "reentry_marker_matches_exact": {
+      "count": 63,
+      "rate": 0.797468
+    },
+    "reentry_repeat_matches_first": {
+      "count": 79,
+      "rate": 1.0
+    }
+  },
+  "step_index": {
+    "counts": {
+      "1": 16,
+      "2": 16,
+      "3": 14,
+      "4": 10,
+      "5": 10,
+      "6": 10,
+      "7": 3
+    },
+    "max": 7,
+    "min": 1
+  },
+  "transition_vs_full_rerun": {
+    "both_correct": 28,
+    "both_wrong": 14,
+    "damage": {
+      "count": 2,
+      "denominator": 30,
+      "rate": 0.066667
+    },
+    "net_gain": 33,
+    "rescue": {
+      "count": 35,
+      "denominator": 49,
+      "rate": 0.714286
+    }
+  },
+  "unique_prefixes": 79,
+  "unique_tasks": 39
+}

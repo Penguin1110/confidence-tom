@@ -1,0 +1,140 @@
+{
+  "accuracy": {
+    "full_rerun_correct": {
+      "count": 63,
+      "rate": 0.311881
+    },
+    "full_trace_correct": {
+      "count": 197,
+      "rate": 0.975248
+    },
+    "reentry_exact_correct": {
+      "count": 176,
+      "rate": 0.871287
+    },
+    "reentry_fenced_correct": {
+      "count": 170,
+      "rate": 0.841584
+    },
+    "reentry_marker_correct": {
+      "count": 175,
+      "rate": 0.866337
+    },
+    "reentry_repeat_correct": {
+      "count": 176,
+      "rate": 0.871287
+    }
+  },
+  "outlier_rows": 0,
+  "prefix_tokens_observed": {
+    "avg": 776.272,
+    "max": 3501,
+    "min": 16
+  },
+  "rows": 202,
+  "run_names": [
+    "reentry_math500_qwen_50"
+  ],
+  "segment_count": {
+    "max": 68,
+    "min": 2
+  },
+  "small_family": "qwen",
+  "small_models": [
+    "Qwen/Qwen3-14B"
+  ],
+  "stability": {
+    "reentry_fenced_matches_exact": {
+      "count": 146,
+      "rate": 0.722772
+    },
+    "reentry_marker_matches_exact": {
+      "count": 141,
+      "rate": 0.69802
+    },
+    "reentry_repeat_matches_first": {
+      "count": 202,
+      "rate": 1.0
+    }
+  },
+  "step_index": {
+    "counts": {
+      "1": 14,
+      "2": 18,
+      "3": 8,
+      "4": 16,
+      "5": 10,
+      "6": 1,
+      "7": 6,
+      "8": 3,
+      "9": 4,
+      "10": 4,
+      "11": 2,
+      "12": 5,
+      "13": 4,
+      "14": 5,
+      "15": 2,
+      "16": 1,
+      "17": 5,
+      "18": 5,
+      "19": 3,
+      "20": 5,
+      "21": 6,
+      "22": 6,
+      "23": 4,
+      "24": 3,
+      "25": 4,
+      "26": 2,
+      "27": 3,
+      "28": 6,
+      "29": 3,
+      "30": 2,
+      "31": 2,
+      "32": 4,
+      "33": 2,
+      "34": 2,
+      "36": 2,
+      "37": 3,
+      "38": 2,
+      "39": 1,
+      "40": 1,
+      "41": 1,
+      "42": 2,
+      "43": 2,
+      "44": 1,
+      "45": 1,
+      "46": 1,
+      "47": 1,
+      "48": 2,
+      "50": 1,
+      "51": 2,
+      "53": 2,
+      "54": 1,
+      "55": 1,
+      "57": 1,
+      "58": 1,
+      "61": 1,
+      "67": 1,
+      "68": 1
+    },
+    "max": 68,
+    "min": 1
+  },
+  "transition_vs_full_rerun": {
+    "both_correct": 63,
+    "both_wrong": 26,
+    "damage": {
+      "count": 0,
+      "denominator": 63,
+      "rate": 0.0
+    },
+    "net_gain": 113,
+    "rescue": {
+      "count": 113,
+      "denominator": 139,
+      "rate": 0.81295
+    }
+  },
+  "unique_prefixes": 202,
+  "unique_tasks": 37
+}
