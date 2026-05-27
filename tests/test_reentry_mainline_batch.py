@@ -174,6 +174,44 @@ def test_build_probe_command_includes_manifest_defaults() -> None:
     assert "--max-rows 3" in rendered
 
 
+def test_gpqa_v2_preset_writes_reentry_and_probe_to_shared_layout() -> None:
+    module = _load_module()
+    preset = module.load_presets(module.PRESET_PATH)["reentry_gpqa_local_v2"]
+    args = Namespace(
+        output_dir=None,
+        prepare_start_index=None,
+        prepare_limit=None,
+        small_backend=None,
+        small_local_model_name=None,
+        small_local_model_map=[],
+        probe_output_dir=None,
+        probe_backend=None,
+        probe_local_model_name=None,
+        probe_local_model_map=[],
+        probe_trust_remote_code=False,
+        selected_layer=-1,
+        run_name_prefix=[],
+        benchmark=[],
+        small_family=[],
+        category=[],
+        task_start_index=None,
+        task_limit=None,
+        max_rows=None,
+        concurrency=2,
+        max_tokens=1024,
+        full_rerun_temperature=0.0,
+        reentry_temperature=0.0,
+        skip_full_rerun=False,
+        capture_probe=False,
+    )
+    cmd = module.build_reentry_cmd("reentry_gpqa_local_v2", preset, args)
+    rendered = " ".join(cmd).replace("\\", "/")
+    assert "outputs/results/reentry/_reentry_gpqa_local_v2_no_fullrerun_inline_probe" in rendered
+    assert "--probe-output-dir outputs/results/probe/_reentry_gpqa_local_v2_no_fullrerun_inline_probe" in rendered
+    assert "--skip-full-rerun" in rendered
+    assert "--capture-probe" in rendered
+
+
 def test_family_sweep_run_name_includes_shard_suffix_for_reentry_prepare() -> None:
     module = _load_family_sweep_module()
     run_name = module._run_name_for_config(

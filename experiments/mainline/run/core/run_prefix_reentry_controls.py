@@ -31,6 +31,7 @@ from confidence_tom.data.scale_dataset import (
 from confidence_tom.eval.static_evaluators import build_static_evaluator
 from confidence_tom.infra.client import LLMClient
 from confidence_tom.infra.paths import project_root, results_root
+from confidence_tom.infra.representations import extract_prompt_representation
 from confidence_tom.intervention.voi import trace_to_cost
 from experiments.mainline.run.core.run_prefix_oracle_gain_mapping import (
     annotate_segment_count_outliers,
@@ -437,7 +438,10 @@ def _group_rows(rows: list[dict[str, Any]], key: str) -> dict[str, list[dict[str
 def _safe_rate(rows: list[dict[str, Any]], field: str) -> float | None:
     if not rows:
         return None
-    return sum(int(row[field]) for row in rows) / len(rows)
+    values = [row for row in rows if field in row and row[field] is not None]
+    if not values:
+        return None
+    return sum(int(row[field]) for row in values) / len(values)
 
 
 def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -446,6 +450,7 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
     summary: dict[str, Any] = {
         "rows": len(rows),
+        "has_full_rerun": any("full_rerun_matches_original_full" in row for row in rows),
         "full_rerun_match_rate": _safe_rate(rows, "full_rerun_matches_original_full"),
         "reentry_match_rate": _safe_rate(rows, "reentry_exact_matches_original_small"),
         "reentry_repeat_match_rate": _safe_rate(rows, "reentry_repeat_matches_first"),
@@ -542,7 +547,6 @@ def _to_markdown(summary: dict[str, Any]) -> str:
         "# Prefix Re-entry Controls",
         "",
         f"- rows: `{summary['rows']}`",
-        f"- full rerun match rate: `{fmt(summary['full_rerun_match_rate'])}`",
         f"- re-entry match rate: `{fmt(summary['reentry_match_rate'])}`",
         f"- re-entry repeat match rate: `{fmt(summary['reentry_repeat_match_rate'])}`",
         f"- marker boundary match rate: `{fmt(summary['marker_boundary_match_rate'])}`",
@@ -567,20 +571,32 @@ def _to_markdown(summary: dict[str, Any]) -> str:
         "## By Benchmark",
         "",
     ]
+    if summary.get("has_full_rerun", True):
+        lines.insert(4, f"- full rerun match rate: `{fmt(summary['full_rerun_match_rate'])}`")
     for benchmark, block in summary["by_benchmark"].items():
+        rerun_part = (
+            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
+            if summary.get("has_full_rerun", True)
+            else ""
+        )
         lines.append(
             f"- `{benchmark}`: rows={block['rows']}, "
             f"reentry_match={fmt(block['reentry_match_rate'])}, "
-            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
+            f"{rerun_part}"
             f"p_pos|match={fmt(block['positive_takeover_given_reentry_match'])}, "
             f"p_pos|mismatch={fmt(block['positive_takeover_given_reentry_mismatch'])}"
         )
     lines += ["", "## By Small Family", ""]
     for family, block in summary["by_small_family"].items():
+        rerun_part = (
+            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
+            if summary.get("has_full_rerun", True)
+            else ""
+        )
         lines.append(
             f"- `{family}`: rows={block['rows']}, "
             f"reentry_match={fmt(block['reentry_match_rate'])}, "
-            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
+            f"{rerun_part}"
             f"p_pos|match={fmt(block['positive_takeover_given_reentry_match'])}, "
             f"p_pos|mismatch={fmt(block['positive_takeover_given_reentry_mismatch'])}"
         )
@@ -633,6 +649,33 @@ async def _generate_one(
     return text, trace_to_cost(trace).model_dump()
 
 
+def _build_probe_row(
+    row: dict[str, Any],
+    task: StaticTask,
+    *,
+    local_model_name: str,
+    selected_layer: int,
+    trust_remote_code: bool,
+) -> dict[str, Any]:
+    prefix_text = str(row["prefix_text"])
+    probe = extract_prompt_representation(
+        model_name=local_model_name,
+        trust_remote_code=trust_remote_code,
+        messages=_build_reentry_messages(task.question, prefix_text, "exact"),
+        prefix_text=prefix_text,
+        selected_layer=selected_layer,
+    )
+    return {
+        "run_name": row["run_name"],
+        "benchmark": row["benchmark"],
+        "task_id": row["task_id"],
+        "prefix_id": row["prefix_id"],
+        "small_family": row.get("small_family", ""),
+        "local_model_name": local_model_name,
+        **probe,
+    }
+
+
 async def _process_one(
     row: dict[str, Any],
     task_map: dict[str, StaticTask],
@@ -644,6 +687,10 @@ async def _process_one(
     small_backend: str,
     small_local_model_name: str | None,
     small_local_model_map: dict[str, str],
+    skip_full_rerun: bool,
+    capture_probe: bool,
+    probe_selected_layer: int,
+    probe_trust_remote_code: bool,
 ) -> dict[str, Any]:
     task = task_map[str(row["task_id"])]
     evaluator = build_static_evaluator(task)
@@ -677,14 +724,38 @@ async def _process_one(
     original_full_answer = _answer_or_raw(str(row["full_trace_answer"]))
     prefix_text = str(row["prefix_text"])
 
-    full_rerun_text, full_rerun_cost = await _generate_one(
-        client,
-        _build_full_trace_messages(task.question),
-        max_tokens=max_tokens,
-        temperature=full_rerun_temperature,
-    )
-    full_rerun_answer = _answer_or_raw(full_rerun_text)
-    full_rerun_eval = evaluator(full_rerun_answer, task)
+    full_rerun_fields: dict[str, Any] = {}
+    if not skip_full_rerun:
+        full_rerun_text, full_rerun_cost = await _generate_one(
+            client,
+            _build_full_trace_messages(task.question),
+            max_tokens=max_tokens,
+            temperature=full_rerun_temperature,
+        )
+        full_rerun_answer = _answer_or_raw(full_rerun_text)
+        full_rerun_eval = evaluator(full_rerun_answer, task)
+        full_rerun_fields = {
+            "full_rerun_answer_key": full_rerun_answer,
+            "full_rerun_correct": int(bool(full_rerun_eval.is_correct)),
+            "full_rerun_matches_original_full": int(full_rerun_answer == original_full_answer),
+            "full_rerun_cost": full_rerun_cost,
+        }
+
+    probe_fields: dict[str, Any] = {}
+    if capture_probe:
+        if small_backend != "local":
+            raise ValueError("--capture-probe requires --small-backend local")
+        if not resolved_local_model_name:
+            raise ValueError(f"Missing local model mapping for probe family={small_family!r}")
+        probe_fields = {
+            "reentry_probe": _build_probe_row(
+                row,
+                task,
+                local_model_name=resolved_local_model_name,
+                selected_layer=probe_selected_layer,
+                trust_remote_code=probe_trust_remote_code,
+            )
+        }
 
     exact_text, exact_cost = await _generate_one(
         client,
@@ -728,10 +799,8 @@ async def _process_one(
         "prefix_tokens_observed": len(_tokenize(prefix_text)),
         "original_small_answer_key": original_small_answer,
         "original_full_answer_key": original_full_answer,
-        "full_rerun_answer_key": full_rerun_answer,
-        "full_rerun_correct": int(bool(full_rerun_eval.is_correct)),
-        "full_rerun_matches_original_full": int(full_rerun_answer == original_full_answer),
-        "full_rerun_cost": full_rerun_cost,
+        **full_rerun_fields,
+        **probe_fields,
         "reentry_exact_answer_key": exact_answer,
         "reentry_exact_correct": int(bool(exact_eval.is_correct)),
         "reentry_exact_matches_original_small": int(exact_answer == original_small_answer),
@@ -756,15 +825,12 @@ async def amain(args: argparse.Namespace) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     out_rows = output_dir / "reentry_rows.jsonl"
     out_summary = output_dir / "reentry_summary.json"
-    out_md = (
-        ROOT
-        / "docs"
-        / "mainline"
-        / "generated"
-        / "analysis"
-        / "prefix"
-        / "prefix_reentry_controls.md"
-    )
+    probe_output_dir = Path(args.probe_output_dir) if args.probe_output_dir else output_dir
+    if args.capture_probe:
+        probe_output_dir.mkdir(parents=True, exist_ok=True)
+    out_probe_rows = probe_output_dir / "reentry_probe_rows.jsonl"
+    out_probe_summary = probe_output_dir / "reentry_probe_summary.json"
+    out_md = Path(args.summary_md)
     lock_path = output_dir / ".reentry.lock"
 
     lock_file = lock_path.open("w", encoding="utf-8")
@@ -854,24 +920,40 @@ async def amain(args: argparse.Namespace) -> None:
                 small_backend=args.small_backend,
                 small_local_model_name=args.small_local_model_name,
                 small_local_model_map=small_local_model_map,
+                skip_full_rerun=args.skip_full_rerun,
+                capture_probe=args.capture_probe,
+                probe_selected_layer=args.probe_selected_layer,
+                probe_trust_remote_code=args.probe_trust_remote_code,
             )
 
     with out_rows.open("a", encoding="utf-8") as f:
-        for idx, row in enumerate(pending, start=1):
-            try:
-                result = await worker(row)
-                f.write(json.dumps(result, ensure_ascii=False) + "\n")
-                f.flush()
-                print(f"processed {idx}/{len(pending)} :: {row['run_name']} :: {row['prefix_id']}")
-            except Exception as exc:
-                error_row = dict(row)
-                error_row["error"] = repr(exc)
-                f.write(json.dumps(error_row, ensure_ascii=False) + "\n")
-                f.flush()
-                print(
-                    f"error {idx}/{len(pending)} :: {row['run_name']} :: "
-                    f"{row['prefix_id']} :: {exc}"
-                )
+        probe_handle = out_probe_rows.open("a", encoding="utf-8") if args.capture_probe else None
+        try:
+            for idx, row in enumerate(pending, start=1):
+                try:
+                    result = await worker(row)
+                    probe_row = result.pop("reentry_probe", None)
+                    f.write(json.dumps(result, ensure_ascii=False) + "\n")
+                    f.flush()
+                    if probe_handle is not None and probe_row is not None:
+                        probe_handle.write(json.dumps(probe_row, ensure_ascii=False) + "\n")
+                        probe_handle.flush()
+                    print(
+                        f"processed {idx}/{len(pending)} :: {row['run_name']} :: "
+                        f"{row['prefix_id']}"
+                    )
+                except Exception as exc:
+                    error_row = dict(row)
+                    error_row["error"] = repr(exc)
+                    f.write(json.dumps(error_row, ensure_ascii=False) + "\n")
+                    f.flush()
+                    print(
+                        f"error {idx}/{len(pending)} :: {row['run_name']} :: "
+                        f"{row['prefix_id']} :: {exc}"
+                    )
+        finally:
+            if probe_handle is not None:
+                probe_handle.close()
 
     rows = [row for row in _dedupe_rows(out_rows) if "error" not in row]
     summary = _summarize(rows)
@@ -880,11 +962,39 @@ async def amain(args: argparse.Namespace) -> None:
     print(f"Wrote rows to {out_rows}")
     print(f"Wrote summary to {out_summary}")
     print(f"Wrote markdown to {out_md}")
+    if args.capture_probe:
+        probe_rows = [row for row in _dedupe_rows(out_probe_rows) if "error" not in row]
+        probe_summary = {
+            "rows": len(probe_rows),
+            "backend": "transformers",
+            "selected_layer": int(args.probe_selected_layer),
+            "models": sorted({str(row["local_model_name"]) for row in probe_rows}),
+            "benchmarks": sorted({str(row["benchmark"]) for row in probe_rows}),
+            "captured_during_reentry": True,
+        }
+        out_probe_summary.write_text(
+            json.dumps(probe_summary, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        print(f"Wrote probe rows to {out_probe_rows}")
+        print(f"Wrote probe summary to {out_probe_summary}")
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run prefix re-entry stability controls.")
     parser.add_argument("--output-dir", default=str(DEFAULT_OUT_DIR))
+    parser.add_argument(
+        "--summary-md",
+        default=str(
+            ROOT
+            / "docs"
+            / "mainline"
+            / "generated"
+            / "analysis"
+            / "prefix"
+            / "prefix_reentry_controls.md"
+        ),
+    )
     parser.add_argument("--run-name", action="append", default=[])
     parser.add_argument(
         "--run-name-prefix",
@@ -928,6 +1038,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--full-rerun-temperature", type=float, default=0.0)
     parser.add_argument("--reentry-temperature", type=float, default=0.0)
     parser.add_argument(
+        "--skip-full-rerun",
+        action="store_true",
+        help="Skip the standalone full rerun control and only run prefix re-entry variants.",
+    )
+    parser.add_argument(
         "--small-backend", default="local", choices=["ollama", "local"]
     )
     parser.add_argument("--small-local-model-name", default=None)
@@ -942,6 +1057,18 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip prepare tasks whose segment count is a robust high outlier within its run.",
     )
+    parser.add_argument(
+        "--capture-probe",
+        action="store_true",
+        help="Capture transformer prompt representations during re-entry.",
+    )
+    parser.add_argument(
+        "--probe-output-dir",
+        default=None,
+        help="Directory for inline probe rows. Defaults to --output-dir.",
+    )
+    parser.add_argument("--probe-selected-layer", type=int, default=-1)
+    parser.add_argument("--probe-trust-remote-code", action="store_true")
     return parser
 
 

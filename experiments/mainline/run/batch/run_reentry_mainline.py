@@ -51,7 +51,9 @@ def _resolve_reentry_output_dir(preset: dict[str, Any], args: argparse.Namespace
     return f"{base}_{family}"
 
 
-def _resolve_summary_md_path(args: argparse.Namespace) -> Path:
+def _resolve_summary_md_path(args: argparse.Namespace, preset: dict[str, Any]) -> Path:
+    if preset.get("summary_md"):
+        return Path(str(preset["summary_md"]))
     family = _single_family_suffix(args)
     if not family:
         return DEFAULT_SUMMARY_MD
@@ -85,6 +87,10 @@ def build_prepare_cmd(
 
 def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.Namespace) -> list[str]:
     output_dir = _resolve_reentry_output_dir(preset, args)
+    skip_full_rerun = bool(
+        getattr(args, "skip_full_rerun", False) or preset.get("skip_full_rerun", False)
+    )
+    capture_probe = bool(getattr(args, "capture_probe", False) or preset.get("capture_probe", False))
     cmd = [
         "uv",
         "run",
@@ -92,6 +98,8 @@ def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.N
         str(REENTRY_RUNNER),
         "--output-dir",
         output_dir,
+        "--summary-md",
+        str(_resolve_summary_md_path(args, preset)),
         "--small-backend",
         str(args.small_backend or preset["small_backend"]),
         "--concurrency",
@@ -103,6 +111,18 @@ def build_reentry_cmd(preset_name: str, preset: dict[str, Any], args: argparse.N
         "--reentry-temperature",
         str(args.reentry_temperature),
     ]
+    if skip_full_rerun:
+        cmd += ["--skip-full-rerun"]
+    if capture_probe:
+        cmd += ["--capture-probe", "--probe-selected-layer", str(args.selected_layer)]
+        if args.probe_output_dir:
+            cmd += ["--probe-output-dir", str(args.probe_output_dir)]
+        elif preset.get("probe_output_dir"):
+            cmd += ["--probe-output-dir", str(preset["probe_output_dir"])]
+        if getattr(args, "probe_trust_remote_code", False) or preset.get(
+            "probe_trust_remote_code", False
+        ):
+            cmd += ["--probe-trust-remote-code"]
     for prefix in args.run_name_prefix or preset.get("run_name_prefixes", []):
         cmd += ["--run-name-prefix", str(prefix)]
     for benchmark in args.benchmark or preset.get("benchmarks", []):
@@ -138,7 +158,7 @@ def build_analyze_cmd(args: argparse.Namespace, preset: dict[str, Any]) -> list[
         "--summary-json",
         str(output_dir / "reentry_summary.json"),
         "--summary-md",
-        str(_resolve_summary_md_path(args)),
+        str(_resolve_summary_md_path(args, preset)),
     ]
 
 
@@ -215,6 +235,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--full-rerun-temperature", type=float, default=0.0)
     parser.add_argument("--reentry-temperature", type=float, default=0.0)
     parser.add_argument(
+        "--skip-full-rerun",
+        action="store_true",
+        help="Skip standalone full-rerun answers during re-entry.",
+    )
+    parser.add_argument(
+        "--capture-probe",
+        action="store_true",
+        help="Capture transformer prompt representations during re-entry.",
+    )
+    parser.add_argument("--probe-trust-remote-code", action="store_true")
+    parser.add_argument(
         "--exclude-segment-count-outliers",
         action="store_true",
         help="Skip prepare rows whose segment count is marked as a robust outlier.",
@@ -243,7 +274,8 @@ def main() -> None:
     if args.phase in {"analyze", "both", "all"}:
         run_cmd(build_analyze_cmd(args, preset), dry_run=args.dry_run)
 
-    if args.phase in {"probe", "all"}:
+    capture_probe = bool(args.capture_probe or preset.get("capture_probe", False))
+    if args.phase == "probe" or (args.phase == "all" and not capture_probe):
         run_cmd(build_probe_cmd(args, preset), dry_run=args.dry_run)
 
 

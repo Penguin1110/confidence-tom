@@ -171,6 +171,41 @@
         "mistral=mistralai/Ministral-8B-Instruct-2410",
         "olmo=allenai/OLMo-2-1124-13B-Instruct"
       ]
+    },
+    "reentry_gpqa_local_v2": {
+      "description": "GPQA Diamond re-entry controls without full-rerun, capturing hidden states during re-entry.",
+      "family_sweep_config": "prefix_family_sweep_reentry_gpqa_ollama",
+      "run_name_prefixes": [
+        "reentry_gpqa_"
+      ],
+      "benchmarks": [
+        "gpqa_diamond"
+      ],
+      "categories": [
+        "stable-success",
+        "late-success",
+        "fragile-success",
+        "persistent-failure"
+      ],
+      "reentry_output_dir": "outputs/results/reentry/_reentry_gpqa_local_v2_no_fullrerun_inline_probe",
+      "summary_md": "docs/mainline/generated/analysis/prefix/prefix_reentry_controls_gpqa_v2.md",
+      "small_backend": "local",
+      "skip_full_rerun": true,
+      "capture_probe": true,
+      "small_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
+      ],
+      "probe_output_dir": "outputs/results/probe/_reentry_gpqa_local_v2_no_fullrerun_inline_probe",
+      "probe_backend": "transformers",
+      "probe_local_model_map": [
+        "qwen=Qwen/Qwen3-14B",
+        "gemma=google/gemma-4-E4B-it",
+        "mistral=mistralai/Ministral-8B-Instruct-2410",
+        "olmo=allenai/OLMo-2-1124-13B-Instruct"
+      ]
     }
   }
 }
