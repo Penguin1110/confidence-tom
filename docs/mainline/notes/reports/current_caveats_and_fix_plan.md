@@ -146,7 +146,6 @@
 固定 large worker，先換 2 到 3 顆 small worker：
 
 - `Qwen-3-14B`
-- `Qwen-3.5-27B`
 - `Llama-4-Scout` 或 `Llama-4-Maverick`
 
 並將題數從 `10` 擴到 `30`。

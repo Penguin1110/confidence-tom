@@ -1,42 +1,42 @@
 {
   "accuracy": {
     "full_rerun_correct": {
-      "count": 1,
-      "rate": 0.013333
+      "count": 5,
+      "rate": 0.015106
     },
     "full_trace_correct": {
-      "count": 8,
-      "rate": 0.106667
+      "count": 25,
+      "rate": 0.075529
     },
     "reentry_exact_correct": {
-      "count": 23,
-      "rate": 0.306667
+      "count": 64,
+      "rate": 0.193353
     },
     "reentry_fenced_correct": {
-      "count": 21,
-      "rate": 0.28
+      "count": 66,
+      "rate": 0.199396
     },
     "reentry_marker_correct": {
-      "count": 24,
-      "rate": 0.32
+      "count": 68,
+      "rate": 0.205438
     },
     "reentry_repeat_correct": {
-      "count": 23,
-      "rate": 0.306667
+      "count": 64,
+      "rate": 0.193353
     }
   },
-  "outlier_rows": 0,
+  "outlier_rows": 112,
   "prefix_tokens_observed": {
-    "avg": 146.027,
-    "max": 458,
-    "min": 0
+    "avg": 182.018,
+    "max": 679,
+    "min": 4
   },
-  "rows": 75,
+  "rows": 331,
   "run_names": [
     "reentry_math500_olmo_50"
   ],
   "segment_count": {
-    "max": 10,
+    "max": 25,
     "min": 2
   },
   "small_family": "olmo",
@@ -45,48 +45,64 @@
   ],
   "stability": {
     "reentry_fenced_matches_exact": {
-      "count": 29,
-      "rate": 0.386667
+      "count": 122,
+      "rate": 0.36858
     },
     "reentry_marker_matches_exact": {
-      "count": 35,
-      "rate": 0.466667
+      "count": 139,
+      "rate": 0.41994
     },
     "reentry_repeat_matches_first": {
-      "count": 69,
-      "rate": 0.92
+      "count": 331,
+      "rate": 1.0
     }
   },
   "step_index": {
     "counts": {
-      "1": 11,
-      "2": 15,
-      "3": 13,
-      "4": 13,
-      "5": 11,
-      "6": 5,
-      "7": 4,
-      "8": 2,
-      "10": 1
+      "1": 50,
+      "2": 50,
+      "3": 46,
+      "4": 38,
+      "5": 33,
+      "6": 21,
+      "7": 13,
+      "8": 11,
+      "9": 9,
+      "10": 8,
+      "11": 6,
+      "12": 6,
+      "13": 6,
+      "14": 6,
+      "15": 6,
+      "16": 4,
+      "17": 4,
+      "18": 4,
+      "19": 3,
+      "20": 2,
+      "21": 1,
+      "22": 1,
+      "23": 1,
+      "24": 1,
+      "25": 1
     },
-    "max": 10,
+    "max": 25,
     "min": 1
   },
   "transition_vs_full_rerun": {
-    "both_correct": 1,
-    "both_wrong": 52,
+    "both_correct": 5,
+    "both_wrong": 267,
     "damage": {
       "count": 0,
-      "denominator": 1,
+      "denominator": 5,
       "rate": 0.0
     },
-    "net_gain": 22,
+    "net_gain": 59,
     "rescue": {
-      "count": 22,
-      "denominator": 74,
-      "rate": 0.297297
+      "count": 59,
+      "denominator": 326,
+      "rate": 0.180982
     }
   },
-  "unique_prefixes": 75,
-  "unique_tasks": 35
+  "unique_prefixes": 331,
+  "unique_tasks": 50
 }

@@ -1,37 +1,37 @@
 {
   "accuracy": {
     "full_rerun_correct": {
-      "count": 30,
-      "rate": 0.379747
+      "count": 110,
+      "rate": 0.45082
     },
     "full_trace_correct": {
-      "count": 53,
-      "rate": 0.670886
+      "count": 172,
+      "rate": 0.704918
     },
     "reentry_exact_correct": {
-      "count": 63,
-      "rate": 0.797468
+      "count": 194,
+      "rate": 0.795082
     },
     "reentry_fenced_correct": {
-      "count": 59,
-      "rate": 0.746835
+      "count": 190,
+      "rate": 0.778689
     },
     "reentry_marker_correct": {
-      "count": 61,
-      "rate": 0.772152
+      "count": 193,
+      "rate": 0.790984
     },
     "reentry_repeat_correct": {
-      "count": 63,
-      "rate": 0.797468
+      "count": 194,
+      "rate": 0.795082
     }
   },
   "outlier_rows": 0,
   "prefix_tokens_observed": {
-    "avg": 279.177,
-    "max": 2003,
-    "min": 19
+    "avg": 301.652,
+    "max": 3209,
+    "min": 18
   },
-  "rows": 79,
+  "rows": 244,
   "run_names": [
     "reentry_math500_gemma_50"
   ],
@@ -45,46 +45,47 @@
   ],
   "stability": {
     "reentry_fenced_matches_exact": {
-      "count": 63,
-      "rate": 0.797468
+      "count": 195,
+      "rate": 0.79918
     },
     "reentry_marker_matches_exact": {
-      "count": 63,
-      "rate": 0.797468
+      "count": 194,
+      "rate": 0.795082
     },
     "reentry_repeat_matches_first": {
-      "count": 79,
+      "count": 244,
       "rate": 1.0
     }
   },
   "step_index": {
     "counts": {
-      "1": 16,
-      "2": 16,
-      "3": 14,
-      "4": 10,
-      "5": 10,
-      "6": 10,
-      "7": 3
+      "1": 47,
+      "2": 47,
+      "3": 47,
+      "4": 42,
+      "5": 33,
+      "6": 21,
+      "7": 6,
+      "8": 1
     },
-    "max": 7,
+    "max": 8,
     "min": 1
   },
   "transition_vs_full_rerun": {
-    "both_correct": 28,
-    "both_wrong": 14,
+    "both_correct": 105,
+    "both_wrong": 45,
     "damage": {
-      "count": 2,
-      "denominator": 30,
-      "rate": 0.066667
+      "count": 5,
+      "denominator": 110,
+      "rate": 0.045455
     },
-    "net_gain": 33,
+    "net_gain": 84,
     "rescue": {
-      "count": 35,
-      "denominator": 49,
-      "rate": 0.714286
+      "count": 89,
+      "denominator": 134,
+      "rate": 0.664179
     }
   },
-  "unique_prefixes": 79,
-  "unique_tasks": 39
+  "unique_prefixes": 244,
+  "unique_tasks": 47
 }
