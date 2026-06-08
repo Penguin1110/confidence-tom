@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from argparse import Namespace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,3 +62,14 @@ def test_slice_rows_by_task_selects_complete_tasks() -> None:
     sliced = module._slice_rows_by_task(rows, 1, 1)
     assert len(sliced) >= 1
     assert len({row["task_id"] for row in sliced}) == 1
+
+
+def test_resolve_candidate_run_names_discovers_when_prefix_filter_requested() -> None:
+    module = _load_module()
+    original_discover = module._discover_run_names
+    try:
+        module._discover_run_names = lambda: ["reentry_gpqa_olmo_40"]
+        args = Namespace(run_name=[], run_name_prefix=["reentry_gpqa_"])
+        assert module._resolve_candidate_run_names(args) == ["reentry_gpqa_olmo_40"]
+    finally:
+        module._discover_run_names = original_discover

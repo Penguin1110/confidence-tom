@@ -222,6 +222,24 @@ def _discover_run_names() -> list[str]:
     return list(discovered)
 
 
+def _resolve_candidate_run_names(args: argparse.Namespace) -> list[str]:
+    explicit_run_names = [str(run_name) for run_name in args.run_name or []]
+    if explicit_run_names:
+        return explicit_run_names
+
+    run_names = list(DEFAULT_RUN_NAMES)
+    missing_defaults = [
+        run_name
+        for run_name in run_names
+        if not any((results_dir / run_name).exists() for results_dir in RESULT_DIR_CANDIDATES)
+    ]
+    if missing_defaults or args.run_name_prefix:
+        discovered = _discover_run_names()
+        if discovered:
+            return discovered
+    return run_names
+
+
 def _load_task_map(benchmark: str) -> dict[str, StaticTask]:
     if benchmark == "olympiadbench":
         tasks = load_olympiadbench(num_samples=50)
@@ -840,17 +858,7 @@ async def amain(args: argparse.Namespace) -> None:
         except BlockingIOError:
             raise SystemExit(f"Another re-entry control process is already running: {lock_path}")
 
-    run_names = args.run_name or DEFAULT_RUN_NAMES
-    if args.run_name is None:
-        missing_defaults = [
-            run_name
-            for run_name in run_names
-            if not any((results_dir / run_name).exists() for results_dir in RESULT_DIR_CANDIDATES)
-        ]
-        if missing_defaults:
-            discovered = _discover_run_names()
-            if discovered:
-                run_names = discovered
+    run_names = _resolve_candidate_run_names(args)
     if not run_names:
         raise FileNotFoundError(
             "No result runs found under any configured results directory. "
