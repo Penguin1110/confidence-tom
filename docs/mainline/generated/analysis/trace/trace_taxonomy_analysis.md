@@ -4,47 +4,48 @@
 
 - Stable-success: full correct, early local re-entry correctness, and local correctness stays reasonably high.
 - Late-success: full correct but not stable-success.
-- Fragile-success: some local re-entry correctness, but final full trace wrong.
+- Late-failure: some local re-entry correctness, but final full trace wrong.
 - Persistent-failure: no local re-entry correctness and final full trace wrong.
 
 ## Overall Counts
 
 | Category | Count | Share | Mean first-correct frac | Mean local correct rate |
 | --- | ---: | ---: | ---: | ---: |
-| stable-success | 178 | 0.253 | 0.228 | 0.948 |
-| late-success | 96 | 0.137 | 0.739 | 0.561 |
-| fragile-success | 83 | 0.118 | 0.427 | 0.447 |
-| persistent-failure | 346 | 0.492 | 1.000 | 0.000 |
+| stable-success | 266 | 0.271 | 0.234 | 0.950 |
+| late-success | 141 | 0.144 | 0.727 | 0.589 |
+| late-failure | 127 | 0.129 | 0.458 | 0.446 |
+| persistent-failure | 448 | 0.456 | 1.000 | 0.000 |
 
 ## Direct vs Re-entry
 
 | Direct full correctness | N | Any small correct | Last small correct | Mean first-correct frac | Mean local correct rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| True | 274 | 0.945 | 0.883 | 0.407 | 0.812 |
-| False | 429 | 0.193 | 0.061 | 0.889 | 0.087 |
+| True | 407 | 0.951 | 0.887 | 0.405 | 0.825 |
+| False | 575 | 0.221 | 0.073 | 0.880 | 0.098 |
 
 ## Transition Matrix
 
-- full correct & any small correct: `259`
-- full correct & no small correct: `15`
-- full wrong & any small correct: `83`
-- full wrong & no small correct: `346`
+- full correct & any small correct: `387`
+- full correct & no small correct: `20`
+- full wrong & any small correct: `127`
+- full wrong & no small correct: `448`
 
 ## Benchmark Breakdown
 
-| Benchmark | Stable | Late | Fragile | Persistent | Mean first-correct frac |
+| Benchmark | Stable | Late | Late-failure | Persistent | Mean first-correct frac |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| livebench_reasoning | 59 | 56 | 48 | 76 | 0.642 |
-| olympiadbench | 119 | 40 | 35 | 270 | 0.732 |
+| livebench_reasoning | 146 | 101 | 92 | 178 | 0.641 |
+| olympiadbench | 120 | 40 | 35 | 270 | 0.731 |
 
 ## Family Breakdown
 
-| Family | Stable | Late | Fragile | Persistent | Mean first-correct frac |
+| Family | Stable | Late | Late-failure | Persistent | Mean first-correct frac |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | google | 0 | 0 | 0 | 6 | 1.000 |
 | meta-llama | 43 | 23 | 33 | 128 | 0.741 |
 | mistralai | 47 | 33 | 33 | 125 | 0.720 |
-| qwen | 88 | 40 | 17 | 87 | 0.635 |
+| ollama | 73 | 32 | 39 | 96 | 0.647 |
+| qwen | 103 | 53 | 22 | 93 | 0.629 |
 
 ## Notes
 

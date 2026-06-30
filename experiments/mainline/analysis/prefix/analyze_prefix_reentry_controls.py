@@ -59,34 +59,9 @@ def summarize(rows: list[Row]) -> dict[str, Any]:
     summary: dict[str, Any] = {
         "rows": len(rows),
         "full_rerun_match_rate": _rate(rows, "full_rerun_matches_original_full"),
-        "reentry_match_rate": _rate(rows, "reentry_exact_matches_original_small"),
         "reentry_repeat_match_rate": _rate(rows, "reentry_repeat_matches_first"),
         "marker_boundary_match_rate": _rate(rows, "reentry_marker_matches_exact"),
         "fenced_boundary_match_rate": _rate(rows, "reentry_fenced_matches_exact"),
-        "full_trace_success_given_reentry_match": _conditional_rate(
-            rows,
-            cond_field="reentry_exact_matches_original_small",
-            cond_value=1,
-            target_field="full_trace_correct",
-        ),
-        "full_trace_success_given_reentry_mismatch": _conditional_rate(
-            rows,
-            cond_field="reentry_exact_matches_original_small",
-            cond_value=0,
-            target_field="full_trace_correct",
-        ),
-        "positive_takeover_given_reentry_match": _conditional_rate(
-            rows,
-            cond_field="reentry_exact_matches_original_small",
-            cond_value=1,
-            target_field="positive_gain",
-        ),
-        "positive_takeover_given_reentry_mismatch": _conditional_rate(
-            rows,
-            cond_field="reentry_exact_matches_original_small",
-            cond_value=0,
-            target_field="positive_gain",
-        ),
         "by_benchmark": {},
         "by_small_family": {},
     }
@@ -95,20 +70,7 @@ def summarize(rows: list[Row]) -> dict[str, Any]:
         for key, block in _group(rows, field).items():
             bucket[key] = {
                 "rows": len(block),
-                "reentry_match_rate": _rate(block, "reentry_exact_matches_original_small"),
                 "full_rerun_match_rate": _rate(block, "full_rerun_matches_original_full"),
-                "positive_takeover_given_reentry_match": _conditional_rate(
-                    block,
-                    cond_field="reentry_exact_matches_original_small",
-                    cond_value=1,
-                    target_field="positive_gain",
-                ),
-                "positive_takeover_given_reentry_mismatch": _conditional_rate(
-                    block,
-                    cond_field="reentry_exact_matches_original_small",
-                    cond_value=0,
-                    target_field="positive_gain",
-                ),
             }
         summary[bucket_name] = bucket
     return summary
@@ -126,26 +88,9 @@ def to_markdown(summary: dict[str, Any]) -> str:
         "",
         f"- rows: `{summary['rows']}`",
         f"- full rerun match rate: `{fmt(summary['full_rerun_match_rate'])}`",
-        f"- re-entry match rate: `{fmt(summary['reentry_match_rate'])}`",
         f"- re-entry repeat match rate: `{fmt(summary['reentry_repeat_match_rate'])}`",
         f"- marker boundary match rate: `{fmt(summary['marker_boundary_match_rate'])}`",
         f"- fenced boundary match rate: `{fmt(summary['fenced_boundary_match_rate'])}`",
-        (
-            "- P(full-trace success | re-entry match): "
-            f"`{fmt(summary['full_trace_success_given_reentry_match'])}`"
-        ),
-        (
-            "- P(full-trace success | re-entry mismatch): "
-            f"`{fmt(summary['full_trace_success_given_reentry_mismatch'])}`"
-        ),
-        (
-            "- P(positive takeover | re-entry match): "
-            f"`{fmt(summary['positive_takeover_given_reentry_match'])}`"
-        ),
-        (
-            "- P(positive takeover | re-entry mismatch): "
-            f"`{fmt(summary['positive_takeover_given_reentry_mismatch'])}`"
-        ),
         "",
         "## By Benchmark",
         "",
@@ -153,19 +98,13 @@ def to_markdown(summary: dict[str, Any]) -> str:
     for benchmark, block in cast(dict[str, BucketSummary], summary["by_benchmark"]).items():
         lines.append(
             f"- `{benchmark}`: rows={block['rows']}, "
-            f"reentry_match={fmt(block['reentry_match_rate'])}, "
-            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
-            f"p_pos|match={fmt(block['positive_takeover_given_reentry_match'])}, "
-            f"p_pos|mismatch={fmt(block['positive_takeover_given_reentry_mismatch'])}"
+            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}"
         )
     lines += ["", "## By Small Family", ""]
     for family, block in cast(dict[str, BucketSummary], summary["by_small_family"]).items():
         lines.append(
             f"- `{family}`: rows={block['rows']}, "
-            f"reentry_match={fmt(block['reentry_match_rate'])}, "
-            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
-            f"p_pos|match={fmt(block['positive_takeover_given_reentry_match'])}, "
-            f"p_pos|mismatch={fmt(block['positive_takeover_given_reentry_mismatch'])}"
+            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}"
         )
     lines.append("")
     return "\n".join(lines)

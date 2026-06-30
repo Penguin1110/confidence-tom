@@ -95,7 +95,7 @@ def _load_records() -> list[TaskRecord]:
                 else:
                     category = "late-success"
             else:
-                category = "fragile-success" if any_small_correct else "persistent-failure"
+                category = "late-failure" if any_small_correct else "persistent-failure"
 
             records.append(
                 TaskRecord(
@@ -177,7 +177,7 @@ def _group_stats(records: list[TaskRecord]) -> dict[str, object]:
                 f"{MIN_STABLE_LOCAL_RATE:.3f}"
             ),
             "late_success": "full_correct and not stable_success",
-            "fragile_success": "not full_correct and any_small_correct",
+            "late_failure": "not full_correct and any_small_correct",
             "persistent_failure": "not full_correct and not any_small_correct",
         },
         "total_records": len(records),
@@ -202,7 +202,7 @@ def _render_markdown(summary: dict[str, object], records: list[TaskRecord]) -> s
         )
     )
     lines.append("- Late-success: full correct but not stable-success.")
-    lines.append("- Fragile-success: some local re-entry correctness, but final full trace wrong.")
+    lines.append("- Late-failure: some local re-entry correctness, but final full trace wrong.")
     lines.append("- Persistent-failure: no local re-entry correctness and final full trace wrong.")
     lines.append("")
     lines.append("## Overall Counts")
@@ -210,7 +210,7 @@ def _render_markdown(summary: dict[str, object], records: list[TaskRecord]) -> s
     lines.append("| Category | Count | Share | Mean first-correct frac | Mean local correct rate |")
     lines.append("| --- | ---: | ---: | ---: | ---: |")
     total = len(records)
-    for cat in ["stable-success", "late-success", "fragile-success", "persistent-failure"]:
+    for cat in ["stable-success", "late-success", "late-failure", "persistent-failure"]:
         block = [r for r in records if r.category == cat]
         if not block:
             continue
@@ -260,7 +260,9 @@ def _render_markdown(summary: dict[str, object], records: list[TaskRecord]) -> s
     lines.append("")
     lines.append("## Benchmark Breakdown")
     lines.append("")
-    lines.append("| Benchmark | Stable | Late | Fragile | Persistent | Mean first-correct frac |")
+    lines.append(
+        "| Benchmark | Stable | Late | Late-failure | Persistent | Mean first-correct frac |"
+    )
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: |")
     for bench, stats in sorted(by_benchmark.items()):
         block = [r for r in records if r.benchmark == bench]
@@ -268,7 +270,7 @@ def _render_markdown(summary: dict[str, object], records: list[TaskRecord]) -> s
         lines.append(
             (
                 f"| {bench} | {counts['stable-success']} | "
-                f"{counts['late-success']} | {counts['fragile-success']} | "
+                f"{counts['late-success']} | {counts['late-failure']} | "
                 f"{counts['persistent-failure']} | "
                 f"{stats['mean_first_correct_frac']:.3f} |"
             )
@@ -276,7 +278,7 @@ def _render_markdown(summary: dict[str, object], records: list[TaskRecord]) -> s
     lines.append("")
     lines.append("## Family Breakdown")
     lines.append("")
-    lines.append("| Family | Stable | Late | Fragile | Persistent | Mean first-correct frac |")
+    lines.append("| Family | Stable | Late | Late-failure | Persistent | Mean first-correct frac |")
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: |")
     for family, stats in sorted(by_family.items()):
         block = [r for r in records if r.family == family]
@@ -284,7 +286,7 @@ def _render_markdown(summary: dict[str, object], records: list[TaskRecord]) -> s
         lines.append(
             (
                 f"| {family} | {counts['stable-success']} | "
-                f"{counts['late-success']} | {counts['fragile-success']} | "
+                f"{counts['late-success']} | {counts['late-failure']} | "
                 f"{counts['persistent-failure']} | "
                 f"{stats['mean_first_correct_frac']:.3f} |"
             )

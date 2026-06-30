@@ -49,3 +49,20 @@ def test_openrouter_completion_kwargs_preserve_original_shape() -> None:
     assert kwargs["top_p"] == 0.8
     assert kwargs["seed"] == 11
     assert "extra_body" not in kwargs
+
+
+def test_openrouter_completion_kwargs_include_reasoning_budget() -> None:
+    client = LLMClient(
+        model="qwen/qwen3-14b",
+        backend="openrouter",
+        reasoning_enabled=True,
+        reasoning_max_tokens=256,
+        reasoning_exclude=False,
+    )
+
+    kwargs = client._completion_kwargs()
+    assert kwargs["extra_body"]["reasoning"] == {
+        "enabled": True,
+        "max_tokens": 256,
+        "exclude": False,
+    }

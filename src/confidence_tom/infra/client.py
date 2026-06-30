@@ -55,6 +55,9 @@ class LLMClient:
         num_ctx: int | None = None,
         num_predict: int | None = None,
         enable_thinking: bool | None = None,
+        reasoning_enabled: bool | None = None,
+        reasoning_max_tokens: int | None = None,
+        reasoning_exclude: bool | None = None,
     ) -> None:
         self.model = model
         self.temperature = temperature
@@ -70,6 +73,9 @@ class LLMClient:
         self.num_ctx = num_ctx
         self.num_predict = num_predict
         self.enable_thinking = enable_thinking
+        self.reasoning_enabled = reasoning_enabled
+        self.reasoning_max_tokens = reasoning_max_tokens
+        self.reasoning_exclude = reasoning_exclude
 
         self.client: OpenAI | None = None
         self.aclient: AsyncOpenAI | None = None
@@ -104,10 +110,17 @@ class LLMClient:
         if self.seed is not None:
             kwargs["seed"] = self.seed
         extra_body: dict[str, Any] = {}
+        reasoning_options: dict[str, Any] = {}
         if self.reasoning_effort:
-            extra_body["reasoning"] = {
-                "effort": self.reasoning_effort,
-            }
+            reasoning_options["effort"] = self.reasoning_effort
+        if self.reasoning_enabled is not None:
+            reasoning_options["enabled"] = self.reasoning_enabled
+        if self.reasoning_max_tokens is not None:
+            reasoning_options["max_tokens"] = self.reasoning_max_tokens
+        if self.reasoning_exclude is not None:
+            reasoning_options["exclude"] = self.reasoning_exclude
+        if reasoning_options:
+            extra_body["reasoning"] = reasoning_options
 
         resolved_enable_thinking = self.enable_thinking
         if (

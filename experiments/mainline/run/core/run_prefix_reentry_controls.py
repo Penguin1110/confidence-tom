@@ -196,11 +196,9 @@ def _load_prefix_rows(run_names: list[str], max_rows: int | None) -> list[dict[s
                         "prefix_id": str(step["prefix_id"]),
                         "step_index": int(step["step_index"]),
                         "prefix_text": prefix_text,
-                        "small_continue_answer": str(step.get("small_continue_answer", "")),
                         "small_continue_correct": int(
                             bool(step.get("small_continue_correct", False))
                         ),
-                        "small_continue_text": str(step.get("small_continue_text", "")),
                         "delta_correctness": float(step.get("delta_correctness", 0.0)),
                         "positive_gain": int(float(step.get("delta_correctness", 0.0)) > 0.0),
                     }
@@ -291,86 +289,22 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
     summary: dict[str, Any] = {
         "rows": len(rows),
         "full_rerun_match_rate": _safe_rate(rows, "full_rerun_matches_original_full"),
-        "reentry_match_rate": _safe_rate(rows, "reentry_exact_matches_original_small"),
         "reentry_repeat_match_rate": _safe_rate(rows, "reentry_repeat_matches_first"),
         "marker_boundary_match_rate": _safe_rate(rows, "reentry_marker_matches_exact"),
         "fenced_boundary_match_rate": _safe_rate(rows, "reentry_fenced_matches_exact"),
-        "full_trace_success_given_reentry_match": None,
-        "full_trace_success_given_reentry_mismatch": None,
-        "positive_takeover_given_reentry_match": None,
-        "positive_takeover_given_reentry_mismatch": None,
         "by_benchmark": {},
         "by_small_family": {},
     }
 
-    matched = [row for row in rows if int(row["reentry_exact_matches_original_small"]) == 1]
-    mismatched = [row for row in rows if int(row["reentry_exact_matches_original_small"]) == 0]
-    if matched:
-        summary["full_trace_success_given_reentry_match"] = sum(
-            int(r["full_trace_correct"]) for r in matched
-        ) / len(matched)
-        summary["positive_takeover_given_reentry_match"] = sum(
-            int(r["positive_gain"]) for r in matched
-        ) / len(matched)
-    if mismatched:
-        summary["full_trace_success_given_reentry_mismatch"] = sum(
-            int(r["full_trace_correct"]) for r in mismatched
-        ) / len(mismatched)
-        summary["positive_takeover_given_reentry_mismatch"] = sum(
-            int(r["positive_gain"]) for r in mismatched
-        ) / len(mismatched)
-
     for benchmark, block in _group_rows(rows, "benchmark").items():
         summary["by_benchmark"][benchmark] = {
             "rows": len(block),
-            "reentry_match_rate": _safe_rate(block, "reentry_exact_matches_original_small"),
             "full_rerun_match_rate": _safe_rate(block, "full_rerun_matches_original_full"),
-            "positive_takeover_given_reentry_match": (
-                sum(
-                    int(r["positive_gain"])
-                    for r in block
-                    if int(r["reentry_exact_matches_original_small"]) == 1
-                )
-                / max(
-                    1, sum(1 for r in block if int(r["reentry_exact_matches_original_small"]) == 1)
-                )
-            ),
-            "positive_takeover_given_reentry_mismatch": (
-                sum(
-                    int(r["positive_gain"])
-                    for r in block
-                    if int(r["reentry_exact_matches_original_small"]) == 0
-                )
-                / max(
-                    1, sum(1 for r in block if int(r["reentry_exact_matches_original_small"]) == 0)
-                )
-            ),
         }
     for family, block in _group_rows(rows, "small_family").items():
         summary["by_small_family"][family] = {
             "rows": len(block),
-            "reentry_match_rate": _safe_rate(block, "reentry_exact_matches_original_small"),
             "full_rerun_match_rate": _safe_rate(block, "full_rerun_matches_original_full"),
-            "positive_takeover_given_reentry_match": (
-                sum(
-                    int(r["positive_gain"])
-                    for r in block
-                    if int(r["reentry_exact_matches_original_small"]) == 1
-                )
-                / max(
-                    1, sum(1 for r in block if int(r["reentry_exact_matches_original_small"]) == 1)
-                )
-            ),
-            "positive_takeover_given_reentry_mismatch": (
-                sum(
-                    int(r["positive_gain"])
-                    for r in block
-                    if int(r["reentry_exact_matches_original_small"]) == 0
-                )
-                / max(
-                    1, sum(1 for r in block if int(r["reentry_exact_matches_original_small"]) == 0)
-                )
-            ),
         }
     return summary
 
@@ -387,26 +321,9 @@ def _to_markdown(summary: dict[str, Any]) -> str:
         "",
         f"- rows: `{summary['rows']}`",
         f"- full rerun match rate: `{fmt(summary['full_rerun_match_rate'])}`",
-        f"- re-entry match rate: `{fmt(summary['reentry_match_rate'])}`",
         f"- re-entry repeat match rate: `{fmt(summary['reentry_repeat_match_rate'])}`",
         f"- marker boundary match rate: `{fmt(summary['marker_boundary_match_rate'])}`",
         f"- fenced boundary match rate: `{fmt(summary['fenced_boundary_match_rate'])}`",
-        (
-            "- P(full-trace success | re-entry match): "
-            f"`{fmt(summary['full_trace_success_given_reentry_match'])}`"
-        ),
-        (
-            "- P(full-trace success | re-entry mismatch): "
-            f"`{fmt(summary['full_trace_success_given_reentry_mismatch'])}`"
-        ),
-        (
-            "- P(positive takeover | re-entry match): "
-            f"`{fmt(summary['positive_takeover_given_reentry_match'])}`"
-        ),
-        (
-            "- P(positive takeover | re-entry mismatch): "
-            f"`{fmt(summary['positive_takeover_given_reentry_mismatch'])}`"
-        ),
         "",
         "## By Benchmark",
         "",
@@ -414,19 +331,13 @@ def _to_markdown(summary: dict[str, Any]) -> str:
     for benchmark, block in summary["by_benchmark"].items():
         lines.append(
             f"- `{benchmark}`: rows={block['rows']}, "
-            f"reentry_match={fmt(block['reentry_match_rate'])}, "
-            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
-            f"p_pos|match={fmt(block['positive_takeover_given_reentry_match'])}, "
-            f"p_pos|mismatch={fmt(block['positive_takeover_given_reentry_mismatch'])}"
+            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}"
         )
     lines += ["", "## By Small Family", ""]
     for family, block in summary["by_small_family"].items():
         lines.append(
             f"- `{family}`: rows={block['rows']}, "
-            f"reentry_match={fmt(block['reentry_match_rate'])}, "
-            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}, "
-            f"p_pos|match={fmt(block['positive_takeover_given_reentry_match'])}, "
-            f"p_pos|mismatch={fmt(block['positive_takeover_given_reentry_mismatch'])}"
+            f"full_rerun_match={fmt(block['full_rerun_match_rate'])}"
         )
     lines.append("")
     return "\n".join(lines)
@@ -511,9 +422,6 @@ async def _process_one(
         ),
     )
 
-    original_small_answer = _answer_or_raw(
-        str(row["small_continue_text"]) or str(row["small_continue_answer"])
-    )
     original_full_answer = _answer_or_raw(str(row["full_trace_answer"]))
     prefix_text = str(row["prefix_text"])
 
@@ -566,7 +474,6 @@ async def _process_one(
         **row,
         "execution_host": os.uname().nodename,
         "prefix_tokens_observed": len(_tokenize(prefix_text)),
-        "original_small_answer_key": original_small_answer,
         "original_full_answer_key": original_full_answer,
         "full_rerun_answer_key": full_rerun_answer,
         "full_rerun_correct": int(bool(full_rerun_eval.is_correct)),
@@ -574,7 +481,6 @@ async def _process_one(
         "full_rerun_cost": full_rerun_cost,
         "reentry_exact_answer_key": exact_answer,
         "reentry_exact_correct": int(bool(exact_eval.is_correct)),
-        "reentry_exact_matches_original_small": int(exact_answer == original_small_answer),
         "reentry_exact_cost": exact_cost,
         "reentry_repeat_answer_key": repeat_answer,
         "reentry_repeat_correct": int(bool(repeat_eval.is_correct)),

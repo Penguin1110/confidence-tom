@@ -37,6 +37,8 @@ def build_static_evaluator(task: StaticTask) -> StaticEvaluator:
         return evaluate_olympiadbench
     if name == "livebench_reasoning":
         return evaluate_livebench_reasoning
+    if name == "logic_goal":
+        return evaluate_logic_goal
     if name == "exact_match":
         return evaluate_exact_match
     raise ValueError(f"No static evaluator for '{name}'")
@@ -74,6 +76,21 @@ def evaluate_exact_match(prediction: str, task: StaticTask) -> EvaluationResult:
         is_correct=is_correct,
         score=1.0 if is_correct else 0.0,
         extracted_answer=prediction.strip(),
+        evaluator_name=task.evaluator_name,
+        metadata={"reference_answer": task.reference_answer or task.correct_answer},
+    )
+
+
+def evaluate_logic_goal(prediction: str, task: StaticTask) -> EvaluationResult:
+    final_markers = re.findall(r"final answer\s*[:：]?\s*([^\n]+)", prediction, flags=re.IGNORECASE)
+    extracted = final_markers[-1].strip() if final_markers else prediction.strip()
+    normalized_pred = _normalize_text_answer(extracted)
+    normalized_ref = _normalize_text_answer(task.reference_answer or task.correct_answer)
+    is_correct = bool(normalized_pred) and normalized_pred == normalized_ref
+    return EvaluationResult(
+        is_correct=is_correct,
+        score=1.0 if is_correct else 0.0,
+        extracted_answer=extracted,
         evaluator_name=task.evaluator_name,
         metadata={"reference_answer": task.reference_answer or task.correct_answer},
     )
